@@ -1,0 +1,471 @@
+
+
+
+
+Network Working Group                                           R. Polli
+Internet-Draft     Digital Transformation Department, Italian Government
+Intended status: Informational                              21 June 2022
+Expires: 23 December 2022
+
+
+                      OpenAPI Linked Data Keywords
+            draft-polli-openapi-linked-data-keywords-latest
+
+Abstract
+
+   This document defines two OpenAPI Specification keywords to provide
+   semantic information in Schema objects.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-polli-openapi-linked-data-
+   keywords/.
+
+   information can be found at https://github.com/ioggstream/draft-
+   polli-openapi-linked-data-keywords.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/ioggstream/draft-polli-openapi-linked-data-
+   keywords/issues.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 23 December 2022.
+
+Copyright Notice
+
+   Copyright (c) 2022 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Goals and Design Choices
+     1.2.  Prosaic semantics
+     1.3.  Notational Conventions
+     1.4.  JSON Schema keywords
+       1.4.1.  the x-jsonld-context keyword
+   2.  Interoperability Considerations
+   3.  Security Considerations
+   4.  IANA Considerations
+   5.  References
+     5.1.  Normative References
+     5.2.  Informative References
+   Appendix A.  Examples
+     A.1.  Schema with semantic information
+     A.2.  Schema with semantic and vocabulary information
+   Appendix B.  Acknowledgements
+   FAQ
+   Change Log
+   Author's Address
+
+1.  Introduction
+
+   API providers usually specify semantic information in text or out-of-
+   band documents; at best, this information is described in prose into
+   specific sections of interface definition documents (see
+   Section 1.2).
+
+   This is because API providers do not always value machine-readable
+   semantics, or because they have no knowledge of semantic
+   technologies, that are perceived as unnecessarily complex.
+
+   Moreover, full-semantic technologies do not always provide easy ways
+   of defining / constraining the syntax of an object (tools like SHACL
+   and OWL restrictions being complex to use and computationally
+   intensive to process).
+
+   The goal of this document is to simplify the work of attaching
+   semantic information to REST APIs described using OpenAPI
+   Specification [OAS].
+
+   [OAS] allows to describe REST APIs interactions and capabilities
+   using a machine-readable format based on [JSON] or [YAML].  It relies
+   on different dialects of [JSONSCHEMA] to define the structure of the
+   exchanged data.  Specifically, OAS 3.0 is based on JSONSchema draft-4
+   while OAS 3.1 relies on the latest JSONSchema draft.
+
+1.1.  Goals and Design Choices
+
+   This document has the following goals:
+
+   *  Describe in a single OAS document both the syntax and semantics of
+      a JSON object.  This information can be either be provided editing
+      the document by hand or via automated tools;
+
+   *  Describe semantically the contents defined in an API spec or in a
+      [JSONSCHEMA] document;
+
+   *  Support for OAS3.0 / JsonSchema Draft4
+
+   *  Easy for non-semantic experts and with low implementation
+      complexity
+
+   while it does not aim to:
+
+   *  infer semantic information where it is not provided;
+
+   *  define a way to convert automatically RDF to [JSONSCHEMA] or [OAS]
+      documents.
+
+   Thus, the following design choices have been made:
+
+   *  the semantic context of a JSON object will be described using
+      [JSON-LD-11] and its keywords;
+
+   *  the semantic context can be provided via APIs using a "Link"
+      header field according to Section 6.1 of [JSON-LD-11];
+
+   *  property names must not contain characters such as ":" to avoid
+      interoperability issues with code-generation tools.
+
+1.2.  Prosaic semantics
+
+   [JSONSCHEMA] allows to define the structure of the exchanged data
+   using specific keywords.  Property semantic is defined in prose via
+   the description keyword.
+
+   Person:
+     $schema: https://json-schema.org/draft/2020-12/schema,
+     $id: https://example.com/person.schema.json,
+     title: Person,
+     description: A Person,
+     type: object
+     properties:
+       givenName:
+         description: The given name of a Person
+         type: string
+       familyName:
+         description: The family name, or surname, of a Person
+         type: string
+     example:
+       givenName: John
+       familyName: Doe
+
+    Figure 1: Example of JSONSCHEMA model that provides semantic prose.
+
+   [JSON-LD-11] defines a way to interpret a JSON object as a JSON-LD
+   document.  The example in the Person schema can be integrated with
+   semantic context information, thus resulting in
+
+   {
+     "@context": {
+       "@vocab": "https://w3.org/ns/person#"
+     },
+     "@type": "Person",
+     "givenName": "John",
+     "familyName": "Doe"
+   }
+
+                    Figure 2: Example of JSON-LD object.
+
+   This specification only applies to JSON objects, this means that
+   other JSON types cannot be integrated with semantic information.
+
+   The design described in the following sections aims at providing the
+   above information of "@context" and "@type" into a JSONSCHEMA
+   document.
+
+1.3.  Notational Conventions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.  These words may also appear in this
+   document in lower case as plain English words, absent their normative
+   meanings.
+
+   This document uses the Augmented BNF defined in [RFC5234] and updated
+   by [RFC7405].
+
+   The terms "content", "content negotiation", "resource", and "user
+   agent" in this document are to be interpreted as in [HTTP].
+
+   The terms "fragment" and "fragment identifier" in this document are
+   to be interpreted as in [URI].
+
+   The terms "node", "alias node", "anchor" and "named anchor" in this
+   document are to be intepreded as in [YAML].
+
+   The keywords "@context", "@type", "@id", "@value" and "@language" are
+   to be interpreted as in [JSON-LD-11].
+
+1.4.  JSON Schema keywords
+
+   A [JSONSCHEMA] or [OAS] resource MAY use the following keywords to
+   attach semantic information to a schema and represent that those
+   information applies to all related schema instances.
+
+   x-jsonld-context:  This keyword is used to provide a JSON-LD context
+      for the JSON schema instances described by the associate schema.
+      It is defined in Section 1.4.1.
+
+   x-jsonld-type:  This keyword is used to provide an RDF type for the
+      JSON schema instances described by the associate schema.
+
+   Both keywords might contain URI references.  Those references MUST
+   NOT be dereferenced automatically, since there is no guarantee that
+   they point to actual locations.  Moreover they could reference
+   unsecured resources (e.g. using the "http://" URI scheme).
+
+1.4.1.  the x-jsonld-context keyword
+
+   The x-jsonld-context keyword allows to interpret the associate
+   JSONSCHEMA instance as a JSON-LD according to the specification in
+   Section 6.1 of JSON-LD-11 (https://www.w3.org/TR/json-
+   ld11/#interpreting-json-as-json-ld).
+
+   Its value MUST be a valid JSON-LD Context (see Section 9.15 of JSON-
+   LD-11 (https://www.w3.org/TR/json-ld11/#context-definitions) ).
+
+2.  Interoperability Considerations
+
+   See the interoperability considerations for the media types and
+   specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
+   and [JSON-LD-11].
+
+   Since this specification relies on JSON-LD keywords such as
+   "@context" and "@type", a document of this type cannot be interpreted
+   as a JSON-LD document.  This is generally not a problem, since it is
+   a document following the [OAS] and [JSONSCHEMA] specification.
+
+3.  Security Considerations
+
+   See the interoperability considerations for the media types and
+   specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
+   and [JSON-LD-11].
+
+4.  IANA Considerations
+
+   None
+
+5.  References
+
+5.1.  Normative References
+
+   [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Semantics", STD 97, RFC 9110,
+              DOI 10.17487/RFC9110, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9110>.
+
+   [JSON]     Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", STD 90, RFC 8259,
+              DOI 10.17487/RFC8259, December 2017,
+              <https://www.rfc-editor.org/rfc/rfc8259>.
+
+   [JSON-LD-11]
+              "JSON-LD 1.1", n.d., <https://www.w3.org/TR/json-ld11/>.
+
+   [JSONSCHEMA]
+              "JSON Schema", n.d.,
+              <https://json-schema.org/specification.html>.
+
+   [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
+              Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
+              Specification 3.0.0", 26 July 2017.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5234]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
+              Specifications: ABNF", STD 68, RFC 5234,
+              DOI 10.17487/RFC5234, January 2008,
+              <https://www.rfc-editor.org/rfc/rfc5234>.
+
+   [RFC7405]  Kyzivat, P., "Case-Sensitive String Support in ABNF",
+              RFC 7405, DOI 10.17487/RFC7405, December 2014,
+              <https://www.rfc-editor.org/rfc/rfc7405>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [URI]      Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
+              Resource Identifier (URI): Generic Syntax", STD 66,
+              RFC 3986, DOI 10.17487/RFC3986, January 2005,
+              <https://www.rfc-editor.org/rfc/rfc3986>.
+
+   [YAML]     Oren Ben-Kiki, Clark Evans, Ingy dot Net, Tina Müller,
+              Pantelis Antoniou, Eemeli Aro, and Thomas Smith, "YAML
+              Ain't Markup Language Version 1.2", 1 October 2021,
+              <https://yaml.org/spec/1.2.2/>.
+
+5.2.  Informative References
+
+   [I-D.ietf-jsonpath-base]
+              Gössner, S., Normington, G., and C. Bormann, "JSONPath:
+              Query expressions for JSON", Work in Progress, Internet-
+              Draft, draft-ietf-jsonpath-base-05, 25 April 2022,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-
+              jsonpath-base-05>.
+
+   [JSON-POINTER]
+              Bryan, P., Ed., Zyp, K., and M. Nottingham, Ed.,
+              "JavaScript Object Notation (JSON) Pointer", RFC 6901,
+              DOI 10.17487/RFC6901, April 2013,
+              <https://www.rfc-editor.org/rfc/rfc6901>.
+
+   [RDF]      "RDF Concepts and Abstract Syntax", n.d.,
+              <https://www.w3.org/TR/rdf11/>.
+
+Appendix A.  Examples
+
+A.1.  Schema with semantic information
+
+   The following example shows a Person JSONSCHEMA with semantic
+   information provided by the x-jsonld-type and x-jsonld-context.
+
+   Person:
+     "x-jsonld-type": "https://schema.org/Person"
+     "x-jsonld-context":
+        "@vocab": "https://schema.org/"
+        custom_id: null  # detach this property from the @vocab
+        country:
+          "@id": addressCountry
+          "@language": en
+     type: object
+     required:
+     - given_name
+     - family_name
+     properties:
+       familyName: { type: string, maxLength: 255  }
+       givenName:  { type: string, maxLength: 255  }
+       country:    { type: string, maxLength: 3, minLength: 3 }
+       custom_id:  { type: string, maxLength: 255  }
+     example:
+       familyName: "Doe"
+       givenName: "John"
+       country: "FRA"
+       custom_id: "12345"
+
+     Figure 3: A JSONSCHEMA data model with semantic context and type.
+
+   The example object is assembled as a JSON-LD object as follows.
+
+   {
+     "@context": {
+       "@vocab": "https://schema.org/",
+       "custom_id": null
+     },
+     "@type": "https://schema.org/Person",
+     "familyName": "Doe",
+     "givenName": "John",
+     "country": "FRA",
+     "custom_id": "12345"
+   }
+
+   The above JSON-LD can be represented as text/turtle as follows.
+
+   _:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+   _:b0 <https://schema.org/country> "FRA" .
+   _:b0 <https://schema.org/familyName> "Doe" .
+   _:b0 <https://schema.org/givenName> "John" .
+
+A.2.  Schema with semantic and vocabulary information
+
+   The following example shows a Person JSONSCHEMA with semantic
+   information provided by the x-jsonld-type and x-jsonld-context.
+
+   Person:
+     "x-jsonld-type": "https://schema.org/Person"
+     "x-jsonld-context":
+        "@vocab": "https://schema.org/"
+        email: "@id"
+        custom_id: null  # detach this property from the @vocab
+        country:
+          "@id": addressCountry
+          "@type": "@id"
+          "@context":
+             "@base": "http://publications.europa.eu/resource/authority/country/"
+
+     type: object
+     required:
+     - email
+     - given_name
+     - family_name
+     properties:
+       email: { type: string, maxLength: 255  }
+       familyName: { type: string, maxLength: 255  }
+       givenName:  { type: string, maxLength: 255  }
+       country:    { type: string, maxLength: 3, minLength: 3 }
+       custom_id:  { type: string, maxLength: 255  }
+     example:
+       familyName: "Doe"
+       givenName: "John"
+       email: "jon@doe.example"
+       country: "FRA"
+       custom_id: "12345"
+
+     Figure 4: A JSONSCHEMA data model with semantic context and type.
+
+   The resulting RDF graph is as follows.
+
+   @prefix schema: <https://schema.org/> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
+
+   <mailto:jon@doe.example>
+     schema:addressCountry country:FRA;
+     schema:familyName "Doe"          ;
+     schema:givenName "John"          .
+
+           Figure 5: A RDF graph with semantic context and type.
+
+Appendix B.  Acknowledgements
+
+   Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being
+   the initial contributors of this work.
+
+   In addition to the people above, this document owes a lot to the
+   extensive discussion inside and outside the workgroup.  The following
+   contributors have helped improve this specification by opening pull
+   requests, reporting bugs, asking smart questions, drafting or
+   reviewing text, and evaluating open issues:
+
+   Pierre-Antoine Champin, and Vladimir Alexiev.
+
+FAQ
+
+   This section is to be removed before publishing as an RFC.
+
+   Q: Why this document?  Because it's useful :)
+
+Change Log
+
+   This section is to be removed before publishing as an RFC.
+
+   RFC EDITOR PLEASE DELETE THIS SECTION.
+
+Author's Address
+
+   Roberto Polli
+   Digital Transformation Department, Italian Government
+   Italy
+   Email: robipolli@gmail.com

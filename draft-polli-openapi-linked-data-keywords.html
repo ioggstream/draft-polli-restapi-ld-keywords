@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>OpenAPI Linked Data Keywords</title>
+<meta content="Roberto Polli" name="author">
+<meta content="
+       This document defines two OpenAPI Specification
+keywords to provide semantic information in
+Schema objects. 
+    " name="description">
+<meta content="xml2rfc 3.12.10" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-polli-openapi-linked-data-keywords-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.12.10
+    Python 3.10.4
+    appdirs 1.4.4
+    ConfigArgParse 1.5.3
+    google-i18n-address 2.5.1
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 2.11.3
+    kitchen 1.2.6
+    lxml 4.8.0
+    MarkupSafe 2.0.1
+    pycountry 20.7.3
+    pyflakes 2.4.0
+    PyYAML 6.0
+    requests 2.27.1
+    setuptools 59.4.0
+    six 1.16.0
+-->
+<link href="draft-polli-openapi-linked-data-keywords.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+dd.break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([stroke="fill"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">OpenAPI Linked Data Keywords</td>
+<td class="right">June 2022</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Polli</td>
+<td class="center">Expires 23 December 2022</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-polli-openapi-linked-data-keywords-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2022-06-21" class="published">21 June 2022</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2022-12-23">23 December 2022</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">R. Polli</div>
+<div class="org">Digital Transformation Department, Italian Government</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">OpenAPI Linked Data Keywords</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines two OpenAPI Specification
+keywords to provide semantic information in
+Schema objects.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-polli-openapi-linked-data-keywords/">https://datatracker.ietf.org/doc/draft-polli-openapi-linked-data-keywords/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+         information can be found at <span><a href="https://github.com/ioggstream/draft-polli-openapi-linked-data-keywords">https://github.com/ioggstream/draft-polli-openapi-linked-data-keywords</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/ioggstream/draft-polli-openapi-linked-data-keywords/issues">https://github.com/ioggstream/draft-polli-openapi-linked-data-keywords/issues</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 23 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2022 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-goals-and-design-choices" class="xref">Goals and Design Choices</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="xref">1.2</a>.  <a href="#name-prosaic-semantics" class="xref">Prosaic semantics</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="xref">1.3</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.4">
+                <p id="section-toc.1-1.1.2.4.1"><a href="#section-1.4" class="xref">1.4</a>.  <a href="#name-json-schema-keywords" class="xref">JSON Schema keywords</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.4.2.1">
+                    <p id="section-toc.1-1.1.2.4.2.1.1"><a href="#section-1.4.1" class="xref">1.4.1</a>.  <a href="#name-the-x-jsonld-context-keywor" class="xref">the x-jsonld-context keyword</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-interoperability-considerat" class="xref">Interoperability Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-references" class="xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-examples" class="xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#appendix-A.1" class="xref">A.1</a>.  <a href="#name-schema-with-semantic-inform" class="xref">Schema with semantic information</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#appendix-A.2" class="xref">A.2</a>.  <a href="#name-schema-with-semantic-and-vo" class="xref">Schema with semantic and vocabulary information</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-B" class="xref">Appendix B</a>.  <a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-C" class="xref"></a><a href="#name-faq" class="xref">FAQ</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-D" class="xref"></a><a href="#name-change-log" class="xref">Change Log</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-E" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">API providers usually specify semantic information in text or out-of-band documents;
+at best, this information is described in prose into specific sections of interface definition documents (see <a href="#prosaic-semantics" class="xref">Section 1.2</a>).<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This is because API providers do not always value machine-readable semantics, or because they have no knowledge of semantic technologies,
+that are perceived as unnecessarily complex.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Moreover, full-semantic technologies do not always provide easy ways of defining / constraining the syntax of an object (tools like SHACL and OWL restrictions being complex to use and computationally intensive to process).<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">The goal of this document is to simplify
+the work of attaching semantic information to REST APIs
+described using OpenAPI Specification <span>[<a href="#OAS" class="xref">OAS</a>]</span>.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5"><span>[<a href="#OAS" class="xref">OAS</a>]</span> allows to describe REST APIs
+interactions and capabilities using a machine-readable format
+based on <span>[<a href="#JSON" class="xref">JSON</a>]</span> or <span>[<a href="#YAML" class="xref">YAML</a>]</span>.
+It relies on different dialects of <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> to define the structure of the exchanged data.
+Specifically, OAS 3.0 is based on JSONSchema draft-4
+while OAS 3.1 relies on the latest JSONSchema draft.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<div id="goals-and-design-choices">
+<section id="section-1.1">
+        <h3 id="name-goals-and-design-choices">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-goals-and-design-choices" class="section-name selfRef">Goals and Design Choices</a>
+        </h3>
+<p id="section-1.1-1">This document has the following goals:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-2.1">Describe in a single OAS document both the syntax and semantics
+ of a JSON object. This information can be either be provided
+ editing the document by hand or via automated tools;<a href="#section-1.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-2.2">Describe semantically the contents defined in an API spec or in a <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> document;<a href="#section-1.1-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-2.3">Support for OAS3.0 / JsonSchema Draft4<a href="#section-1.1-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-2.4">Easy for non-semantic experts and with low implementation complexity<a href="#section-1.1-2.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-1.1-3">while it does not aim to:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-4.1">infer semantic information where it is not provided;<a href="#section-1.1-4.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-4.2">define a way to convert automatically RDF to <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> or <span>[<a href="#OAS" class="xref">OAS</a>]</span> documents.<a href="#section-1.1-4.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-1.1-5">Thus, the following design choices have been made:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-6.1">the semantic context of a JSON object will be described
+using <span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span> and its keywords;<a href="#section-1.1-6.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-6.2">the semantic context can be provided via APIs
+using a "Link" header field according to Section 6.1 of <span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span>;<a href="#section-1.1-6.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-6.3">property names must not contain characters such as ":"
+to avoid interoperability issues with code-generation tools.<a href="#section-1.1-6.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="prosaic-semantics">
+<section id="section-1.2">
+        <h3 id="name-prosaic-semantics">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-prosaic-semantics" class="section-name selfRef">Prosaic semantics</a>
+        </h3>
+<p id="section-1.2-1"><span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> allows to define the structure of the exchanged data using specific keywords.
+Property semantic is defined in prose via the <code>description</code> keyword.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<span id="name-example-of-jsonschema-model"></span><div id="ex-semantic-prose">
+<figure id="figure-1">
+          <div id="section-1.2-2.1">
+<pre class="lang-yaml sourcecode">
+Person:
+  $schema: https://json-schema.org/draft/2020-12/schema,
+  $id: https://example.com/person.schema.json,
+  title: Person,
+  description: A Person,
+  type: object
+  properties:
+    givenName:
+      description: The given name of a Person
+      type: string
+    familyName:
+      description: The family name, or surname, of a Person
+      type: string
+  example:
+    givenName: John
+    familyName: Doe
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-example-of-jsonschema-model" class="selfRef">Example of JSONSCHEMA model that provides semantic prose.</a>
+          </figcaption></figure>
+</div>
+<p id="section-1.2-3"><span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span> defines a way to interpret a JSON object as a JSON-LD document.
+The example in the Person schema can be integrated with
+semantic context information, thus resulting in<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<span id="name-example-of-json-ld-object"></span><div id="ex-json-ld">
+<figure id="figure-2">
+          <div id="section-1.2-4.1">
+<pre class="lang-json sourcecode">
+{
+  "@context": {
+    "@vocab": "https://w3.org/ns/person#"
+  },
+  "@type": "Person",
+  "givenName": "John",
+  "familyName": "Doe"
+}
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-example-of-json-ld-object" class="selfRef">Example of JSON-LD object.</a>
+          </figcaption></figure>
+</div>
+<p id="section-1.2-5">This specification only applies to JSON objects,
+this means that other JSON types cannot be
+integrated with semantic information.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<p id="section-1.2-6">The design described in the following sections aims
+at providing the above information of "@context" and "@type"
+into a JSONSCHEMA document.<a href="#section-1.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="notational-conventions">
+<section id="section-1.3">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.3-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+"MAY", and "OPTIONAL" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.
+These words may also appear in this document in
+lower case as plain English words, absent their normative meanings.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-2">This document uses the Augmented BNF defined in <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span> and updated
+by <span>[<a href="#RFC7405" class="xref">RFC7405</a>]</span>.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
+<p id="section-1.3-3">The terms  "content", "content negotiation", "resource",
+and "user agent"
+in this document are to be interpreted as in <span>[<a href="#HTTP" class="xref">HTTP</a>]</span>.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+<p id="section-1.3-4">The terms "fragment" and "fragment identifier"
+in this document are to be interpreted as in <span>[<a href="#URI" class="xref">URI</a>]</span>.<a href="#section-1.3-4" class="pilcrow">¶</a></p>
+<p id="section-1.3-5">The terms "node", "alias node", "anchor" and "named anchor"
+in this document are to be intepreded as in <span>[<a href="#YAML" class="xref">YAML</a>]</span>.<a href="#section-1.3-5" class="pilcrow">¶</a></p>
+<p id="section-1.3-6">The keywords "@context", "@type", "@id", "@value" and "@language" are to be interpreted as in <span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span>.<a href="#section-1.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="keywords">
+<section id="section-1.4">
+        <h3 id="name-json-schema-keywords">
+<a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-json-schema-keywords" class="section-name selfRef">JSON Schema keywords</a>
+        </h3>
+<p id="section-1.4-1">A <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> or <span>[<a href="#OAS" class="xref">OAS</a>]</span> resource MAY
+use the following keywords to
+attach semantic information to a schema
+and represent that those information applies
+to all related schema instances.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-1.4-2">
+          <dt id="section-1.4-2.1">x-jsonld-context:</dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-2.2">
+            <p id="section-1.4-2.2.1">This keyword is used to provide a JSON-LD context
+ for the JSON schema instances described by the associate
+ schema. It is defined  in <a href="#keywords-context" class="xref">Section 1.4.1</a>.<a href="#section-1.4-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-1.4-2.3">x-jsonld-type:</dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-2.4">
+            <p id="section-1.4-2.4.1">This keyword is used to provide an RDF type
+ for the JSON schema instances described by the associate
+ schema.<a href="#section-1.4-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-1.4-3">Both keywords might contain URI references.
+Those references MUST NOT be dereferenced automatically,
+since there is no guarantee that they point to actual
+locations. Moreover they could reference unsecured resources
+(e.g. using the "http://" URI scheme).<a href="#section-1.4-3" class="pilcrow">¶</a></p>
+<div id="keywords-context">
+<section id="section-1.4.1">
+          <h4 id="name-the-x-jsonld-context-keywor">
+<a href="#section-1.4.1" class="section-number selfRef">1.4.1. </a><a href="#name-the-x-jsonld-context-keywor" class="section-name selfRef">the x-jsonld-context keyword</a>
+          </h4>
+<p id="section-1.4.1-1">The x-jsonld-context keyword allows to interpret the associate
+JSONSCHEMA instance as a JSON-LD according to the
+specification in <a href="https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld">Section 6.1 of JSON-LD-11</a>.<a href="#section-1.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.4.1-2">Its value MUST be a valid JSON-LD Context (see
+<a href="https://www.w3.org/TR/json-ld11/#context-definitions">Section 9.15 of JSON-LD-11</a>
+).<a href="#section-1.4.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="int">
+<section id="section-2">
+      <h2 id="name-interoperability-considerat">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
+      </h2>
+<p id="section-2-1">See the interoperability considerations for the media types
+and specifications used, including <span>[<a href="#YAML" class="xref">YAML</a>]</span>, <span>[<a href="#JSON" class="xref">JSON</a>]</span>, <span>[<a href="#OAS" class="xref">OAS</a>]</span>,
+<span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span>.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">Since this specification relies on JSON-LD keywords such as
+"@context" and "@type", a document of this type cannot be
+interpreted as a JSON-LD document.
+This is generally not a problem, since it is a document
+following the <span>[<a href="#OAS" class="xref">OAS</a>]</span> and <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> specification.<a href="#section-2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec">
+<section id="section-3">
+      <h2 id="name-security-considerations">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-3-1">See the interoperability considerations for the media types
+and specifications used, including <span>[<a href="#YAML" class="xref">YAML</a>]</span>, <span>[<a href="#JSON" class="xref">JSON</a>]</span>, <span>[<a href="#OAS" class="xref">OAS</a>]</span>,
+<span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="xref">JSON-LD-11</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana">
+<section id="section-4">
+      <h2 id="name-iana-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-4-1">None<a href="#section-4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-5">
+      <h2 id="name-references">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-5.1">
+        <h3 id="name-normative-references">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="HTTP">[HTTP]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9110">https://www.rfc-editor.org/rfc/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="JSON">[JSON]</dt>
+        <dd>
+<span class="refAuthor">Bray, T., Ed.</span>, <span class="refTitle">"The JavaScript Object Notation (JSON) Data Interchange Format"</span>, <span class="seriesInfo">STD 90</span>, <span class="seriesInfo">RFC 8259</span>, <span class="seriesInfo">DOI 10.17487/RFC8259</span>, <time datetime="2017-12" class="refDate">December 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8259">https://www.rfc-editor.org/rfc/rfc8259</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="JSON-LD-11">[JSON-LD-11]</dt>
+        <dd>
+<span class="refTitle">"JSON-LD 1.1"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="JSONSCHEMA">[JSONSCHEMA]</dt>
+        <dd>
+<span class="refTitle">"JSON Schema"</span>, <span>n.d.</span>, <span>&lt;<a href="https://json-schema.org/specification.html">https://json-schema.org/specification.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OAS">[OAS]</dt>
+        <dd>
+<span class="refAuthor">Darrel Miller</span>, <span class="refAuthor">Jeremy Whitlock</span>, <span class="refAuthor">Marsh Gardiner</span>, <span class="refAuthor">Mike Ralphson</span>, <span class="refAuthor">Ron Ratovsky</span>, and <span class="refAuthor">Uri Sarid</span>, <span class="refTitle">"OpenAPI Specification 3.0.0"</span>, <time datetime="2017-07-26" class="refDate">26 July 2017</time>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7405">[RFC7405]</dt>
+        <dd>
+<span class="refAuthor">Kyzivat, P.</span>, <span class="refTitle">"Case-Sensitive String Support in ABNF"</span>, <span class="seriesInfo">RFC 7405</span>, <span class="seriesInfo">DOI 10.17487/RFC7405</span>, <time datetime="2014-12" class="refDate">December 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7405">https://www.rfc-editor.org/rfc/rfc7405</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="URI">[URI]</dt>
+        <dd>
+<span class="refAuthor">Berners-Lee, T.</span>, <span class="refAuthor">Fielding, R.</span>, and <span class="refAuthor">L. Masinter</span>, <span class="refTitle">"Uniform Resource Identifier (URI): Generic Syntax"</span>, <span class="seriesInfo">STD 66</span>, <span class="seriesInfo">RFC 3986</span>, <span class="seriesInfo">DOI 10.17487/RFC3986</span>, <time datetime="2005-01" class="refDate">January 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3986">https://www.rfc-editor.org/rfc/rfc3986</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="YAML">[YAML]</dt>
+      <dd>
+<span class="refAuthor">Oren Ben-Kiki</span>, <span class="refAuthor">Clark Evans</span>, <span class="refAuthor">Ingy dot Net</span>, <span class="refAuthor">Tina Müller</span>, <span class="refAuthor">Pantelis Antoniou</span>, <span class="refAuthor">Eemeli Aro</span>, and <span class="refAuthor">Thomas Smith</span>, <span class="refTitle">"YAML Ain't Markup Language Version 1.2"</span>, <time datetime="2021-10-01" class="refDate">1 October 2021</time>, <span>&lt;<a href="https://yaml.org/spec/1.2.2/">https://yaml.org/spec/1.2.2/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-5.2">
+        <h3 id="name-informative-references">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-jsonpath-base">[I-D.ietf-jsonpath-base]</dt>
+        <dd>
+<span class="refAuthor">Gössner, S.</span>, <span class="refAuthor">Normington, G.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"JSONPath: Query expressions for JSON"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-jsonpath-base-05</span>, <time datetime="2022-04-25" class="refDate">25 April 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-05">https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base-05</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="JSON-POINTER">[JSON-POINTER]</dt>
+        <dd>
+<span class="refAuthor">Bryan, P., Ed.</span>, <span class="refAuthor">Zyp, K.</span>, and <span class="refAuthor">M. Nottingham, Ed.</span>, <span class="refTitle">"JavaScript Object Notation (JSON) Pointer"</span>, <span class="seriesInfo">RFC 6901</span>, <span class="seriesInfo">DOI 10.17487/RFC6901</span>, <time datetime="2013-04" class="refDate">April 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6901">https://www.rfc-editor.org/rfc/rfc6901</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RDF">[RDF]</dt>
+      <dd>
+<span class="refTitle">"RDF Concepts and Abstract Syntax"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.w3.org/TR/rdf11/">https://www.w3.org/TR/rdf11/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="ex">
+<section id="appendix-A">
+      <h2 id="name-examples">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<div id="schema-with-semantic-information">
+<section id="appendix-A.1">
+        <h3 id="name-schema-with-semantic-inform">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-schema-with-semantic-inform" class="section-name selfRef">Schema with semantic information</a>
+        </h3>
+<p id="appendix-A.1-1">The following example shows a
+Person JSONSCHEMA with semantic information
+provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<span id="name-a-jsonschema-data-model-wit"></span><div id="ex-base">
+<figure id="figure-3">
+          <div id="appendix-A.1-2.1">
+<pre class="lang-example sourcecode">
+Person:
+  "x-jsonld-type": "https://schema.org/Person"
+  "x-jsonld-context":
+     "@vocab": "https://schema.org/"
+     custom_id: null  # detach this property from the @vocab
+     country:
+       "@id": addressCountry
+       "@language": en
+  type: object
+  required:
+  - given_name
+  - family_name
+  properties:
+    familyName: { type: string, maxLength: 255  }
+    givenName:  { type: string, maxLength: 255  }
+    country:    { type: string, maxLength: 3, minLength: 3 }
+    custom_id:  { type: string, maxLength: 255  }
+  example:
+    familyName: "Doe"
+    givenName: "John"
+    country: "FRA"
+    custom_id: "12345"
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-a-jsonschema-data-model-wit" class="selfRef">A JSONSCHEMA data model with semantic context and type.</a>
+          </figcaption></figure>
+</div>
+<p id="appendix-A.1-3">The example object is assembled as a JSON-LD object as follows.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
+<div id="appendix-A.1-4">
+<pre class="lang-json sourcecode">
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "custom_id": null
+  },
+  "@type": "https://schema.org/Person",
+  "familyName": "Doe",
+  "givenName": "John",
+  "country": "FRA",
+  "custom_id": "12345"
+}
+</pre><a href="#appendix-A.1-4" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-5">The above JSON-LD can be represented as <code>text/turtle</code> as follows.<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
+<div id="appendix-A.1-6">
+<pre class="lang-text sourcecode">
+_:b0 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://schema.org/Person&gt; .
+_:b0 &lt;https://schema.org/country&gt; "FRA" .
+_:b0 &lt;https://schema.org/familyName&gt; "Doe" .
+_:b0 &lt;https://schema.org/givenName&gt; "John" .
+</pre><a href="#appendix-A.1-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="ex-semantic-and-vocabulary">
+<section id="appendix-A.2">
+        <h3 id="name-schema-with-semantic-and-vo">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-schema-with-semantic-and-vo" class="section-name selfRef">Schema with semantic and vocabulary information</a>
+        </h3>
+<p id="appendix-A.2-1">The following example shows a
+Person JSONSCHEMA with semantic information
+provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<span id="name-a-jsonschema-data-model-with"></span><div id="ex-complete-example">
+<figure id="figure-4">
+          <div id="appendix-A.2-2.1">
+<pre class="lang-example sourcecode">
+Person:
+  "x-jsonld-type": "https://schema.org/Person"
+  "x-jsonld-context":
+     "@vocab": "https://schema.org/"
+     email: "@id"
+     custom_id: null  # detach this property from the @vocab
+     country:
+       "@id": addressCountry
+       "@type": "@id"
+       "@context":
+          "@base": "http://publications.europa.eu/resource/authority/country/"
+
+  type: object
+  required:
+  - email
+  - given_name
+  - family_name
+  properties:
+    email: { type: string, maxLength: 255  }
+    familyName: { type: string, maxLength: 255  }
+    givenName:  { type: string, maxLength: 255  }
+    country:    { type: string, maxLength: 3, minLength: 3 }
+    custom_id:  { type: string, maxLength: 255  }
+  example:
+    familyName: "Doe"
+    givenName: "John"
+    email: "jon@doe.example"
+    country: "FRA"
+    custom_id: "12345"
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-a-jsonschema-data-model-with" class="selfRef">A JSONSCHEMA data model with semantic context and type.</a>
+          </figcaption></figure>
+</div>
+<p id="appendix-A.2-3">The resulting RDF graph is as follows.<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+<span id="name-a-rdf-graph-with-semantic-c"></span><div id="ex-rdf">
+<figure id="figure-5">
+          <div id="appendix-A.2-4.1">
+<pre class="lang-text sourcecode">
+@prefix schema: &lt;https://schema.org/&gt; .
+@prefix country: &lt;http://publications.europa.eu/resource/authority/country/&gt; .
+
+&lt;mailto:jon@doe.example&gt;
+  schema:addressCountry country:FRA;
+  schema:familyName "Doe"          ;
+  schema:givenName "John"          .
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-a-rdf-graph-with-semantic-c" class="selfRef">A RDF graph with semantic context and type.</a>
+          </figcaption></figure>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-B">
+      <h2 id="name-acknowledgements">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-B-1">Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">In addition to the people above, this document owes a lot to the extensive discussion inside
+and outside the workgroup.
+The following contributors have helped improve this specification by
+opening pull requests, reporting bugs, asking smart questions,
+drafting or reviewing text, and evaluating open issues:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-3">Pierre-Antoine Champin,
+and Vladimir Alexiev.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="faq">
+<section id="appendix-C">
+      <h2 id="name-faq">
+<a href="#name-faq" class="section-name selfRef">FAQ</a>
+      </h2>
+<p id="appendix-C-1">This section is to be removed before publishing as an RFC.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="appendix-C-2">
+        <dt id="appendix-C-2.1">Q: Why this document?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-C-2.2">
+          <p id="appendix-C-2.2.1">Because it's useful :)<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="change-log">
+<section id="appendix-D">
+      <h2 id="name-change-log">
+<a href="#name-change-log" class="section-name selfRef">Change Log</a>
+      </h2>
+<p id="appendix-D-1">This section is to be removed before publishing as an RFC.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
+<p id="appendix-D-2">RFC EDITOR PLEASE DELETE THIS SECTION.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-E">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Roberto Polli</span></div>
+<div dir="auto" class="left"><span class="org">Digital Transformation Department, Italian Government</span></div>
+<div dir="auto" class="left"><span class="country-name">Italy</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:robipolli@gmail.com" class="email">robipolli@gmail.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
