@@ -67,6 +67,9 @@ normative:
 informative:
   I-D.ietf-jsonpath-base:
   JSON-POINTER: RFC6901
+  JSONLD-11-API:
+    target: https://www.w3.org/TR/json-ld11-api/
+    title: JSON-LD 1.1 Processing Algorithms and API
   RDF:
     title: RDF Concepts and Abstract Syntax
     target: https://www.w3.org/TR/rdf11/
@@ -131,7 +134,7 @@ This document has the following goals:
 while it does not aim to:
 
 - infer semantic information where it is not provided;
-- define a way to convert automatically RDF to [JSONSCHEMA] or [OAS] documents.
+- convert automatically RDF to [JSONSCHEMA] or [OAS] documents.
 
 Thus, the following design choices have been made:
 
@@ -139,7 +142,8 @@ Thus, the following design choices have been made:
   using [JSON-LD-11] and its keywords;
 - the semantic context can be provided via APIs
   using a "Link" header field according to Section 6.1 of [JSON-LD-11];
-- property names must not contain characters such as `:`
+- property names are limited to characters that can be used in variable
+  names (e.g. excluding `:` and `.`)
   to avoid interoperability issues with code-generation tools.
 
 ## Prosaic semantics {#prosaic-semantics}
@@ -192,13 +196,9 @@ The design described in the following sections aims
 at providing the above information of "@context" and "@type"
 into a JSON Schema document.
 
-
 ## Notational Conventions
 
 {::boilerplate bcp14+}
-
-This document uses the Augmented BNF defined in {{!RFC5234}} and updated
-by {{!RFC7405}}.
 
 The terms  "content", "content negotiation", "resource",
 and "user agent"
@@ -210,15 +210,17 @@ in this document are to be interpreted as in [URI].
 The terms "node", "alias node", "anchor" and "named anchor"
 in this document are to be intepreded as in [YAML].
 
+The terms "schema" and "schema instance"
+in this document are to be intepreded as in [JSONSCHEMA].
+
 The terms "JSON object", "JSON document", "member", "member name"
 in this document are to be intepreded as in [JSON].
-The term "property" is a synonym of "member name",
+The term "property" - when referred to a JSON document
+such as a schema instance -
+is a synonym of "member name",
 and the term "property value" is a synonym of "member value".
 
 The terms "@context", "@type", "@id", "@value" and "@language" are to be interpreted as JSON-LD keywords in [JSON-LD-11].
-
-The terms "schema" and "schema instance"
-in this document are to be intepreded as in [JSONSCHEMA].
 
 Since JSON-LD is a serialization format for RDF,
 the document can use JSON-LD and RDF interchangeably
@@ -226,7 +228,7 @@ when it refers to the semantic interpretation of a resource.
 
 # JSON Schema keywords {#keywords}
 
-A [JSONSCHEMA] or [OAS] resource MAY
+A [JSONSCHEMA] or [OAS] document MAY
 use the following JSON Schema keywords to
 attach semantic information to a schema
 and represent that those information applies
@@ -259,33 +261,48 @@ since there is no guarantee that they point to actual
 locations. Moreover they could reference unsecured resources
 (e.g. using the "http://" URI scheme [HTTP]).
 
-To interpret a schema instance as [JSON-LD]:
-
-1. ensure that the initial schema instance does not have
-   a "@context" and a "@type" property.
-   For further information see {{sec-conflicts}};
-1. add the "@context" property with the value of x-jsonld-context.
-   This will be the instance context: the only one that will be mangled;
-1. add the "@type" property with the value of x-jsonld-type;
-1. iterate on each instance property like the following:
-
-   - identify the sub-schema associated to the property (e.g. traversing $refs)
-     and check the presence of semantic keywords;
-   - for the x-jsonld-type, add the "@type" property to the schema instance;
-   - for the x-jsonld-context, integrate its information in the instance context
-     when they are not already present;
-   - interate this process in case of nested entries.
-
 ## The x-jsonld-context JSON Schema keyword {#keywords-context}
 
 The x-jsonld-context value
 provides the information required to interpret the associate
-JSONSCHEMA instance as a JSON-LD
+schema instance as a JSON-LD
 according to the specification in [Section 6.1 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld).
 
 Its value MUST be a valid JSON-LD Context (see
 [Section 9.15 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#context-definitions)
 ).
+
+When context composition (see {{int-composability}}) is needed,
+the JSON-LD Context SHOULD be provided in the form of a JSON object.
+
+## Interpreting schema instances {#interpreting}
+
+To interpret a schema instance as JSON-LD:
+
+1. ensure that the initial schema instance does not have
+   a "@context" and a "@type" property.
+   For further information see {{sec-conflicts}};
+1. add the "@context" property with the value of x-jsonld-context.
+   This will be the "instance context": the only one that will be mangled;
+1. add the "@type" property with the value of x-jsonld-type;
+1. iterate on each instance property like the following:
+
+   - identify the sub-schema associated to the property (e.g. traversing $refs)
+     and check the presence of semantic keywords;
+   - for the x-jsonld-type, add the "@type" property to the sub-instance;
+   - for the x-jsonld-context, integrate its information in the instance context
+     when they are not already present;
+   - interate this process in case of nested entries.
+
+The specific algorithm
+for integrating the values of x-jsonld-context into the
+instance context is an implementation detail.
+Note that if the x-jsonld-context is an URL,
+an implementation that wants to automatically
+generate the instance context needs to dereference
+that URL. This is not trivial.
+
+NOTE: not a replacement for xsd/xmlschema in jsonschema.
 
 # Interoperability Considerations {#int}
 
@@ -302,13 +319,27 @@ following the [OAS] and [JSONSCHEMA] specification.
 ## Limited expressivity {#int-limitations}
 
 Not all RDF resources can be expressed as JSON documents
-plus "@context" and "@type":
+annotated with "@context" and "@type":
 this specifications is limited by the possibilities
 of [Section 6.1 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld).
 On the other hand, since this approach
 delegates almost all the processing to of JSON-LD,
 as long as JSON-LD evolves
 it will cover more an more use cases.
+
+## URL contexts {#int-url-contexts}
+
+When a context is expressed by an URL, implementing
+an automatic resolution algorithm is not trivial.
+In general adopting this specification requires
+a proper design of schemas and contexts.
+
+~~~ example
+Person:
+  x-jsonld-context: https://ctx.example/context.jsonld
+  type: object
+~~~
+{: title="Example of an URL context." #ex-url-context}
 
 ## Disjoint with JSON-LD {#int-no-jsonld}
 
@@ -317,16 +348,17 @@ or mangle JSON-LD documents
 (e.g. to add a missing "@type" to a JSON-LD document),
 but only schemas that do not describe JSON-LD documents.
 
-Applications that use JSON-LD document natively
-need to have their own "@type" and "@context",
-and when returned in APIs they need to use a proper media type
-since the processing and interpretation of those documents
+Applications exchanging JSON-LD documents
+need to explicitly populate "@type" and "@context",
+and use a proper media type
+since Linked Data processing and interpretation
 requires further checks.
 
-In that case, if this application relies on [JSONSCHEMA] or [OAS] to
-describe messages, it needs to declare all required properties
-and process them with a JSON-LD processor,
-like in the example below.
+If that application describe messages using [JSONSCHEMA] or [OAS],
+it needs to
+process them with a JSON-LD processor
+and declare all required properties
+in the schema - like in the example below.
 
 ~~~ yaml
 PersonLD:
@@ -347,25 +379,27 @@ PersonLD:
       type: string
 ~~~
 
-## No composability {#int-no-composability}
+## Composability {#int-composability}
 
-Composability can be achieved applying the process described ,
-and they are to be applied only at the top-level of a schema instance.
+Composability can be achieved applying the process described
+in {{interpreting}}.
+This process is inherently complex and composability
+is not one of the explicit goal of this specification.
 
-~~~ yaml
-Person:
-  x-jsonld-type: Person
-  x-jsonld-context:
-    "@vocab": "https://w3.org/ns/person#"
-    children:
-      "@type": "@container"
+Well-designed schemas do not usually have
+more than 3 or 4 nested levels.
+This means that, when needed, it is possible
+to assemble and optimize an instance context (see {{interpreting}})
+at design time and set the value of x-jsonld-context manually
 
-  properties:
-    email: { type: string }
-    children:
-      type: array
-      items:
-        $ref: '#/Person'
+Once a context is assembled, the RDF data can be
+generated using the algoritms described in [JSONLD-11-API]
+for example through a library.
+
+~~~ python
+from pyld import jsonld
+...
+jsonld_text = jsonld.expand(schema_instance, context)
 ~~~
 
 # Security Considerations {#sec}
@@ -581,11 +615,6 @@ The following schema references another schema.
 
 ~~~ yaml
 BirthPlace:
-  type: object
-  additionalProperties: false
-  required:
-    - province
-    - country
   x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
   x-jsonld-context:
     "@vocab": "https://w3id.org/italia/onto/CLV/"
@@ -599,15 +628,18 @@ BirthPlace:
       "@type": "@id"
       "@context":
         "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+  type: object
+  additionalProperties: false
+  required:
+    - province
+    - country
   properties:
     province:
-      type: string
       description: The province where the person was born.
-      example: RM
-    country:
       type: string
+    country:
       description: The iso alpha-3 code of the country where the person was born.
-      example: ITA
+      type: string
   example:
     province: RM
     country: ITA
@@ -672,18 +704,24 @@ results in the following JSON-LD document.
 }
 ~~~
 
-That can be serialized in RDF as
+That can be serialized as `text/turtle` as
 
 
 ~~~ text
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-<mailto:a@example> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3.org/ns/person#Person> .
-<mailto:a@example> <https://w3.org/ns/person#birthplace> _:b0 .
-<mailto:a@example> <https://w3.org/ns/person#familyName> "Polli" .
-<mailto:a@example> <https://w3.org/ns/person#givenName> "Roberto" .
-_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/italia/onto/CLV/Feature> .
-_:b0 <https://w3id.org/italia/onto/CLV/hasCountry> <http://publications.europa.eu/resource/authority/country/ITA> .
-_:b0 <https://w3id.org/italia/onto/CLV/hasProvince> <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix eu: <https://w3.org/ns/person#> .
+@prefix itl: <https://w3id.org/italia/onto/CLV/> .
+
+<mailto:a@example>
+  rdf:type eu:Person ;
+  eu:birthplace _:b0 ;
+  eu:familyName "Polli" ;
+  eu:givenName  "Roberto"
+.
+_:b0 rdf:type itl:Feature ;
+  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
+  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+.
 
 ~~~
 # Acknowledgements
