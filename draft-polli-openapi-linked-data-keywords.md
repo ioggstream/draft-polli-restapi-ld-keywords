@@ -265,10 +265,16 @@ To interpret a schema instance as [JSON-LD]:
    a "@context" and a "@type" property.
    For further information see {{sec-conflicts}};
 1. add the "@context" property with the value of x-jsonld-context.
-   This will be the one and only "@context" that will be mangled;
+   This will be the instance context: the only one that will be mangled;
 1. add the "@type" property with the value of x-jsonld-type;
-1. iterate on each property retrieving the @context and @type
-   from the associate sub-schemas (e.g. traversing $refs).
+1. iterate on each instance property like the following:
+
+   - identify the sub-schema associated to the property (e.g. traversing $refs)
+     and check the presence of semantic keywords;
+   - for the x-jsonld-type, add the "@type" property to the schema instance;
+   - for the x-jsonld-context, integrate its information in the instance context
+     when they are not already present;
+   - interate this process in case of nested entries.
 
 ## The x-jsonld-context JSON Schema keyword {#keywords-context}
 
@@ -513,6 +519,173 @@ The resulting RDF graph is as follows.
 ~~~
 {: title="A RDF graph with semantic context and type." #ex-rdf}
 
+
+## Cyclic schema
+
+The following schema contains a cyclic reference.
+
+~~~ yaml
+Person:
+  description: Simple cyclic example.
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+    children:
+      "@container": "@set"
+  type: object
+  properties:
+    email: { type: string }
+    children:
+      type: array
+      items:
+        $ref: '#/Person'
+  example:
+    email: "mailto:a@example"
+    children:
+    - email: "mailto:dough@example"
+    - email: "mailto:son@example"
+~~~
+
+The example contained in the above schema
+results in the following JSON-LD document.
+
+~~~ json
+
+{
+  "email": "mailto:a@example",
+  "children": [
+    {
+      "email": "mailto:dough@example",
+      "@type": "Person"
+    },
+    {
+      "email": "mailto:son@example",
+      "@type": "Person"
+    }
+  ],
+  "@type": "Person",
+  "@context": {
+    "email": "@id",
+    "@vocab": "https://w3.org/ns/person#",
+    "children": {
+      "@container": "@set"
+    }
+  }
+}
+~~~
+
+## Nested schema
+
+The following schema references another schema.
+
+~~~ yaml
+BirthPlace:
+  type: object
+  additionalProperties: false
+  required:
+    - province
+    - country
+  x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CLV/"
+    country:
+      "@id": "hasCountry"
+      "@type": "@id"
+      "@context":
+        "@base": "http://publications.europa.eu/resource/authority/country/"
+    province:
+      "@id": "hasProvince"
+      "@type": "@id"
+      "@context":
+        "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+  properties:
+    province:
+      type: string
+      description: The province where the person was born.
+      example: RM
+    country:
+      type: string
+      description: The iso alpha-3 code of the country where the person was born.
+      example: ITA
+  example:
+    province: RM
+    country: ITA
+Citizen:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+  example:
+    email: "mailto:a@example"
+    givenName: Roberto
+    familyName: Polli
+    birthplace:
+      province: LT
+      country: ITA
+
+~~~
+
+The example contained in the above schema
+results in the following JSON-LD document.
+
+~~~ json
+{
+  "email": "mailto:a@example",
+  "givenName": "Roberto",
+  "familyName": "Polli",
+  "birthplace": {
+    "province": "RM",
+    "country": "ITA",
+    "@type": "https://w3id.org/italia/onto/CLV/Feature"
+  },
+  "@type": "Person",
+  "@context": {
+    "email": "@id",
+    "@vocab": "https://w3.org/ns/person#",
+    "birthplace": {
+      "@context": {
+        "@vocab": "https://w3id.org/italia/onto/CLV/",
+        "city": "hasCity",
+        "country": {
+          "@id": "hasCountry",
+          "@type": "@id",
+          "@context": {
+            "@base": "http://publications.europa.eu/resource/authority/country/"
+          }
+        },
+        "province": {
+          "@id": "hasProvince",
+          "@type": "@id",
+          "@context": {
+            "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+          }
+        }
+      }
+    }
+  }
+}
+~~~
+
+That can be serialized in RDF as
+
+
+~~~ text
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+<mailto:a@example> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3.org/ns/person#Person> .
+<mailto:a@example> <https://w3.org/ns/person#birthplace> _:b0 .
+<mailto:a@example> <https://w3.org/ns/person#familyName> "Polli" .
+<mailto:a@example> <https://w3.org/ns/person#givenName> "Roberto" .
+_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/italia/onto/CLV/Feature> .
+_:b0 <https://w3id.org/italia/onto/CLV/hasCountry> <http://publications.europa.eu/resource/authority/country/ITA> .
+_:b0 <https://w3id.org/italia/onto/CLV/hasProvince> <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM> .
+
+~~~
 # Acknowledgements
 
 Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.

@@ -15,3 +15,5 @@ report.xml
 venv/
 lib
 *.xml
+tmp*.json
+__pycache__

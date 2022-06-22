@@ -6,6 +6,7 @@ from typing import Dict
 
 import jsonschema
 import yaml
+from pyld import jsonld
 
 CTX = "@context"
 
@@ -124,7 +125,7 @@ def schema_yaml():
                 schema={"x-jsonld-context": "http://foo.example", "type": "object"},
                 context=Instance.NO_CONTEXT,
             ),
-            {},
+            Instance.NO_CONTEXT,
         ),
         (
             dict(
@@ -172,35 +173,23 @@ def test_init(testcase, expected):
     )
     res = (
         i.subentry_context_ref
-        if i.is_subentry
+        if i.is_subentry or i.is_decontext()
         else i.subentry_context_ref.get("@context")
     )
     assert res == expected
 
 
-def test_person(resolver, schema_yaml):
-    schema = schema_yaml["Person"]
-    instance = harn_schema(schema, resolver)
-    json.dump(instance.ld, fp=open("tmp.person.json", "w"), indent=2)
-
-
-def test_granny(resolver, schema_yaml):
-    schema = schema_yaml["Granny"]
-    instance = harn_schema(schema, resolver)
-    json.dump(instance.ld, fp=open("tmp.granny.json", "w"), indent=2)
-
-
-def test_spouse(resolver, schema_yaml):
-    schema = schema_yaml["Spouse"]
-    instance = harn_schema(schema, resolver)
-    json.dump(instance.ld, fp=open("tmp.spouse.json", "w"), indent=2)
-
-
-@pytest.mark.parametrize("schema_name", ["EducationLevel", "BirthPlace", "Citizen"])
+@pytest.mark.parametrize(
+    "schema_name",
+    ["Person", "Granny", "Spouse", "EducationLevel", "BirthPlace", "Citizen"],
+)
 def test_edu(resolver, schema_yaml, schema_name):
     schema = schema_yaml[schema_name]
     instance = harn_schema(schema, resolver)
-    json.dump(instance.ld, fp=open(f"tmp.{schema_name}.json", "w"), indent=2)
+    with open(f"tmp.{schema_name}.json", "w") as fp:
+        json.dump(instance.ld, fp=fp, indent=2)
+    with open(f"tmp.{schema_name}.expanded.json", "w") as fp:
+        json.dump(jsonld.expand(instance.ld), fp=fp, indent=2)
 
 
 def harn_schema(schema, resolver):
