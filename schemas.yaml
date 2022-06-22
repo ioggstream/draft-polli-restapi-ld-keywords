@@ -6,7 +6,7 @@ Person:
     "@vocab": "https://w3.org/ns/person#"
     children:
       "@container": "@set"
-
+  type: object
   properties:
     email: { type: string }
     children:
@@ -15,6 +15,51 @@ Person:
         $ref: '#/Person'
   example:
     email: "mailto:a@example"
+    children:
+    - email: "mailto:dough@example"
+    - email: "mailto:son@example"
+Granny:
+  description: Simple cyclic example.
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+    children:
+      "@container": "@set"
+  type: object
+  properties:
+    email: { type: string }
+    children:
+      type: array
+      items:
+        $ref: '#/Person'
+  example:
+    email: "mailto:a@example"
+    children:
+    - email: "mailto:son@example"
+      children:
+      - email: "mailto:gdough@example"
+Spouse:
+  description: Simple cyclic example.
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+    children:
+      "@container": "@set"
+
+  properties:
+    email: { type: string }
+    spouse:
+      $ref: "#/Person"
+    children:
+      type: array
+      items:
+        $ref: '#/Person'
+  example:
+    email: "mailto:a@example"
+    spouse:
+      email: mailto:hus@example
     children:
     - email: "mailto:dough@example"
     - email: "mailto:son@example"
