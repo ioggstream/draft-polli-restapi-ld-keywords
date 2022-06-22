@@ -1197,19 +1197,22 @@ Schema objects.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
                 <p id="section-toc.1-1.7.2.2.1"><a href="#appendix-A.2" class="xref">A.2</a>.  <a href="#name-schema-with-semantic-and-vo" class="xref">Schema with semantic and vocabulary information</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#appendix-A.3" class="xref">A.3</a>.  <a href="#name-cyclic-schema" class="xref">Cyclic schema</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
+                <p id="section-toc.1-1.7.2.4.1"><a href="#appendix-A.4" class="xref">A.4</a>.  <a href="#name-nested-schema" class="xref">Nested schema</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="xref">Appendix B</a>.  <a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="xref"></a><a href="#name-faq" class="xref">FAQ</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-C" class="xref"></a><a href="#name-faq" class="xref">FAQ</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#appendix-C" class="xref"></a><a href="#name-change-log" class="xref">Change Log</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-D" class="xref"></a><a href="#name-change-log" class="xref">Change Log</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-E" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-D" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1426,12 +1429,24 @@ a "@context" and a "@type" property.
 For further information see <a href="#sec-conflicts" class="xref">Section 4.2</a>;<a href="#section-2-7.1" class="pilcrow">¶</a>
 </li>
         <li id="section-2-7.2">add the "@context" property with the value of x-jsonld-context.
-This will be the one and only "@context" that will be mangled;<a href="#section-2-7.2" class="pilcrow">¶</a>
+This will be the instance context: the only one that will be mangled;<a href="#section-2-7.2" class="pilcrow">¶</a>
 </li>
         <li id="section-2-7.3">add the "@type" property with the value of x-jsonld-type;<a href="#section-2-7.3" class="pilcrow">¶</a>
 </li>
-        <li id="section-2-7.4">iterate on each property retrieving the @context and @type
-from the associate sub-schemas (e.g. traversing $refs).<a href="#section-2-7.4" class="pilcrow">¶</a>
+        <li id="section-2-7.4">
+          <p id="section-2-7.4.1">iterate on each instance property like the following:<a href="#section-2-7.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-7.4.2.1">identify the sub-schema associated to the property (e.g. traversing $refs)
+and check the presence of semantic keywords;<a href="#section-2-7.4.2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2-7.4.2.2">for the x-jsonld-type, add the "@type" property to the schema instance;<a href="#section-2-7.4.2.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2-7.4.2.3">for the x-jsonld-context, integrate its information in the instance context
+when they are not already present;<a href="#section-2-7.4.2.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2-7.4.2.4">interate this process in case of nested entries.<a href="#section-2-7.4.2.4" class="pilcrow">¶</a>
+</li>
+          </ul>
 </li>
       </ol>
 <div id="keywords-context">
@@ -1823,69 +1838,238 @@ Person:
 </div>
 </section>
 </div>
+<div id="cyclic-schema">
+<section id="appendix-A.3">
+        <h3 id="name-cyclic-schema">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-cyclic-schema" class="section-name selfRef">Cyclic schema</a>
+        </h3>
+<p id="appendix-A.3-1">The following schema contains a cyclic reference.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<div id="appendix-A.3-2">
+<pre class="lang-yaml sourcecode">
+Person:
+  description: Simple cyclic example.
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+    children:
+      "@container": "@set"
+  type: object
+  properties:
+    email: { type: string }
+    children:
+      type: array
+      items:
+        $ref: '#/Person'
+  example:
+    email: "mailto:a@example"
+    children:
+    - email: "mailto:dough@example"
+    - email: "mailto:son@example"
+</pre><a href="#appendix-A.3-2" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.3-3">The example contained in the above schema
+results in the following JSON-LD document.<a href="#appendix-A.3-3" class="pilcrow">¶</a></p>
+<div id="appendix-A.3-4">
+<pre class="lang-json sourcecode">
+{
+  "email": "mailto:a@example",
+  "children": [
+    {
+      "email": "mailto:dough@example",
+      "@type": "Person"
+    },
+    {
+      "email": "mailto:son@example",
+      "@type": "Person"
+    }
+  ],
+  "@type": "Person",
+  "@context": {
+    "email": "@id",
+    "@vocab": "https://w3.org/ns/person#",
+    "children": {
+      "@container": "@set"
+    }
+  }
+}
+</pre><a href="#appendix-A.3-4" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
-<div id="acknowledgements">
-<section id="appendix-B">
-      <h2 id="name-acknowledgements">
-<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
-      </h2>
-<p id="appendix-B-1">Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">In addition to the people above, this document owes a lot to the extensive discussion inside
+<div id="nested-schema">
+<section id="appendix-A.4">
+        <h3 id="name-nested-schema">
+<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-nested-schema" class="section-name selfRef">Nested schema</a>
+        </h3>
+<p id="appendix-A.4-1">The following schema references another schema.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
+<div id="appendix-A.4-2">
+<pre class="breakable lang-yaml sourcecode">
+BirthPlace:
+  type: object
+  additionalProperties: false
+  required:
+    - province
+    - country
+  x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CLV/"
+    country:
+      "@id": "hasCountry"
+      "@type": "@id"
+      "@context":
+        "@base": "http://publications.europa.eu/resource/authority/country/"
+    province:
+      "@id": "hasProvince"
+      "@type": "@id"
+      "@context":
+        "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+  properties:
+    province:
+      type: string
+      description: The province where the person was born.
+      example: RM
+    country:
+      type: string
+      description: The iso alpha-3 code of the country where the person was born.
+      example: ITA
+  example:
+    province: RM
+    country: ITA
+Citizen:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+  example:
+    email: "mailto:a@example"
+    givenName: Roberto
+    familyName: Polli
+    birthplace:
+      province: LT
+      country: ITA
+
+</pre><a href="#appendix-A.4-2" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.4-3">The example contained in the above schema
+results in the following JSON-LD document.<a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
+<div id="appendix-A.4-4">
+<pre class="lang-json sourcecode">
+{
+  "email": "mailto:a@example",
+  "givenName": "Roberto",
+  "familyName": "Polli",
+  "birthplace": {
+    "province": "RM",
+    "country": "ITA",
+    "@type": "https://w3id.org/italia/onto/CLV/Feature"
+  },
+  "@type": "Person",
+  "@context": {
+    "email": "@id",
+    "@vocab": "https://w3.org/ns/person#",
+    "birthplace": {
+      "@context": {
+        "@vocab": "https://w3id.org/italia/onto/CLV/",
+        "city": "hasCity",
+        "country": {
+          "@id": "hasCountry",
+          "@type": "@id",
+          "@context": {
+            "@base": "http://publications.europa.eu/resource/authority/country/"
+          }
+        },
+        "province": {
+          "@id": "hasProvince",
+          "@type": "@id",
+          "@context": {
+            "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+          }
+        }
+      }
+    }
+  }
+}
+</pre><a href="#appendix-A.4-4" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.4-5">That can be serialized in RDF as<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
+<div id="appendix-A.4-6">
+<pre class="lang-text sourcecode">
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+&lt;mailto:a@example&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3.org/ns/person#Person&gt; .
+&lt;mailto:a@example&gt; &lt;https://w3.org/ns/person#birthplace&gt; _:b0 .
+&lt;mailto:a@example&gt; &lt;https://w3.org/ns/person#familyName&gt; "Polli" .
+&lt;mailto:a@example&gt; &lt;https://w3.org/ns/person#givenName&gt; "Roberto" .
+_:b0 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/italia/onto/CLV/Feature&gt; .
+_:b0 &lt;https://w3id.org/italia/onto/CLV/hasCountry&gt; &lt;http://publications.europa.eu/resource/authority/country/ITA&gt; .
+_:b0 &lt;https://w3id.org/italia/onto/CLV/hasProvince&gt; &lt;https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM&gt; .
+
+</pre><a href="#appendix-A.4-6" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.4-7"># Acknowledgements<a href="#appendix-A.4-7" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-8">Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.<a href="#appendix-A.4-8" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-9">In addition to the people above, this document owes a lot to the extensive discussion inside
 and outside the workgroup.
 The following contributors have helped improve this specification by
 opening pull requests, reporting bugs, asking smart questions,
-drafting or reviewing text, and evaluating open issues:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
-<p id="appendix-B-3">Pierre-Antoine Champin,
-and Vladimir Alexiev.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
+drafting or reviewing text, and evaluating open issues:<a href="#appendix-A.4-9" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-10">Pierre-Antoine Champin,
+and Vladimir Alexiev.<a href="#appendix-A.4-10" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="faq">
-<section id="appendix-C">
+<section id="appendix-B">
       <h2 id="name-faq">
 <a href="#name-faq" class="section-name selfRef">FAQ</a>
       </h2>
-<p id="appendix-C-1">This section is to be removed before publishing as an RFC.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="appendix-C-2">
-        <dt id="appendix-C-2.1">Q: Why this document?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.2">
-          <p id="appendix-C-2.2.1">There's currently no standard way to provide machine-readable semantic
-information in <span>[<a href="#OAS" class="xref">OAS</a>]</span> / <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span>.<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">This section is to be removed before publishing as an RFC.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="appendix-B-2">
+        <dt id="appendix-B-2.1">Q: Why this document?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.2">
+          <p id="appendix-B-2.2.1">There's currently no standard way to provide machine-readable semantic
+information in <span>[<a href="#OAS" class="xref">OAS</a>]</span> / <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span>.<a href="#appendix-B-2.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="appendix-C-2.3">Q: Why don't use existing <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> keywords like <code>externalDocs</code> ?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.4">
-          <p id="appendix-C-2.4.1">We already tried, but this was actually squatting a keyword designed
-for <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#externalDocumentationObject">human readable documents</a>.<a href="#appendix-C-2.4.1" class="pilcrow">¶</a></p>
+<dt id="appendix-B-2.3">Q: Why don't use existing <span>[<a href="#JSONSCHEMA" class="xref">JSONSCHEMA</a>]</span> keywords like <code>externalDocs</code> ?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.4">
+          <p id="appendix-B-2.4.1">We already tried, but this was actually squatting a keyword designed
+for <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#externalDocumentationObject">human readable documents</a>.<a href="#appendix-B-2.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="appendix-C-2.5">Q: Why using <code>x-</code> keywords?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.6">
-          <p id="appendix-C-2.6.1">OpenAPI 3.0 does not validate unregistered keywords that don't start with <code>x-</code>
-and we want a solution that is valid for all OAS versions &gt;= 3.0.<a href="#appendix-C-2.6.1" class="pilcrow">¶</a></p>
+<dt id="appendix-B-2.5">Q: Why using <code>x-</code> keywords?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.6">
+          <p id="appendix-B-2.6.1">OpenAPI 3.0 does not validate unregistered keywords that don't start with <code>x-</code>
+and we want a solution that is valid for all OAS versions &gt;= 3.0.<a href="#appendix-B-2.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="appendix-C-2.7">Q: Why not using a full-semantic approach?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.8">
-          <p id="appendix-C-2.8.1">This approach allows API providers to attach metadata to their
+<dt id="appendix-B-2.7">Q: Why not using a full-semantic approach?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.8">
+          <p id="appendix-B-2.8.1">This approach allows API providers to attach metadata to their
 specification without modifying their actual services nor their
 implementation, since custom keywords are ignored by OpenAPI toolings
-like Gateways and code generators.<a href="#appendix-C-2.8.1" class="pilcrow">¶</a></p>
+like Gateways and code generators.<a href="#appendix-B-2.8.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="appendix-C-2.9">Q: Why not defining a mechanism to attach semantic information to</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.10">
-          <p id="appendix-C-2.10.1"></p><a href="#appendix-C-2.10" class="pilcrow">¶</a>
+<dt id="appendix-B-2.9">Q: Why not defining a mechanism to attach semantic information to</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.10">
+          <p id="appendix-B-2.10.1"></p><a href="#appendix-B-2.10" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="appendix-C-2.11">   non-object schemas (e.g. JSON Strings) like other implementations?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.12">
-          <p id="appendix-C-2.12.1">This is actually problematic. Look at this example that reuses
-the <code>TaxCode</code> schema and semantic in different properties.<a href="#appendix-C-2.12.1" class="pilcrow">¶</a></p>
+<dt id="appendix-B-2.11">   non-object schemas (e.g. JSON Strings) like other implementations?</dt>
+        <dd style="margin-left: 1.5em" id="appendix-B-2.12">
+          <p id="appendix-B-2.12.1">This is actually problematic. Look at this example that reuses
+the <code>TaxCode</code> schema and semantic in different properties.<a href="#appendix-B-2.12.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<div id="appendix-C-3">
+<div id="appendix-B-3">
 <pre class="lang-yaml sourcecode">
     TaxCode:
       type: string
@@ -1902,26 +2086,26 @@ the <code>TaxCode</code> schema and semantic in different properties.<a href="#a
           # Here we are reusing not only the schema,
           #   but even the same semantics.
           $ref: "#/components/schemas/TaxCode"
-</pre><a href="#appendix-C-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-B-3" class="pilcrow">¶</a>
 </div>
-<div class="alignLeft art-text artwork" id="appendix-C-4">
+<div class="alignLeft art-text artwork" id="appendix-B-4">
 <pre>
 For this reason, composability is limited to the object level.
-</pre><a href="#appendix-C-4" class="pilcrow">¶</a>
+</pre><a href="#appendix-B-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="change-log">
-<section id="appendix-D">
+<section id="appendix-C">
       <h2 id="name-change-log">
 <a href="#name-change-log" class="section-name selfRef">Change Log</a>
       </h2>
-<p id="appendix-D-1">This section is to be removed before publishing as an RFC.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
-<p id="appendix-D-2">RFC EDITOR PLEASE DELETE THIS SECTION.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">This section is to be removed before publishing as an RFC.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">RFC EDITOR PLEASE DELETE THIS SECTION.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-E">
+<section id="appendix-D">
       <h2 id="name-authors-address">
 <a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>
