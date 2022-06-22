@@ -261,13 +261,14 @@ locations. Moreover they could reference unsecured resources
 
 To interpret a schema instance as [JSON-LD]:
 
-1. ensure that the schema instance does not have
+1. ensure that the initial schema instance does not have
    a "@context" and a "@type" property.
    For further information see {{sec-conflicts}};
-1. add the "@context" property with the value of x-jsonld-context
+1. add the "@context" property with the value of x-jsonld-context.
+   This will be the one and only "@context" that will be mangled;
 1. add the "@type" property with the value of x-jsonld-type;
-1. iterate this process on sub-schemas (e.g. traversing $refs).
-
+1. iterate on each property retrieving the @context and @type
+   from the associate sub-schemas (e.g. traversing $refs).
 
 ## The x-jsonld-context JSON Schema keyword {#keywords-context}
 

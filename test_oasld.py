@@ -34,7 +34,7 @@ class Instance:
 
         if context is Instance.NO_CONTEXT:
             # Explicitly skipping context merge.
-            self.subentry_context_ref = {CTX: {}}
+            self.subentry_context_ref = Instance.NO_CONTEXT
             return
         self.subentry_context_ref = context
         if self.jcontext:
@@ -45,16 +45,19 @@ class Instance:
                 raise ValueError(
                     "Cannot overwrite a @context defined in the super-schema"
                 )
-            elif context:
+            elif isinstance(context, dict):
                 # Merge in the passed context
                 self.subentry_context_ref[CTX] = deepcopy(self.jcontext)
             else:
                 raise NotImplementedError("An sub-entry MUST have a context")
 
+    def is_decontext(self):
+        return self.subentry_context_ref == Instance.NO_CONTEXT
+
     def process_instance(self, resolver: RefResolver):
         properties = self.schema["properties"]
         for k, v in self.ld.items():
-            process_keywords = {"@context", "@type"} - set(self.jcontext.get(k, {}))
+            process_keywords = {"@context", "@type"} - set(self.jcontext.get(k) or {})
             property_schema = properties.get(k, {})
             log.warn(f"Looking for {process_keywords} on {k} => {property_schema}")
             if schema_ref := property_schema.get("$ref"):
@@ -67,7 +70,11 @@ class Instance:
                     subschema = resolver.resolve(
                         property_schema["items"]["$ref"].strip("#")
                     )
-                    subcontext = self.subentry_context_ref[CTX][k]
+                    subcontext = (
+                        Instance.NO_CONTEXT
+                        if self.is_decontext()
+                        else self.subentry_context_ref[CTX][k]
+                    )
                     for idx, subinstance in enumerate(v):
                         log.debug(f"Integrating context id {id(subcontext)}")
                         i = Instance(
@@ -81,7 +88,7 @@ class Instance:
                         subcontext = Instance.NO_CONTEXT
                 elif property_schema["type"] == "object":
                     subschema = property_schema
-                    subcontext = self.subentry_context_ref.setdefault(k, {})
+                    subcontext = self.subentry_context_ref[CTX].setdefault(k, {})
                     # if k == "spouse": import pdb; pdb.set_trace()
                     i = Instance(v, subschema, context=subcontext, is_subentry=True)
                     i.process_instance(resolver)
@@ -185,8 +192,15 @@ def test_granny(resolver, schema_yaml):
 
 def test_spouse(resolver, schema_yaml):
     schema = schema_yaml["Spouse"]
-    harn_schema(schema, resolver)
-    raise NotImplementedError
+    instance = harn_schema(schema, resolver)
+    json.dump(instance.ld, fp=open("tmp.spouse.json", "w"), indent=2)
+
+
+@pytest.mark.parametrize("schema_name", ["EducationLevel", "BirthPlace", "Citizen"])
+def test_edu(resolver, schema_yaml, schema_name):
+    schema = schema_yaml[schema_name]
+    instance = harn_schema(schema, resolver)
+    json.dump(instance.ld, fp=open(f"tmp.{schema_name}.json", "w"), indent=2)
 
 
 def harn_schema(schema, resolver):

@@ -36,9 +36,10 @@ Granny:
   example:
     email: "mailto:a@example"
     children:
-    - email: "mailto:son@example"
+    - email: "mailto:dough@example"
       children:
       - email: "mailto:gdough@example"
+    - email: "mailto:son@example"
 Spouse:
   description: Simple cyclic example.
   x-jsonld-type: Person
@@ -65,3 +66,94 @@ Spouse:
     - email: "mailto:son@example"
       children:
       - email: "mailto:gdough@example"
+EducationLevel:
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CPV/"
+    education_level:
+      "@id": "hasLevelOfEducation"
+      "@type": "@id"
+      "@context":
+        "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
+  type: object
+  additionalProperties: false
+  properties:
+    education_level:
+      type: string
+  example:
+    education_level: NED
+BirthPlace:
+  type: object
+  additionalProperties: false
+  required:
+    - city
+    - province
+    - country
+  x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+  x-jsonld-context: &BirthPlaceContext
+    "@vocab": "https://w3id.org/italia/onto/CLV/"
+    city: hasCity
+    country:
+      "@id": "hasCountry"
+      "@type": "@id"
+      "@context":
+        "@base": "http://publications.europa.eu/resource/authority/country/"
+    province:
+      "@id": "hasProvince"
+      "@type": "@id"
+      "@context":
+        "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+    interno: null
+  properties:
+    city:
+      type: string
+      description: The city where the person was born.
+      example: Roma
+    province:
+      type: string
+      description: The province where the person was born.
+      example: RM
+    country:
+      type: string
+      description: The iso alpha-3 code of the country where the person was born.
+      example: ITA
+    postCode:
+      type: string
+      description: The post code (zip code)
+      example: "00100"
+    interno:
+      type: string
+      maxLength: 32
+  example:
+    city: Roma
+    province: RM
+    country: ITA
+    postCode: "00100"
+    interno: "Interno 8"
+Citizen:
+  description: Simple cyclic example.
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+    children:
+      "@container": "@set"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+    children:
+      type: array
+      items:
+        $ref: '#/Person'
+  example:
+    email: "mailto:a@example"
+    birthplace:
+      city: Roma
+      province: RM
+      country: ITA
+      postCode: "00100"
+      interno: "Interno 8"
+    children:
+    - email: "mailto:dough@example"
+    - email: "mailto:son@example"
