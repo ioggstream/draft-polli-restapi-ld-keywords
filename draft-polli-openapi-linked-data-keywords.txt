@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                              21 June 2022
-Expires: 23 December 2022
+Intended status: Informational                              22 June 2022
+Expires: 24 December 2022
 
 
                       OpenAPI Linked Data Keywords
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 December 2022.
+   This Internet-Draft will expire on 24 December 2022.
 
 Copyright Notice
 
@@ -68,14 +68,19 @@ Table of Contents
      1.1.  Goals and Design Choices
      1.2.  Prosaic semantics
      1.3.  Notational Conventions
-     1.4.  JSON Schema keywords
-       1.4.1.  the x-jsonld-context keyword
-   2.  Interoperability Considerations
-   3.  Security Considerations
-   4.  IANA Considerations
-   5.  References
-     5.1.  Normative References
-     5.2.  Informative References
+   2.  JSON Schema keywords
+     2.1.  The x-jsonld-context JSON Schema keyword
+   3.  Interoperability Considerations
+     3.1.  Limited expressivity
+     3.2.  Disjoint with JSON-LD
+     3.3.  No composability
+   4.  Security Considerations
+     4.1.  Integrity and Authenticity
+     4.2.  Conflicts
+   5.  IANA Considerations
+   6.  References
+     6.1.  Normative References
+     6.2.  Informative References
    Appendix A.  Examples
      A.1.  Schema with semantic information
      A.2.  Schema with semantic and vocabulary information
@@ -92,13 +97,18 @@ Table of Contents
    Section 1.2).
 
    This is because API providers do not always value machine-readable
-   semantics, or because they have no knowledge of semantic
-   technologies, that are perceived as unnecessarily complex.
+   semantics, or because they have no knowledge of semantic technologies
+   - that are perceived as unnecessarily complex.
 
-   Moreover, full-semantic technologies do not always provide easy ways
-   of defining / constraining the syntax of an object (tools like SHACL
-   and OWL restrictions being complex to use and computationally
-   intensive to process).
+   A full-semantic approach (e.g. writing RDF oriented APIs) has not
+   become widespread because transferring and processing the semantics
+   on every message significantly increases data transfer and
+   computation requirements.
+
+   Moreover the semantic landscape do not provide easy ways of defining
+   / constraining the syntax of an object: tools like [SHACL] and [OWL]
+   restrictions are considered computationally intensive to process and
+   complex to use from the web and mobile developers.
 
    The goal of this document is to simplify the work of attaching
    semantic information to REST APIs described using OpenAPI
@@ -107,8 +117,8 @@ Table of Contents
    [OAS] allows to describe REST APIs interactions and capabilities
    using a machine-readable format based on [JSON] or [YAML].  It relies
    on different dialects of [JSONSCHEMA] to define the structure of the
-   exchanged data.  Specifically, OAS 3.0 is based on JSONSchema draft-4
-   while OAS 3.1 relies on the latest JSONSchema draft.
+   exchanged data.  Specifically, OAS 3.0 is based on JSON Schema
+   draft-4 while OAS 3.1 relies on the latest JSON Schema draft.
 
 1.1.  Goals and Design Choices
 
@@ -121,7 +131,7 @@ Table of Contents
    *  Describe semantically the contents defined in an API spec or in a
       [JSONSCHEMA] document;
 
-   *  Support for OAS3.0 / JsonSchema Draft4
+   *  Support for OAS3.0 / JSON Schema Draft4
 
    *  Easy for non-semantic experts and with low implementation
       complexity
@@ -141,7 +151,7 @@ Table of Contents
    *  the semantic context can be provided via APIs using a "Link"
       header field according to Section 6.1 of [JSON-LD-11];
 
-   *  property names must not contain characters such as ":" to avoid
+   *  property names must not contain characters such as : to avoid
       interoperability issues with code-generation tools.
 
 1.2.  Prosaic semantics
@@ -167,10 +177,10 @@ Table of Contents
        givenName: John
        familyName: Doe
 
-    Figure 1: Example of JSONSCHEMA model that provides semantic prose.
+    Figure 1: Example of JSON Schema model that provides semantic prose.
 
    [JSON-LD-11] defines a way to interpret a JSON object as a JSON-LD
-   document.  The example in the Person schema can be integrated with
+   document.  The example in the "Person" schema can be integrated with
    semantic context information, thus resulting in
 
    {
@@ -188,7 +198,7 @@ Table of Contents
    other JSON types cannot be integrated with semantic information.
 
    The design described in the following sections aims at providing the
-   above information of "@context" and "@type" into a JSONSCHEMA
+   above information of "@context" and "@type" into a JSON Schema
    document.
 
 1.3.  Notational Conventions
@@ -213,38 +223,70 @@ Table of Contents
    The terms "node", "alias node", "anchor" and "named anchor" in this
    document are to be intepreded as in [YAML].
 
-   The keywords "@context", "@type", "@id", "@value" and "@language" are
-   to be interpreted as in [JSON-LD-11].
+   The terms "JSON object", "JSON document", "member", "member name" in
+   this document are to be intepreded as in [JSON].  The term "property"
+   is a synonym of "member name", and the term "property value" is a
+   synonym of "member value".
 
-1.4.  JSON Schema keywords
+   The terms "@context", "@type", "@id", "@value" and "@language" are to
+   be interpreted as JSON-LD keywords in [JSON-LD-11].
 
-   A [JSONSCHEMA] or [OAS] resource MAY use the following keywords to
-   attach semantic information to a schema and represent that those
-   information applies to all related schema instances.
+   The terms "schema" and "schema instance" in this document are to be
+   intepreded as in [JSONSCHEMA].
+
+   Since JSON-LD is a serialization format for RDF, the document can use
+   JSON-LD and RDF interchangeably when it refers to the semantic
+   interpretation of a resource.
+
+2.  JSON Schema keywords
+
+   A [JSONSCHEMA] or [OAS] resource MAY use the following JSON Schema
+   keywords to attach semantic information to a schema and represent
+   that those information applies to all related schema instances.
 
    x-jsonld-context:  This keyword is used to provide a JSON-LD context
       for the JSON schema instances described by the associate schema.
-      It is defined in Section 1.4.1.
+      It is defined in Section 2.1.
 
    x-jsonld-type:  This keyword is used to provide an RDF type for the
       JSON schema instances described by the associate schema.
 
-   Both keywords might contain URI references.  Those references MUST
-   NOT be dereferenced automatically, since there is no guarantee that
-   they point to actual locations.  Moreover they could reference
-   unsecured resources (e.g. using the "http://" URI scheme).
+   The schema MUST be of type "object".  This is because [JSON-LD-11]
+   does not define a way to provide semantic information on JSON values
+   that are not JSON objects.
 
-1.4.1.  the x-jsonld-context keyword
+   The schema MUST NOT represent a JSON-LD resource (e.g. of
+   application/ld+json media type).  In this case, conflicts will arise
+   such as which is the correct "@context" or "@type".  See Section 4.2.
 
-   The x-jsonld-context keyword allows to interpret the associate
-   JSONSCHEMA instance as a JSON-LD according to the specification in
-   Section 6.1 of JSON-LD-11 (https://www.w3.org/TR/json-
-   ld11/#interpreting-json-as-json-ld).
+   Both JSON Schema keywords might contain URI references.  Those
+   references MUST NOT be dereferenced automatically, since there is no
+   guarantee that they point to actual locations.  Moreover they could
+   reference unsecured resources (e.g. using the "http://" URI scheme
+   [HTTP]).
+
+   To interpret a schema instance as [JSON-LD]:
+
+   1.  ensure that the schema instance does not have a "@context" and a
+       "@type" property.  For further information see Section 4.2;
+
+   2.  add the "@context" property with the value of x-jsonld-context
+
+   3.  add the "@type" property with the value of x-jsonld-type;
+
+   4.  iterate this process on sub-schemas (e.g. traversing $refs).
+
+2.1.  The x-jsonld-context JSON Schema keyword
+
+   The x-jsonld-context value provides the information required to
+   interpret the associate JSONSCHEMA instance as a JSON-LD according to
+   the specification in Section 6.1 of JSON-LD-11
+   (https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld).
 
    Its value MUST be a valid JSON-LD Context (see Section 9.15 of JSON-
    LD-11 (https://www.w3.org/TR/json-ld11/#context-definitions) ).
 
-2.  Interoperability Considerations
+3.  Interoperability Considerations
 
    See the interoperability considerations for the media types and
    specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
@@ -255,19 +297,107 @@ Table of Contents
    as a JSON-LD document.  This is generally not a problem, since it is
    a document following the [OAS] and [JSONSCHEMA] specification.
 
-3.  Security Considerations
+3.1.  Limited expressivity
+
+   Not all RDF resources can be expressed as JSON documents plus
+   "@context" and "@type": this specifications is limited by the
+   possibilities of Section 6.1 of JSON-LD-11 (https://www.w3.org/TR/
+   json-ld11/#interpreting-json-as-json-ld).  On the other hand, since
+   this approach delegates almost all the processing to of JSON-LD, as
+   long as JSON-LD evolves it will cover more an more use cases.
+
+3.2.  Disjoint with JSON-LD
+
+   This specification is not designed to pre-process or mangle JSON-LD
+   documents (e.g. to add a missing "@type" to a JSON-LD document), but
+   only schemas that do not describe JSON-LD documents.
+
+   Applications that use JSON-LD document natively need to have their
+   own "@type" and "@context", and when returned in APIs they need to
+   use a proper media type since the processing and interpretation of
+   those documents requires further checks.
+
+   In that case, if this application relies on [JSONSCHEMA] or [OAS] to
+   describe messages, it needs to declare all required properties and
+   process them with a JSON-LD processor, like in the example below.
+
+   PersonLD:
+     type: object
+     required: [ "@context", "@type", "givenName", "familyName" ]
+     properties:
+       "@context":
+         type: object
+         enum:
+         - "@vocab": "https://w3.org/ns/person#"
+       "@type":
+         type: string
+         enum:
+         - Person
+       givenName:
+         type: string
+       familyName:
+         type: string
+
+3.3.  No composability
+
+   Composability can be achieved applying the process described , and
+   they are to be applied only at the top-level of a schema instance.
+
+   Person:
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "@vocab": "https://w3.org/ns/person#"
+       children:
+         "@type": "@container"
+
+     properties:
+       email: { type: string }
+       children:
+         type: array
+         items:
+           $ref: '#/Person'
+
+4.  Security Considerations
 
    See the interoperability considerations for the media types and
    specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
    and [JSON-LD-11].
 
-4.  IANA Considerations
+4.1.  Integrity and Authenticity
+
+   Adding a semantic context to a JSON document alters its value and, in
+   an implementation dependant way, can lead to reordering of fields.
+   This process can thus affect the processing of digitally signed
+   content.
+
+4.2.  Conflicts
+
+   If an OAS document includes the keywords defined in Section 2 the
+   provider explicitly states that the semantic of the schema instance:
+
+   *  is defined at contract level;
+
+   *  is the same for every message;
+
+   *  and is not conveyed nor specific for each message.
+
+   In this case, processing the semantic conveyed in a message might
+   have security implications.
+
+   An application that relies on this specification might want to define
+   separate processing streams for JSON documents and RDF graphs, even
+   when RDF graphs are serialized as JSON-LD documents.  For example, it
+   might want to raise an error when an application/json resource
+   contains unexpected properties impacting on the application logic
+   like "@type" and "@context".
+
+5.  IANA Considerations
 
    None
 
-5.  References
+6.  References
 
-5.1.  Normative References
+6.1.  Normative References
 
    [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
               Ed., "HTTP Semantics", STD 97, RFC 9110,
@@ -318,7 +448,7 @@ Table of Contents
               Ain't Markup Language Version 1.2", 1 October 2021,
               <https://yaml.org/spec/1.2.2/>.
 
-5.2.  Informative References
+6.2.  Informative References
 
    [I-D.ietf-jsonpath-base]
               Gössner, S., Normington, G., and C. Bormann, "JSONPath:
@@ -333,14 +463,20 @@ Table of Contents
               DOI 10.17487/RFC6901, April 2013,
               <https://www.rfc-editor.org/rfc/rfc6901>.
 
+   [OWL]      "OWL 2 Web Ontology Language Document Overview", n.d.,
+              <https://www.w3.org/TR/owl2-overview/>.
+
    [RDF]      "RDF Concepts and Abstract Syntax", n.d.,
               <https://www.w3.org/TR/rdf11/>.
+
+   [SHACL]    "Shapes Constraint Language (SHACL)", 20 July 2017,
+              <https://www.w3.org/TR/shacl/>.
 
 Appendix A.  Examples
 
 A.1.  Schema with semantic information
 
-   The following example shows a Person JSONSCHEMA with semantic
+   The following example shows a Person JSON Schema with semantic
    information provided by the x-jsonld-type and x-jsonld-context.
 
    Person:
@@ -366,7 +502,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 3: A JSONSCHEMA data model with semantic context and type.
+     Figure 3: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -391,7 +527,7 @@ A.1.  Schema with semantic information
 
 A.2.  Schema with semantic and vocabulary information
 
-   The following example shows a Person JSONSCHEMA with semantic
+   The following example shows a Person JSON Schema with semantic
    information provided by the x-jsonld-type and x-jsonld-context.
 
    Person:
@@ -424,7 +560,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 4: A JSONSCHEMA data model with semantic context and type.
+     Figure 4: A JSON Schema data model with semantic context and type.
 
    The resulting RDF graph is as follows.
 
@@ -455,7 +591,49 @@ FAQ
 
    This section is to be removed before publishing as an RFC.
 
-   Q: Why this document?  Because it's useful :)
+   Q: Why this document?  There's currently no standard way to provide
+      machine-readable semantic information in [OAS] / [JSONSCHEMA].
+
+   Q: Why don't use existing [JSONSCHEMA] keywords like externalDocs
+   ?  We already tried, but this was actually squatting a keyword
+      designed for human readable documents (https://github.com/OAI/
+      OpenAPI-Specification/blob/main/
+      versions/3.1.0.md#externalDocumentationObject).
+
+   Q: Why using x- keywords?  OpenAPI 3.0 does not validate unregistered
+      keywords that don't start with x- and we want a solution that is
+      valid for all OAS versions >= 3.0.
+
+   Q: Why not using a full-semantic approach?  This approach allows API
+      providers to attach metadata to their specification without
+      modifying their actual services nor their implementation, since
+      custom keywords are ignored by OpenAPI toolings like Gateways and
+      code generators.
+
+   Q: Why not defining a mechanism to attach semantic information to
+
+   non-object schemas (e.g.  JSON Strings) like other
+   implementations?  This is actually problematic.  Look at this example
+      that reuses the TaxCode schema and semantic in different
+      properties.
+
+       TaxCode:
+         type: string
+         $linkedData:
+           "@id": "https://w3id.org/italia/onto/CPV/taxCode"
+           "term": "taxCode"
+       Contract:
+         ...
+         properties:
+           employer_tax_code:
+             # Beware! TaxCode.$linkedData.term == 'taxCode'
+             $ref: "#/components/schemas/TaxCode"
+           employee_tax_code:
+             # Here we are reusing not only the schema,
+             #   but even the same semantics.
+             $ref: "#/components/schemas/TaxCode"
+
+   For this reason, composability is limited to the object level.
 
 Change Log
 
