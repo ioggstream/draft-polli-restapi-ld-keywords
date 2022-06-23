@@ -2,9 +2,9 @@
 
 This is the working area for the individual Internet-Draft, "FOO Media Type".
 
-* [Editor's Copy](https://ioggstream.github.io/draft-polli-openapi-linked-data-keywords/#go.draft-polli-openapi-linked-data-keywords.html)
-* [Individual Draft](https://datatracker.ietf.org/doc/draft-polli-openapi-linked-data-keywords/)
-* [Compare Editor's Copy to Individual Draft](https://ioggstream.github.io/draft-polli-openapi-linked-data-keywords/#go.draft-polli-openapi-linked-data-keywords.diff)
+* [Editor's Copy](https://ioggstream.github.io/draft-polli-restapi-ld-keywords/#go.draft-polli-restapi-ld-keywords.html)
+* [Individual Draft](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/)
+* [Compare Editor's Copy to Individual Draft](https://ioggstream.github.io/draft-polli-restapi-ld-keywords/#go.draft-polli-restapi-ld-keywords.diff)
 
 ## Building the Draft
 
@@ -21,4 +21,4 @@ This requires that you have the necessary software installed.  See
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/ioggstream/draft-polli-openapi-linked-data-keywords/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ioggstream/draft-polli-restapi-ld-keywords/blob/master/CONTRIBUTING.md).
