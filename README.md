@@ -1,6 +1,6 @@
-# Foo Media type
+# REST API Linked Data Keywords
 
-This is the working area for the individual Internet-Draft, "FOO Media Type".
+This is the working area for the individual Internet-Draft, "REST API Linked Data Keywords".
 
 * [Editor's Copy](https://ioggstream.github.io/draft-polli-restapi-ld-keywords/#go.draft-polli-restapi-ld-keywords.html)
 * [Individual Draft](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/)
