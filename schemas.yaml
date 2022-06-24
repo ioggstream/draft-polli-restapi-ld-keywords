@@ -157,3 +157,66 @@ Citizen:
     children:
     - email: "mailto:dough@example"
     - email: "mailto:son@example"
+ContextPerson:
+  type: object
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CPV/"
+    tax_code: taxCode
+    date_of_birth: dateOfBirth
+    given_name: givenName
+    family_name: familyName
+    education_level:
+      "@id": hasLevelOfEducation
+      "@type": "@id"
+      "@context":
+        "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
+    birth_place:
+      "@id": "hasBirthPlace"
+      "@context":
+        <<: *BirthPlaceContext
+    children:
+      "@id": isParentOf
+    parents:
+      "@id": isChildOf
+  additionalProperties: false
+  description: |-
+      Questo schema rappresenta una persona fisica.
+  required:
+  - given_name
+  - family_name
+  - tax_code
+  properties:
+    tax_code:
+      type: string
+    family_name:
+      maxLength: 255
+      type: string
+    given_name:
+      maxLength: 255
+      type: string
+    date_of_birth:
+      format: date
+      type: string
+    education_level:
+      type: string
+      maxLength: 3
+      description: |-
+        Il livello di istruzione della persona.
+        I valori ammessi sono indicati nel [vocabolario](https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level)
+    birth_place:
+      $ref: "#/BirthPlace"
+  example:
+    tax_code: RSSMRA75L01H501A
+    family_name: Rossi
+    given_name: Mario
+    date_of_birth: "1961-01-01"
+    education_level: "NED"
+    birth_place:
+      city: Roma
+      province: RM
+      country: ITA
+    children:
+    - tax_code: RSSMRA75L01H501A
+    - tax_code: RSSMRA76L01H501A
+    - tax_code: RSSMRA77L01H501A

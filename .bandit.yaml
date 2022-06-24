@@ -1,0 +1,22 @@
+---
+# Bandit config file.
+# BEWARE: Bandit does not use any configuration file by default
+#         so you need to specify it using -c.
+# If you have lines in your code triggering vulnerability errors
+# and you are certain that this is acceptable, they can be individually
+# silenced by appending # nosec to the line:
+exclude_dirs:
+ - .tox
+ - .git
+ - .mypy_cache
+ - .pytest_cache
+ - .github
+ - venv
+ - tests
+
+skips:
+ - B410  # blacklist lxml.etree FIXME see https://github.com/par-tec/store-processor/issues/13
+ - B320  # blacklist lxml.etree FIXME see https://github.com/par-tec/store-processor/issues/13
+
+assert_used:
+  skips: ['*_test.py', 'test_*.py']

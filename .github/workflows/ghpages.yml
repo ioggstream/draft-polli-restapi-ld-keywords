@@ -2,18 +2,11 @@ name: "Update Editor's Copy"
 
 on:
   push:
-    paths-ignore:
-    - README.md
-    - CONTRIBUTING.md
-    - LICENSE.md
-    - .gitignore
+    paths:
+    - "draft-*.md"
   pull_request:
-    paths-ignore:
-    - README.md
-    - CONTRIBUTING.md
-    - LICENSE.md
-    - .gitignore
-
+    paths:
+    - "draft-*.md"
 jobs:
   build:
     name: "Update Editor's Copy"
