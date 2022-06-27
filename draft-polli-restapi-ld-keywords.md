@@ -90,7 +90,8 @@ informative:
 
 This document defines two
 keywords to provide semantic information in
-OpenAPI Specification and JSON Schema documents.
+OpenAPI Specification and JSON Schema documents,
+and support contract-first semantic schema design.
 
 --- middle
 
@@ -116,7 +117,8 @@ from web and mobile developers.
 
 This document provides a simple mechanism
 to attach semantic information to REST APIs
-that rely on different dialects of [JSONSCHEMA].
+that rely on different dialects of [JSONSCHEMA],
+thus supporting a contract-first schema design.
 
 For example, the OpenAPI Specifications (see [OAS])
 allow to describe REST APIs
@@ -148,7 +150,7 @@ Thus, the following design choices have been made:
 - the semantic context of a JSON object will be described
   using [JSON-LD-11] and its keywords;
 - property names are limited to characters that can be used in variable
-  names (e.g. excluding `:` and `.`);
+  names (e.g. excluding `:` and `.`)
   to avoid interoperability issues with code-generation tools;
 - privilege a deterministic behavior over automation and composability;
 - interoperable with the mechanisms described in Section 6.1 of [JSON-LD-11]
@@ -425,12 +427,22 @@ PersonLD:
 
 ## Composability {#int-composability}
 
-Composability can be achieved applying the process described
+Limited composability can be achieved applying the process described
 in {{interpreting}}.
-This process is inherently complex, and composability
-is not an explicit goal of this specification.
+Automatic composability is not an explicit goal of this specification
+because of its complexity. One of the issue is that
+the meaning of a JSON-LD keyword is affected by
+their position. For example, `@type`
+- in a node object, adds an `rdf:type` arc to the RDF graph
+  (it also has a few other effects on processing, e.g. by enabling type-scoped contexts)
+- in a value object, specifies the datatype of the produced literal
+- in the context, and more precisely in a term definition,
+  specifies [type coercion](https://www.w3.org/TR/json-ld11/#type-coercion).
+  It only applies when the value of the term is a string.
 
-Well-designed schemas do not usually have
+These issues can be tackled in future versions of this specifications.
+
+Moreover, well-designed schemas do not usually have
 more than 3 or 4 nested levels.
 This means that, when needed, it is possible
 to assemble and optimize an instance context (see {{keywords}})
@@ -817,14 +829,27 @@ and Vladimir Alexiev.
 
 Q: Why this document?
 :  There's currently no standard way to provide machine-readable semantic
-   information in [OAS] / [JSONSCHEMA].
+   information in [OAS] / [JSONSCHEMA] to be used at contract time.
+
+Q: Does this document support the exchange of JSON-LD resources?
+:  This document is focused on annotating schemas that are used
+   at contract/design time, so that application can exchange compact
+   JSON object without dereferencing nor interpreting
+   external resources at runtime.
+   
+   While you can use the provided semantic information to generate
+   JSON-LD objects, it is not the primary goal of this specification:
+   context information are not expected to be dereferenced at runtime
+   (see security considerations in JSON-LD)
+   and the semantics of exchanged messages is expected
+   to be constrained inside the application.
 
 Q: Why don't use existing [JSONSCHEMA] keywords like `externalDocs` ?
 :  We already tried, but this was actually squatting a keyword designed
    for [human readable documents](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#externalDocumentationObject).
 
 Q: Why using `x-` keywords?
-:  OpenAPI 3.0 does not validate unregistered keywords that don't start with `x-`
+:  OpenAPI 3.0 considers invalid unregistered keywords that don't start with `x-`,
    and we want a solution that is valid for all OAS versions >= 3.0.
 
 Q: Why not using a full-semantic approach?
@@ -843,6 +868,8 @@ Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?
    Moreover, OWL restrictions are about semantics,
    and are not designed to restrict the syntax.
 
+Q: Why don't design for composability first?
+:  JSON-LD is a complex specification. 
 ~~~ yaml
     TaxCode:
       type: string
