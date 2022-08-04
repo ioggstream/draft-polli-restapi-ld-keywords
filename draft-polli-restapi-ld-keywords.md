@@ -76,6 +76,9 @@ informative:
   JSONLD-11-API:
     target: https://www.w3.org/TR/json-ld11-api/
     title: JSON-LD 1.1 Processing Algorithms and API
+  JSON-SCHEMA-RDF:
+    target: https://www.w3.org/2019/wot/json-schema/
+    title: JSON Schema in RDF
   SHACL:
     title: Shapes Constraint Language (SHACL)
     target: https://www.w3.org/TR/shacl/
@@ -362,12 +365,27 @@ See the interoperability considerations for the media types
 and specifications used, including [YAML], [JSON], [OAS],
 [JSONSCHEMA] and [JSON-LD-11].
 
-A schema annotated with semantic keywords
+Annotating a schema with semantic keywords
 containing JSON-LD keywords
 (e.g. `@context`, `@type` and `@language`)
-cannot be interpreted as a JSON-LD document.
-This is generally not a problem, since it is a document
-following the [OAS] and [JSONSCHEMA] specification.
+may hinder its ability to be interpreted as a JSON-LD document
+(e.g. using the [JSON-LD 1.1 context for the JSON Schema vocabulary](https://www.w3.org/2019/wot/json-schema#json-ld11-ctx));
+this can be mitigated extending that context and specifying
+that Linked Data keywords are JSON Literals.
+
+~~~ json
+{ "@context": {
+    "x-jsonld-context: { "@type": "@json"},
+    "x-jsonld-type: { "@type": "@json"}
+  }
+}
+~~~
+
+This is generally not a problem, since a generic
+[JSONSCHEMA] document cannot be reliably interpreted
+as JSON-LD using a single context: this is because the same
+JSON member keys can have different meanings depending
+on their JSON Schema position (see [the notes in the  Interpreting JSON Schema as JSON-LD 1.1](https://www.w3.org/2019/wot/json-schema#interpreting-json-schema-as-json-ld-1-1) section of [JSON-SCHEMA-RDF]).
 
 ## Syntax is out of scope {#int-syntax-oos}
 
@@ -432,7 +450,8 @@ in {{interpreting}}.
 Automatic composability is not an explicit goal of this specification
 because of its complexity. One of the issue is that
 the meaning of a JSON-LD keyword is affected by
-their position. For example, `@type`
+their position. For example, `@type`:
+
 - in a node object, adds an `rdf:type` arc to the RDF graph
   (it also has a few other effects on processing, e.g. by enabling type-scoped contexts)
 - in a value object, specifies the datatype of the produced literal
@@ -836,7 +855,7 @@ Q: Does this document support the exchange of JSON-LD resources?
    at contract/design time, so that application can exchange compact
    JSON object without dereferencing nor interpreting
    external resources at runtime.
-   
+
    While you can use the provided semantic information to generate
    JSON-LD objects, it is not the primary goal of this specification:
    context information are not expected to be dereferenced at runtime
@@ -869,7 +888,7 @@ Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?
    and are not designed to restrict the syntax.
 
 Q: Why don't design for composability first?
-:  JSON-LD is a complex specification. 
+:  JSON-LD is a complex specification.
 ~~~ yaml
     TaxCode:
       type: string
