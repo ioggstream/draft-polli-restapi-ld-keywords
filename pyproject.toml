@@ -1,0 +1,17 @@
+[project]
+name = "oasld"
+version = "0.1.0"
+
+[build-system]
+requires = ["setuptools", "setuptools-git-versioning"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["oasld.py"]
+exclude = ["docs*", "tests*"]
+
+[tool.setuptools-git-versioning]
+enabled = true

@@ -61,6 +61,14 @@ class Instance:
             elif isinstance(context, dict):
                 # Merge in the passed context
                 self.subentry_context_ref[CTX] = deepcopy(self.jcontext)
+            elif isinstance(context, str):
+                if isinstance(self.jcontext, dict):
+                    log.warning(
+                        "The parent entry defines a string context, while the child has a dict context"
+                    )
+                raise NotImplementedError(
+                    f"Possibly conflicting contexts between the instance [{self.jcontext}] and its parent [{context}]"
+                )
             else:
                 raise NotImplementedError("An sub-entry MUST have a context")
 
