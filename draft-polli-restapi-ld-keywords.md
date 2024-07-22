@@ -69,6 +69,9 @@ normative:
   RDFS:
     title: RDF Schema 1.1
     target: https://www.w3.org/TR/rdf-schema/
+  YAML-IANA:
+    title: The application/yaml Media Type
+    target: https://www.iana.org/assignments/media-types/application/yaml
 
 informative:
   I-D.ietf-jsonpath-base:
@@ -362,7 +365,7 @@ is an implementation detail.
 # Interoperability Considerations {#int}
 
 See the interoperability considerations for the media types
-and specifications used, including [YAML], [JSON], [OAS],
+and specifications used, including [YAML-IANA], [JSON], [OAS],
 [JSONSCHEMA] and [JSON-LD-11].
 
 Annotating a schema with semantic keywords
@@ -481,7 +484,7 @@ jsonld_text = jsonld.expand(schema_instance, context)
 # Security Considerations {#sec}
 
 See the interoperability considerations for the media types
-and specifications used, including [YAML], [JSON], [OAS],
+and specifications used, including [YAML-IANA], [JSON], [OAS],
 [JSONSCHEMA] and [JSON-LD-11].
 
 ## Integrity and Authenticity {#sec-integrity}
