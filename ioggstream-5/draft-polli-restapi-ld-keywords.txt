@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                            8 January 2024
-Expires: 11 July 2024
+Intended status: Informational                              22 July 2024
+Expires: 23 January 2025
 
 
                      REST API Linked Data Keywords
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 July 2024.
+   This Internet-Draft will expire on 23 January 2025.
 
 Copyright Notice
 
@@ -356,8 +356,8 @@ Table of Contents
 3.  Interoperability Considerations
 
    See the interoperability considerations for the media types and
-   specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
-   and [JSON-LD-11].
+   specifications used, including [YAML-IANA], [JSON], [OAS],
+   [JSONSCHEMA] and [JSON-LD-11].
 
    Annotating a schema with semantic keywords containing JSON-LD
    keywords (e.g. @context, @type and @language) may hinder its ability
@@ -463,8 +463,8 @@ Table of Contents
 4.  Security Considerations
 
    See the interoperability considerations for the media types and
-   specifications used, including [YAML], [JSON], [OAS], [JSONSCHEMA]
-   and [JSON-LD-11].
+   specifications used, including [YAML-IANA], [JSON], [OAS],
+   [JSONSCHEMA] and [JSON-LD-11].
 
 4.1.  Integrity and Authenticity
 
@@ -547,6 +547,11 @@ Table of Contents
               Pantelis Antoniou, Eemeli Aro, and Thomas Smith, "YAML
               Ain't Markup Language Version 1.2", 1 October 2021,
               <https://yaml.org/spec/1.2.2/>.
+
+   [YAML-IANA]
+              "The application/yaml Media Type", n.d.,
+              <https://www.iana.org/assignments/media-types/application/
+              yaml>.
 
 6.2.  Informative References
 

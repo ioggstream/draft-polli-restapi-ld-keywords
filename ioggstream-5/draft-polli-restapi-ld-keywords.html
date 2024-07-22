@@ -12,24 +12,23 @@ keywords to provide semantic information in
 OpenAPI Specification and JSON Schema documents,
 and support contract-first semantic schema design. 
     " name="description">
-<meta content="xml2rfc 3.19.0" name="generator">
+<meta content="xml2rfc 3.22.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-polli-restapi-ld-keywords-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.19.0
-    Python 3.11.6
+  xml2rfc 3.22.0
+    Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 4.1.0
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
-    requests 2.31.0
-    setuptools 68.2.2
-    six 1.16.0
-    wcwidth 0.2.12
+    requests 2.32.3
+    setuptools 69.5.1
+    wcwidth 0.2.13
 -->
 <link href="draft-polli-restapi-ld-keywords.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1028,11 +1027,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">REST API Linked Data Keywords</td>
-<td class="right">January 2024</td>
+<td class="right">July 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Polli</td>
-<td class="center">Expires 11 July 2024</td>
+<td class="center">Expires 23 January 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1045,12 +1044,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-polli-restapi-ld-keywords-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-01-08" class="published">8 January 2024</time>
+<time datetime="2024-07-22" class="published">22 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-07-11">11 July 2024</time></dd>
+<dd class="expires"><time datetime="2025-01-23">23 January 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1098,7 @@ and support contract-first semantic schema design.<a href="#section-abstract-1" 
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 July 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1579,7 +1578,7 @@ is an implementation detail.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
       </h2>
 <p id="section-3-1">See the interoperability considerations for the media types
-and specifications used, including <span>[<a href="#YAML" class="cite xref">YAML</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
+and specifications used, including <span>[<a href="#YAML-IANA" class="cite xref">YAML-IANA</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
 <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">Annotating a schema with semantic keywords
 containing JSON-LD keywords
@@ -1721,7 +1720,7 @@ jsonld_text = jsonld.expand(schema_instance, context)
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <p id="section-4-1">See the interoperability considerations for the media types
-and specifications used, including <span>[<a href="#YAML" class="cite xref">YAML</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
+and specifications used, including <span>[<a href="#YAML-IANA" class="cite xref">YAML-IANA</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
 <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <div id="sec-integrity">
 <section id="section-4.1">
@@ -1773,6 +1772,7 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 <p id="section-5-1">None<a href="#section-5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="sec-combined-references">
 <section id="section-6">
       <h2 id="name-references">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-references" class="section-name selfRef">References</a>
@@ -1824,8 +1824,12 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 <span class="refAuthor">Berners-Lee, T.</span>, <span class="refAuthor">Fielding, R.</span>, and <span class="refAuthor">L. Masinter</span>, <span class="refTitle">"Uniform Resource Identifier (URI): Generic Syntax"</span>, <span class="seriesInfo">STD 66</span>, <span class="seriesInfo">RFC 3986</span>, <span class="seriesInfo">DOI 10.17487/RFC3986</span>, <time datetime="2005-01" class="refDate">January 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3986">https://www.rfc-editor.org/rfc/rfc3986</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="YAML">[YAML]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Oren Ben-Kiki</span>, <span class="refAuthor">Clark Evans</span>, <span class="refAuthor">Ingy dot Net</span>, <span class="refAuthor">Tina Müller</span>, <span class="refAuthor">Pantelis Antoniou</span>, <span class="refAuthor">Eemeli Aro</span>, and <span class="refAuthor">Thomas Smith</span>, <span class="refTitle">"YAML Ain't Markup Language Version 1.2"</span>, <time datetime="2021-10-01" class="refDate">1 October 2021</time>, <span>&lt;<a href="https://yaml.org/spec/1.2.2/">https://yaml.org/spec/1.2.2/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="YAML-IANA">[YAML-IANA]</dt>
+      <dd>
+<span class="refTitle">"The application/yaml Media Type"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/media-types/application/yaml">https://www.iana.org/assignments/media-types/application/yaml</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1868,6 +1872,7 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 </section>
 </div>
 </section>
+</div>
 <div id="ex">
 <section id="appendix-A">
       <h2 id="name-examples">
