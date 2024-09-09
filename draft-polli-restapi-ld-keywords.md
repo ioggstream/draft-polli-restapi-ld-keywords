@@ -421,8 +421,8 @@ and use a proper media type
 since Linked Data processing and interpretation
 requires further checks.
 
-If these applications describes messages using [JSONSCHEMA] or [OAS],
-they needs to
+If these applications describe messages using [JSONSCHEMA] or [OAS],
+they need to
 process them with a JSON-LD processor
 and declare all required properties
 in the schema - like in the example below.
@@ -445,6 +445,7 @@ PersonLD:
     familyName:
       type: string
 ~~~
+{: title="A JSON-Schema describing a JSON-LD document." #ex-jsonld-schema}
 
 ## Composability {#int-composability}
 
@@ -453,11 +454,11 @@ in {{interpreting}}.
 Automatic composability is not an explicit goal of this specification
 because of its complexity. One of the issue is that
 the meaning of a JSON-LD keyword is affected by
-their position. For example, `@type`:
+its position. For example, the `@type` keyword:
 
 - in a node object, adds an `rdf:type` arc to the RDF graph
-  (it also has a few other effects on processing, e.g. by enabling type-scoped contexts)
-- in a value object, specifies the datatype of the produced literal
+  (it also has a few other effects on processing, e.g. by enabling type-scoped contexts);
+- in a value object, specifies the datatype of the produced literal;
 - in the context, and more precisely in a term definition,
   specifies [type coercion](https://www.w3.org/TR/json-ld11/#type-coercion).
   It only applies when the value of the term is a string.
@@ -891,6 +892,8 @@ Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?
 
 Q: Why don't design for composability first?
 :  JSON-LD is a complex specification.
+   Consider the following schemas, where `Contract` references `TaxCode`.
+
 ~~~ yaml
     TaxCode:
       type: string
@@ -909,7 +912,20 @@ Q: Why don't design for composability first?
           $ref: "#/components/schemas/TaxCode"
 ~~~
 
-    For this reason, composability is limited to the object level.
+  The result will be that only one of the properties will be correctly annotated.
+  For this reason, composability is limited to the object level.
+
+Q: Can the value of `x-jsonld-type` be an `rdfs:property`?
+   This would allow to reuse the same schema in different objects without modifying the `@context`.
+:  No, it cannot. The value of `x-jsonld-type` is an RDF type, not a property.
+   The following example is thus invalid.
+
+~~~ yaml
+    TaxCode:
+      type: string
+      x-jsonld-type: "https://w3id.org/italia/onto/CPV/taxCode"
+~~~
+{: title="The above code is invalid, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
 
 # Change Log
 {: numbered="false" removeinrfc="true"}
