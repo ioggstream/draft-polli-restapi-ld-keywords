@@ -405,8 +405,8 @@ Table of Contents
    @type and @context, and use a proper media type since Linked Data
    processing and interpretation requires further checks.
 
-   If these applications describes messages using [JSONSCHEMA] or [OAS],
-   they needs to process them with a JSON-LD processor and declare all
+   If these applications describe messages using [JSONSCHEMA] or [OAS],
+   they need to process them with a JSON-LD processor and declare all
    required properties in the schema - like in the example below.
 
    PersonLD:
@@ -426,19 +426,21 @@ Table of Contents
        familyName:
          type: string
 
+           Figure 4: A JSON-Schema describing a JSON-LD document.
+
 3.4.  Composability
 
    Limited composability can be achieved applying the process described
    in Section 2.3.  Automatic composability is not an explicit goal of
    this specification because of its complexity.  One of the issue is
-   that the meaning of a JSON-LD keyword is affected by their position.
-   For example, @type:
+   that the meaning of a JSON-LD keyword is affected by its position.
+   For example, the @type keyword:
 
    *  in a node object, adds an rdf:type arc to the RDF graph (it also
       has a few other effects on processing, e.g. by enabling type-
-      scoped contexts)
+      scoped contexts);
 
-   *  in a value object, specifies the datatype of the produced literal
+   *  in a value object, specifies the datatype of the produced literal;
 
    *  in the context, and more precisely in a term definition, specifies
       type coercion (https://www.w3.org/TR/json-ld11/#type-coercion).
@@ -450,7 +452,7 @@ Table of Contents
    Moreover, well-designed schemas do not usually have more than 3 or 4
    nested levels.  This means that, when needed, it is possible to
    assemble and optimize an instance context (see Section 2) at design
-   time and use it to valorize x-jsonld-context (see Figure 7).
+   time and use it to valorize x-jsonld-context (see Figure 8).
 
    Once a context is assembled, the RDF data can be generated using the
    algorithms described in [JSONLD-11-API] for example through a
@@ -614,7 +616,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 4: A JSON Schema data model with semantic context and type.
+     Figure 5: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -675,7 +677,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 5: A JSON Schema data model with semantic context and type.
+     Figure 6: A JSON Schema data model with semantic context and type.
 
    The resulting RDF graph is
 
@@ -687,7 +689,7 @@ A.2.  Schema with semantic and vocabulary information
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
 
-           Figure 6: An RDF graph with semantic context and type.
+           Figure 7: An RDF graph with semantic context and type.
 
 A.3.  Cyclic schema
 
@@ -750,18 +752,18 @@ A.3.  Cyclic schema
        "@vocab": "https://w3.org/ns/person#",
        "children": {
          "@container": "@set",
-           "@context": {
-             "email": "@id",
-             "@vocab": "https://w3.org/ns/person#",
-             "children": {
-               "@container": "@set"
-             }
+         "@context": {
+           "email": "@id",
+           "@vocab": "https://w3.org/ns/person#",
+           "children": {
+             "@container": "@set"
            }
+         }
        }
      }
    }
 
-       Figure 7: An instance context containing redundant information
+       Figure 8: An instance context containing redundant information
 
 A.4.  Composite instance context
 
@@ -814,7 +816,7 @@ A.4.  Composite instance context
          province: LT
          country: ITA
 
-                  Figure 8: A schema with object contexts.
+                  Figure 9: A schema with object contexts.
 
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
@@ -856,7 +858,7 @@ A.4.  Composite instance context
      }
    }
 
-       Figure 9: A @context that includes information from different
+       Figure 10: A @context that includes information from different
                                   schemas.
 
    That can be serialized as text/turtle as
@@ -876,7 +878,7 @@ A.4.  Composite instance context
      itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
    .
 
-                 Figure 10: The above entry in text/turtle
+                 Figure 11: The above entry in text/turtle
 
 Appendix B.  Acknowledgements
 
@@ -941,15 +943,51 @@ FAQ
       are not designed to restrict the syntax.
 
    Q: Why don't design for composability first?  JSON-LD is a complex
-      specification. ~~~ yaml TaxCode: type: string $linkedData: "@id":
-      "https://w3id.org/italia/onto/CPV/taxCode" "term": "taxCode"
-      Contract: ...  properties: employer_tax_code: # Beware!
-      TaxCode.$linkedData.term == 'taxCode' $ref: "#/components/schemas/
-      TaxCode" employee_tax_code: # Here we are reusing not only the
-      schema, # but even the same term.  $ref: "#/components/schemas/
-      TaxCode" ~~~
+      specification.  Consider the following schemas, where Contract
+      references TaxCode.
 
-      For this reason, composability is limited to the object level.
+       TaxCode:
+         type: string
+         $linkedData:
+           "@id": "https://w3id.org/italia/onto/CPV/taxCode"
+           "term": "taxCode"
+       Contract:
+         ...
+         properties:
+           employer_tax_code:
+             # Beware! TaxCode.$linkedData.term == 'taxCode'
+             $ref: "#/components/schemas/TaxCode"
+           employee_tax_code:
+             # Here we are reusing not only the schema,
+             #   but even the same term.
+             $ref: "#/components/schemas/TaxCode"
+
+   The result will be that only one of the properties will be correctly
+   annotated.  For this reason, composability is limited to the object
+   level.
+
+   Q: Can the value of x-jsonld-type be an rdf:Property?  Would this
+   allow to reuse the same schema in different objects without
+   modifying the @context?  Under normal circumstances, i.e. when
+      designing public or financial service APIs, you don't want x-
+      jsonld-type to be an rdf:Property.  The value of x-jsonld-type
+      usually maps to a owl:Class, not an owl:DataTypeProperty; for
+      example a sensible value for x-jsonld-type would be rdfs:Literal
+      (that is, the rdfs:range of CPV:taxCode), but this would be mostly
+      a syntactic information, which instead is provided by JSON Schema.
+
+       TaxCode:
+         type: string
+         x-jsonld-type: "https://w3id.org/italia/onto/CPV/taxCode"
+         description: |-
+           This example is ambiguous, because:
+
+           1. it treats a CPV:taxCode as an owl:Class,
+              while it's an owl:DataTypeProperty;
+           2. the `rdfs:range` for CPV:taxCode is `rdfs:Literal`.
+
+     Figure 12: The above code is ambiguous, because the rdfs:range of
+                        CPV:taxCode is rdfs:Literal
 
 Change Log
 
