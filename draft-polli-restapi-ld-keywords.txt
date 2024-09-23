@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                              22 July 2024
-Expires: 23 January 2025
+Intended status: Informational                         23 September 2024
+Expires: 27 March 2025
 
 
                      REST API Linked Data Keywords
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 January 2025.
+   This Internet-Draft will expire on 27 March 2025.
 
 Copyright Notice
 
