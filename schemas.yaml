@@ -173,8 +173,7 @@ ContextPerson:
         "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
     birth_place:
       "@id": "hasBirthPlace"
-      "@context":
-        <<: *BirthPlaceContext
+      "@context": *BirthPlaceContext
     children:
       "@id": isParentOf
     parents:
