@@ -915,17 +915,24 @@ Q: Why don't design for composability first?
   The result will be that only one of the properties will be correctly annotated.
   For this reason, composability is limited to the object level.
 
-Q: Can the value of `x-jsonld-type` be an `rdfs:property`?
-   This would allow to reuse the same schema in different objects without modifying the `@context`.
-:  No, it cannot. The value of `x-jsonld-type` is an RDF type, not a property.
-   The following example is thus invalid.
+Q: Can the value of `x-jsonld-type` be an `rdf:Property`?
+   Would this allow to reuse the same schema in different objects without modifying the `@context`?
+:  Under normal circumstances, i.e. when designing public or financial service APIs,
+   you don't want x-jsonld-type to be an [`rdf:Property`](https://www.w3.org/TR/rdf-schema/#ch_property).
+   The value of `x-jsonld-type` usually maps to a `owl:Class`, not an [`owl:DataTypeProperty`](https://www.w3.org/2002/07/owl#DatatypeProperty).
 
 ~~~ yaml
     TaxCode:
       type: string
       x-jsonld-type: "https://w3id.org/italia/onto/CPV/taxCode"
+      description: |-
+        This example is ambiguous, because:
+
+        1. it treats a CPV:taxCode as an owl:Class,
+           while it's an owl:DataTypeProperty;
+        2. the `rdfs:range` for a tax code is `rdfs:Literal`.
 ~~~
-{: title="The above code is invalid, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
+{: title="The above code is ambiguous, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
 
 # Change Log
 {: numbered="false" removeinrfc="true"}
