@@ -917,8 +917,10 @@ Q: Why don't design for composability first?
 
 Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to reuse the same schema in different objects without modifying the `@context`?
 :  Under normal circumstances, i.e. when designing public or financial service APIs,
-   you don't want x-jsonld-type to be an [`rdf:Property`](https://www.w3.org/TR/rdf-schema/#ch_property).
-   The value of `x-jsonld-type` usually maps to a `owl:Class`, not an [`owl:DataTypeProperty`](https://www.w3.org/2002/07/owl#DatatypeProperty).
+   you don't want `x-jsonld-type` to be an `rdf:Property`.
+   The value of `x-jsonld-type` usually maps to a `owl:Class`, not an `owl:DataTypeProperty`;
+   for example a sensible value for `x-jsonld-type` would be `rdfs:Literal` (that is, the `rdfs:range` of `CPV:taxCode`),
+   but this would be mostly a syntactic information, which instead is provided by JSON Schema.
 
 ~~~ yaml
     TaxCode:
@@ -929,7 +931,7 @@ Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to re
 
         1. it treats a CPV:taxCode as an owl:Class,
            while it's an owl:DataTypeProperty;
-        2. the `rdfs:range` for a tax code is `rdfs:Literal`.
+        2. the `rdfs:range` for CPV:taxCode is `rdfs:Literal`.
 ~~~
 {: title="The above code is ambiguous, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
 
