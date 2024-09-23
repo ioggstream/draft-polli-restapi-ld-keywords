@@ -701,13 +701,13 @@ the instance context could have been more complex.
     "@vocab": "https://w3.org/ns/person#",
     "children": {
       "@container": "@set",
-        "@context": {
-          "email": "@id",
-          "@vocab": "https://w3.org/ns/person#",
-          "children": {
-            "@container": "@set"
-          }
+      "@context": {
+        "email": "@id",
+        "@vocab": "https://w3.org/ns/person#",
+        "children": {
+          "@container": "@set"
         }
+      }
     }
   }
 }
@@ -915,8 +915,7 @@ Q: Why don't design for composability first?
   The result will be that only one of the properties will be correctly annotated.
   For this reason, composability is limited to the object level.
 
-Q: Can the value of `x-jsonld-type` be an `rdf:Property`?
-   Would this allow to reuse the same schema in different objects without modifying the `@context`?
+Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to reuse the same schema in different objects without modifying the `@context`?
 :  Under normal circumstances, i.e. when designing public or financial service APIs,
    you don't want x-jsonld-type to be an [`rdf:Property`](https://www.w3.org/TR/rdf-schema/#ch_property).
    The value of `x-jsonld-type` usually maps to a `owl:Class`, not an [`owl:DataTypeProperty`](https://www.w3.org/2002/07/owl#DatatypeProperty).
