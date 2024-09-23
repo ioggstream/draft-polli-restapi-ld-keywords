@@ -665,7 +665,6 @@ The example schema instance contained in the above schema
 results in the following JSON-LD document.
 
 ~~~ json
-
 {
   "email": "mailto:a@example",
   "children": [
