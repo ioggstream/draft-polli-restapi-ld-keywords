@@ -1,0 +1,110 @@
+#
+# Schema to test the editor.
+#
+openapi: 3.0.3
+components:
+  schemas:
+    Country:
+      description: >-
+        The `country` property is mapped to the object id.
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CLV/
+        country: "@id"
+        "@base": "https://publications.europa.eu/resource/authority/country/"
+      type: object
+      properties:
+        country:
+          type: string
+      example:
+        country: ITA
+    Location:
+      description: >-
+        The country property inherits its id
+        from Country/x-jsonld-context.
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CLV/
+        country: hasCountry
+      type: object
+      properties:
+        hasCity:
+          type: string
+        country:
+          $ref: "#/components/schemas/Country"
+      example:
+        hasCity: Rome
+        country: ITA
+    DontOverride:
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CPV/
+        dontOverride:
+          "@id": null
+          "@context":
+            "@vocab": https://schema.org/
+      type: object
+      properties:
+        dontOverride:
+          # The original context is not overridden
+          # by Simple/x-jsonld-context.
+          $ref: "#/components/schemas/Location"
+    MergeContext:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CPV/
+        birthplace: hasBirthPlace
+      type: object
+      properties:
+        fullName:
+          type: string
+        hasCitizenship:
+          # The @id is inferred from the property name
+          #  using the @vocab.
+          $ref: "#/components/schemas/Location"
+        birthplace:
+          # The Simple/x-jsonld-context is merged with
+          #  the parent context.
+          $ref: "#/components/schemas/Location"
+    DeeplyNestedPerson:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CPV/
+        taxCode: "@id"
+        "@base": "TINIT:"  # This cannot be set inside `taxCode` to avoid hijacking the object id.
+        parent: hasParentalRelationshipWith
+      type: object
+      example:
+        taxCode: MRORSS77
+        parent:
+        - taxCode: LGORSA25
+          birthplace:
+            hasCity: Rome
+            country: ITA
+      properties:
+        taxCode:
+          type: string
+        parent:
+          $ref: "#/components/schemas/MergeContext"
+
+info:
+  title: Test schema collection
+  version: 202409.01.00
+  x-summary: A schema to test functionalities of the editor.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: roberto.polli@par-tec.it
+    url: https://www.par-tec.it
+  description: |-
+
+    ## Welcome!
+    This schema is used to test the editor functionalities.
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []
