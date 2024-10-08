@@ -296,14 +296,17 @@ The x-jsonld-type value
 provides information on the RDF type of the associate
 schema instances.
 
-It SHOULD NOT reference an [RDF Datatype](https://www.w3.org/TR/rdf11-concepts/#section-Datatypes), because
-it is not intended to provide
-syntax information, but only semantic ones.
+This value MUST be valid according to the JSON-LD `@type` keyword as described in [Section 3.5 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#specifying-the-type);
+it is thus related to the information provided via the x-jsonld-context keyword (see {{keywords-context}}).
+
+It SHOULD NOT reference an [RDF Datatype](https://www.w3.org/TR/rdf11-concepts/#section-Datatypes)
+because it is not intended to provide
+syntax information, but only semantic information.
 
 ## The x-jsonld-context JSON Schema keyword {#keywords-context}
 
 The x-jsonld-context value
-provides the information required to interpret the associate
+provides the information required to interpret the associated
 schema instances as JSON-LD
 according to the specification in [Section 6.1 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld).
 
@@ -314,9 +317,9 @@ Its value MUST be a valid JSON-LD Context
 
 When context composition (see {{int-composability}}) is needed,
 the context SHOULD be provided in the form of a JSON object;
-in fact, if the x-jsonld-context is an URL string,
-to generate the instance context that URL needs to be
-dereferenced and processed.
+in fact, if the x-jsonld-context is a URL string,
+that URL needs to be dereferenced and processed
+to generate the instance context.
 
 ~~~ yaml
 Place:
@@ -528,6 +531,7 @@ None
 The following example shows a
 Person JSON Schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.
+Type information is provided as a URI reference.
 
 ~~~ example
 Person:
@@ -638,6 +642,8 @@ The resulting RDF graph is
 ## Cyclic schema {#ex-cyclic-schema}
 
 The following schema contains a cyclic reference.
+Type information is resolved using the `@vocab` keyword
+specified in the x-jsonld-context.
 
 ~~~ yaml
 Person:
