@@ -1,0 +1,802 @@
+
+
+
+
+Network Working Group                                           R. Polli
+Internet-Draft                                            Par-Tec S.p.A.
+Intended status: Informational                            8 October 2024
+Expires: 11 April 2025
+
+
+           Designing APIs with REST API Linked Data Keywords
+                   draft-polli-design-process-latest
+
+Abstract
+
+   This document provides guidance for designing schemas using REST API
+   Linked Data keywords.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-polli-design-process/.
+
+   information can be found at https://github.com/ioggstream/draft-
+   polli-restapi-ld-keywords.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/ioggstream/draft-polli-restapi-ld-keywords/issues.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 11 April 2025.
+
+Copyright Notice
+
+   Copyright (c) 2024 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Goals and Design Choices
+     1.2.  Notational Conventions
+     1.3.  Modeling an vocabulary-bases entry
+     1.4.  Modeling an object with references
+     1.5.  Interpreting schema instances
+   2.  Interoperability Considerations
+     2.1.  JSON Schema property names
+     2.2.  Composability
+   3.  Security Considerations
+     3.1.  Integrity and Authenticity
+     3.2.  Conflicts
+   4.  References
+     4.1.  Normative References
+     4.2.  Informative References
+   Appendix A.  Examples
+     A.1.  Schema with semantic information
+     A.2.  Schema with semantic and vocabulary information
+     A.3.  Cyclic schema
+     A.4.  Composite instance context
+   Appendix B.  Acknowledgements
+   FAQ
+   Change Log
+   Author's Address
+
+1.  Introduction
+
+   This document provides guidance and examples for designing schemas
+   using REST API Linked Data keywords.
+
+1.1.  Goals and Design Choices
+
+   TBD
+
+1.2.  Notational Conventions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.  These words may also appear in this
+   document in lower case as plain English words, absent their normative
+   meanings.
+
+   All JSON examples are represented in YAML format for readability and
+   conciseness.
+
+   The term "schema instance" referso to a JSON document that conforms
+   to a JSON Schema.
+
+1.3.  Modeling an vocabulary-bases entry
+
+   There are different ways to model a vocabulary-based entry, e.g., a
+   list of countries or a list of currencies.
+
+   Normally, you would use a JSON Schema (e.g., with an enum keyword):
+
+       CountryCode:
+         type: string
+         enum: [ "ITA", "FRA", "DEU" ]
+         example: ITA
+
+             Figure 1: A JSON Schema for a Country enumeration.
+
+   The resulting schema instance is a simple string (e.g.  ITA), while
+   JSON-LD only supports JSON objects (in compact form) or JSON arrays
+   (in expanded forms).  Please note that the expanded form is not
+   supported by [I-D.polli-restapi-ld-keywords].
+
+   To be able to represent the entry in JSON-LD, an enumerated entry can
+   be modeled using a specific property for the identifier, and a JSON-
+   LD context.
+
+       Country:
+         type: object
+         properties:
+           identifier:
+             $ref: "#/components/schemas/CountryCode"
+           name:
+             type: string
+         example:
+           identifier: ITA
+           name: Italy
+
+   Linked Data keywords provide a context.  Different contexts can lead
+   to different RDF representations for the same schema instances (i.e.
+   the actual data).
+
+   1.  Isomorphic representation: the RDF representation preserves the
+       structure of the JSON object.
+
+       CountryBlankNode:
+         x-jsonld-type: Country
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           identifier:
+             "$ref": "#/components/schemas/CountryCode"
+           name:
+             type: string
+         example:
+           identifier: ITA
+           name: Italy
+
+   results in the following RDF graph using a blank node:
+
+   @prefix schema: <https://schema.org/> .
+   _:b0 schema:identifier "ITA" ;
+        schema:name "Italy" .
+
+                 Figure 2: An RDF graph with a blank node.
+
+   1.  Non-isomorphic representation: one property maps to the node
+       name.
+
+   Associating a property with the @id keyword and a @base prefix, we
+   state that the corresponding value is the name of the node.  This
+   schema
+
+       CountryURI:
+         x-jsonld-type: Country
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           identifier: "@id"
+           "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+         type: object
+         properties:
+           identifier:
+             $ref: "#/components/schemas/CountryCode"
+           name:
+             type: string
+         example:
+           identifier: ITA
+           name: Italy
+
+   results in the following RDF graph using a named node:
+
+   @prefix schema: <https://schema.org/> .
+   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+
+   iso_3166_3:ITA
+     a schema:Country;
+     schema:name "Italy"
+   .
+
+                 Figure 3: An RDF graph with a named node.
+
+1.4.  Modeling an object with references
+
+   When modeling an object with references, the parent's context will
+   normally provide the context for the child.
+
+   The following example models a Person object with a nationality
+   property referencing the CountryCode schema.  The x-jsonld-context
+   ensures that the nationality property will be resolved to an URI,
+   though there is no space in the schema instance to provide a name for
+   the country.
+
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           nationality:
+             "@type": "@id"
+             "@context":
+               "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+         type: object
+         properties:
+           givenName:
+             type: string
+           familyName:
+             type: string
+           nationality:
+             $ref: "#/components/schemas/CountryCode"
+         example:
+           givenName: John
+           familyName: Doe
+           nationality: ITA
+
+   results in the following RDF graph:
+
+   @prefix schema: <https://schema.org/> .
+   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+
+   _:b0 a schema:Person ;
+        schema:familyName "Doe" ;
+        schema:givenName "John" ;
+        schema:nationality iso_3166_3:ITA .
+
+                 Figure 4: An RDF graph with a named node.
+
+   To provide a label or other properties for the country, we can use a
+   nested object.
+
+       NestedPerson:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           givenName:
+             type: string
+           familyName:
+             type: string
+           nationality:
+             $ref: "#/components/schemas/CountryURI"
+         example:
+           givenName: John
+           familyName: Doe
+           nationality:
+             identifier: ITA
+             name: Italy
+
+   An implementation supporting context composition will check that the
+   value of NestedPerson/x-jsonld-context/nationality/@context is
+   undefined, and will then integrate the information present in
+   CountryURI/x-jsonld-context into the instance context.
+
+   results in the following RDF graph:
+
+   @prefix schema: <https://schema.org/> .
+   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+
+   _:b0 a schema:Person ;
+        schema:familyName "Doe" ;
+        schema:givenName "John" ;
+        schema:nationality iso_3166_3:ITA
+        .
+   iso_3166_3:ITA
+     schema:name "Italy" .
+
+                   Figure 5: An RDF graph with two nodes.
+
+1.5.  Interpreting schema instances
+
+2.  Interoperability Considerations
+
+2.1.  JSON Schema property names
+
+   To minimize context information, a common practice is to name JSON
+   Schema properties after the corresponding RDF predicates.
+
+   Place:
+     x-jsonld-type: Place
+     ...
+   Occupation:
+     x-jsonld-type: Occupation
+     ...
+   Person:
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "@vocab": "https://schema.org/"
+     type: object
+     properties:
+       familyName:
+         type: string
+       givenName:
+         type: string
+       birthPlace:
+         $ref: "#/Place"
+       hasOccupation:
+         $ref: "#/Occupation"
+
+    Figure 6: A JSON Schema with properties named after RDF predicates.
+
+   As we can see from the above schema, this can lead to inheriting non
+   uniform naming conventions from the RDF vocabulary: for example,
+   birthPlace and hasOccupation both target objects, while only
+   hasOccupation starts with a verb (i.e. has).
+
+   Another issue is related to the schema instance size when using very
+   long property or class names such as https://schema.org/
+   isAccessibleForFree and https://schema.org/
+   IPTCDigitalSourceEnumeration.
+
+   Mapping JSON Schema properties to RDF predicates in x-jsonld-context
+   can reduce semantic risks when some ontologies changes, or when
+   there's a need to switch to a different ontology: this is because
+   having different names for the property and the predicate clarifies
+   that the property may well evolve into a different predicate in time,
+   like shown in the following example.
+
+   Instead of using a generic surname, this schema uses the more
+   specific patronymicName named after the corresponding RDF predicate.
+
+   Person:
+     x-jsonld-context:
+       "@vocab": "http://w3.org/ns/person#"
+     properties:
+       patronymicName:
+         type: string
+     example:
+       patronymicName: "Ericsson"
+     x-rdf: >-
+       _:b0 :patronymicName "Ericsson" .
+
+   If the service evolves to be more generic (e.g., moving to foaf:),
+   the property name might be mapped to the foaf:familyName predicate,
+   but the schema instance will remain the same thus retaining the
+   information of a legacy ontology.
+
+   A more flexible design would have been to use a generic surname
+   property name, and either map it to http://w3.org/ns/
+   person#patronymicName or foaf:familyName in the context.
+
+2.2.  Composability
+
+   Always prefer explicit context information over implicit context
+   composition.  Different implementations of context composition may
+   lead to different results, especially over large schemas with many
+   nested objects.
+
+   While composition is useful in the schema design phase, bundling and
+   validating the composed context in the final schema definition
+   reduces the risk of interoperability issues.
+
+3.  Security Considerations
+
+3.1.  Integrity and Authenticity
+
+3.2.  Conflicts
+
+4.  References
+
+4.1.  Normative References
+
+   [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Semantics", STD 97, RFC 9110,
+              DOI 10.17487/RFC9110, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9110>.
+
+   [JSON]     Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", STD 90, RFC 8259,
+              DOI 10.17487/RFC8259, December 2017,
+              <https://www.rfc-editor.org/rfc/rfc8259>.
+
+   [JSON-LD-11]
+              "JSON-LD 1.1", n.d., <https://www.w3.org/TR/json-ld11/>.
+
+   [JSONSCHEMA]
+              "JSON Schema", n.d.,
+              <https://json-schema.org/specification.html>.
+
+   [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
+              Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
+              Specification 3.0.0", 26 July 2017.
+
+   [RDF]      "RDF Concepts and Abstract Syntax", n.d.,
+              <https://www.w3.org/TR/rdf11/>.
+
+   [RDFS]     "RDF Schema 1.1", n.d.,
+              <https://www.w3.org/TR/rdf-schema/>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [URI]      Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
+              Resource Identifier (URI): Generic Syntax", STD 66,
+              RFC 3986, DOI 10.17487/RFC3986, January 2005,
+              <https://www.rfc-editor.org/rfc/rfc3986>.
+
+   [YAML]     Oren Ben-Kiki, Clark Evans, Ingy dot Net, Tina Müller,
+              Pantelis Antoniou, Eemeli Aro, and Thomas Smith, "YAML
+              Ain't Markup Language Version 1.2", 1 October 2021,
+              <https://yaml.org/spec/1.2.2/>.
+
+   [YAML-IANA]
+              "The application/yaml Media Type", n.d.,
+              <https://www.iana.org/assignments/media-types/application/
+              yaml>.
+
+4.2.  Informative References
+
+   [I-D.ietf-jsonpath-base]
+              Gössner, S., Normington, G., and C. Bormann, "JSONPath:
+              Query expressions for JSON", Work in Progress, Internet-
+              Draft, draft-ietf-jsonpath-base-21, 24 September 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-
+              jsonpath-base-21>.
+
+   [I-D.polli-restapi-ld-keywords]
+              Polli, R., "REST API Linked Data Keywords", Work in
+              Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
+              04, 22 July 2024, <https://datatracker.ietf.org/doc/html/
+              draft-polli-restapi-ld-keywords-04>.
+
+   [JSON-POINTER]
+              Bryan, P., Ed., Zyp, K., and M. Nottingham, Ed.,
+              "JavaScript Object Notation (JSON) Pointer", RFC 6901,
+              DOI 10.17487/RFC6901, April 2013,
+              <https://www.rfc-editor.org/rfc/rfc6901>.
+
+   [JSON-SCHEMA-RDF]
+              "JSON Schema in RDF", n.d.,
+              <https://www.w3.org/2019/wot/json-schema/>.
+
+   [JSONLD-11-API]
+              "JSON-LD 1.1 Processing Algorithms and API", n.d.,
+              <https://www.w3.org/TR/json-ld11-api/>.
+
+   [OWL]      "OWL 2 Web Ontology Language Document Overview", n.d.,
+              <https://www.w3.org/TR/owl2-overview/>.
+
+   [SHACL]    "Shapes Constraint Language (SHACL)", 20 July 2017,
+              <https://www.w3.org/TR/shacl/>.
+
+   [XS]       "XML Schema", n.d., <https://www.w3.org/2001/XMLSchema>.
+
+Appendix A.  Examples
+
+A.1.  Schema with semantic information
+
+   The following example shows a Person JSON Schema with semantic
+   information provided by the x-jsonld-type and x-jsonld-context.
+
+   Person:
+     "x-jsonld-type": "https://schema.org/Person"
+     "x-jsonld-context":
+        "@vocab": "https://schema.org/"
+        custom_id: null  # detach this property from the @vocab
+        country:
+          "@id": addressCountry
+          "@language": en
+     type: object
+     required:
+     - given_name
+     - family_name
+     properties:
+       familyName: { type: string, maxLength: 255  }
+       givenName:  { type: string, maxLength: 255  }
+       country:    { type: string, maxLength: 3, minLength: 3 }
+       custom_id:  { type: string, maxLength: 255  }
+     example:
+       familyName: "Doe"
+       givenName: "John"
+       country: "FRA"
+       custom_id: "12345"
+
+     Figure 7: A JSON Schema data model with semantic context and type.
+
+   The example object is assembled as a JSON-LD object as follows.
+
+   {
+     "@context": {
+       "@vocab": "https://schema.org/",
+       "custom_id": null
+     },
+     "@type": "https://schema.org/Person",
+     "familyName": "Doe",
+     "givenName": "John",
+     "country": "FRA",
+     "custom_id": "12345"
+   }
+
+   The above JSON-LD can be represented as text/turtle as follows.
+
+   @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+   @prefix schema: <https://schema.org/>
+
+   _:b0 rdf:type schema:Person    ;
+        schema:country     "FRA"  ;
+        schema:familyName  "Doe"  ;
+        schema:givenName   "John" .
+
+A.2.  Schema with semantic and vocabulary information
+
+   The following example shows a "Person" schema with semantic
+   information provided by the x-jsonld-type and x-jsonld-context.
+
+   Person:
+     "x-jsonld-type": "https://schema.org/Person"
+     "x-jsonld-context":
+        "@vocab": "https://schema.org/"
+        email: "@id"
+        custom_id: null  # detach this property from the @vocab
+        country:
+          "@id": addressCountry
+          "@type": "@id"
+          "@context":
+             "@base": "http://publications.europa.eu/resource/authority/country/"
+
+     type: object
+     required:
+     - email
+     - given_name
+     - family_name
+     properties:
+       email: { type: string, maxLength: 255  }
+       familyName: { type: string, maxLength: 255  }
+       givenName:  { type: string, maxLength: 255  }
+       country:    { type: string, maxLength: 3, minLength: 3 }
+       custom_id:  { type: string, maxLength: 255  }
+     example:
+       familyName: "Doe"
+       givenName: "John"
+       email: "jon@doe.example"
+       country: "FRA"
+       custom_id: "12345"
+
+     Figure 8: A JSON Schema data model with semantic context and type.
+
+   The resulting RDF graph is
+
+   @prefix schema: <https://schema.org/> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
+
+   <mailto:jon@doe.example>
+     schema:familyName "Doe"          ;
+     schema:givenName "John"          ;
+     schema:addressCountry country:FRA .
+
+           Figure 9: An RDF graph with semantic context and type.
+
+A.3.  Cyclic schema
+
+   The following schema contains a cyclic reference.
+
+   Person:
+     description: Simple cyclic example.
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "email": "@id"
+       "@vocab": "https://w3.org/ns/person#"
+       children:
+         "@container": "@set"
+     type: object
+     properties:
+       email: { type: string }
+       children:
+         type: array
+         items:
+           $ref: '#/Person'
+     example:
+       email: "mailto:a@example"
+       children:
+       - email: "mailto:dough@example"
+       - email: "mailto:son@example"
+
+   The example schema instance contained in the above schema results in
+   the following JSON-LD document.
+
+   {
+     "email": "mailto:a@example",
+     "children": [
+       {
+         "email": "mailto:dough@example",
+         "@type": "Person"
+       },
+       {
+         "email": "mailto:son@example",
+         "@type": "Person"
+       }
+     ],
+     "@type": "Person",
+     "@context": {
+       "email": "@id",
+       "@vocab": "https://w3.org/ns/person#",
+       "children": {
+         "@container": "@set"
+       }
+     }
+   }
+
+   Applying the workflow described in Section 1.5 just recursively
+   copying the x-jsonld-context, the instance context could have been
+   more complex.
+
+   {
+     ...
+     "@context": {
+       "email": "@id",
+       "@vocab": "https://w3.org/ns/person#",
+       "children": {
+         "@container": "@set",
+         "@context": {
+           "email": "@id",
+           "@vocab": "https://w3.org/ns/person#",
+           "children": {
+             "@container": "@set"
+           }
+         }
+       }
+     }
+   }
+
+      Figure 10: An instance context containing redundant information
+
+A.4.  Composite instance context
+
+   In the following schema document, the "Citizen" schema references the
+   "BirthPlace" schema.
+
+   BirthPlace:
+     x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+     x-jsonld-context:
+       "@vocab": "https://w3id.org/italia/onto/CLV/"
+       country:
+         "@id": "hasCountry"
+         "@type": "@id"
+         "@context":
+           "@base": "http://publications.europa.eu/resource/authority/country/"
+       province:
+         "@id": "hasProvince"
+         "@type": "@id"
+         "@context":
+           "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+     type: object
+     required:
+       - province
+       - country
+     properties:
+       province:
+         description: The province where the person was born.
+         type: string
+       country:
+         description: The iso alpha-3 code of the country where the person was born.
+         type: string
+     example:
+       province: RM
+       country: ITA
+   Citizen:
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "email": "@id"
+       "@vocab": "https://w3.org/ns/person#"
+     type: object
+     properties:
+       email: { type: string }
+       birthplace:
+         $ref: "#/BirthPlace"
+     example:
+       email: "mailto:a@example"
+       givenName: Roberto
+       familyName: Polli
+       birthplace:
+         province: LT
+         country: ITA
+
+                 Figure 11: A schema with object contexts.
+
+   The example schema instance contained in the above schema results in
+   the following JSON-LD document.  The instance context contains
+   information from both "Citizen" and "BirthPlace" semantic keywords.
+
+   {
+     "email": "mailto:a@example",
+     "givenName": "Roberto",
+     "familyName": "Polli",
+     "birthplace": {
+       "province": "RM",
+       "country": "ITA",
+       "@type": "https://w3id.org/italia/onto/CLV/Feature"
+     },
+     "@type": "Person",
+     "@context": {
+       "email": "@id",
+       "@vocab": "https://w3.org/ns/person#",
+       "birthplace": {
+         "@context": {
+           "@vocab": "https://w3id.org/italia/onto/CLV/",
+           "city": "hasCity",
+           "country": {
+             "@id": "hasCountry",
+             "@type": "@id",
+             "@context": {
+               "@base": "http://publications.europa.eu/resource/authority/country/"
+             }
+           },
+           "province": {
+             "@id": "hasProvince",
+             "@type": "@id",
+             "@context": {
+               "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+             }
+           }
+         }
+       }
+     }
+   }
+
+       Figure 12: A @context that includes information from different
+                                  schemas.
+
+   That can be serialized as text/turtle as
+
+   @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+   @prefix eu: <https://w3.org/ns/person#> .
+   @prefix itl: <https://w3id.org/italia/onto/CLV/> .
+
+   <mailto:a@example>
+     rdf:type eu:Person ;
+     eu:birthplace _:b0 ;
+     eu:familyName "Polli" ;
+     eu:givenName  "Roberto"
+   .
+   _:b0 rdf:type itl:Feature ;
+     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
+     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+   .
+
+                 Figure 13: The above entry in text/turtle
+
+Appendix B.  Acknowledgements
+
+   Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being
+   the initial contributors of this work.
+
+   In addition to the people above, this document owes a lot to the
+   extensive discussion inside and outside the workgroup.  The following
+   contributors have helped improve this specification by opening pull
+   requests, reporting bugs, asking smart questions, drafting or
+   reviewing text, and evaluating open issues:
+
+   Pierre-Antoine Champin, and Vladimir Alexiev.
+
+FAQ
+
+   This section is to be removed before publishing as an RFC.
+
+Change Log
+
+   This section is to be removed before publishing as an RFC.
+
+   TBD
+
+Author's Address
+
+   Roberto Polli
+   Par-Tec S.p.A.
+   Italy
+   Email: robipolli@gmail.com
