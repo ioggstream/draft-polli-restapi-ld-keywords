@@ -320,187 +320,100 @@ iso_3166_3:ITA
 
 ## Interpreting schema instances {#interpreting}
 
-This section describes an OPTIONAL workflow
-to interpret a schema instance as JSON-LD.
-
-1. ensure that the initial schema instance does not contain
-   any `@context` or `@type` property.
-   For further information see {{sec-conflicts}};
-1. add the `@context` property with the value of x-jsonld-context.
-   This will be the initial "instance context": the only one that will be mangled;
-1. add the `@type` property with the value of x-jsonld-type;
-1. iterate on each instance property like the following:
-
-   - identify the sub-schema associated to the property
-     (e.g. resolving `$ref`s)
-     and check the presence of semantic keywords;
-   - for the x-jsonld-type, add the `@type` property to the sub-instance;
-   - for the x-jsonld-context, integrate its information in the instance context
-     when they are not already present;
-   - iterate this process in case of nested entries.
-
-The specific algorithm
-for integrating the values of x-jsonld-context
-present in sub-schemas
-into the instance context (see {{keywords}})
-is an implementation detail.
 
 # Interoperability Considerations {#int}
 
-See the interoperability considerations for the media types
-and specifications used, including [YAML-IANA], [JSON], [OAS],
-[JSONSCHEMA] and [JSON-LD-11].
+## JSON Schema property names {#int-property-names}
 
-Annotating a schema with semantic keywords
-containing JSON-LD keywords
-(e.g. `@context`, `@type` and `@language`)
-may hinder its ability to be interpreted as a JSON-LD document
-(e.g. using the [JSON-LD 1.1 context for the JSON Schema vocabulary](https://www.w3.org/2019/wot/json-schema#json-ld11-ctx));
-this can be mitigated extending that context and specifying
-that Linked Data keywords are JSON Literals.
-
-~~~ json
-{ "@context": {
-    "x-jsonld-context: { "@type": "@json"},
-    "x-jsonld-type: { "@type": "@json"}
-  }
-}
-~~~
-
-This is generally not a problem, since a generic
-[JSONSCHEMA] document cannot be reliably interpreted
-as JSON-LD using a single context: this is because the same
-JSON member keys can have different meanings depending
-on their JSON Schema position (see [the notes in the  Interpreting JSON Schema as JSON-LD 1.1](https://www.w3.org/2019/wot/json-schema#interpreting-json-schema-as-json-ld-1-1) section of [JSON-SCHEMA-RDF]).
-
-## Syntax is out of scope {#int-syntax-oos}
-
-This specification is not designed to restrict
-the syntax of a JSON value nor to support a conversion
-between JSON Schema and XMLSchema
-(see {{keywords-type}}).
-
-## Limited expressivity {#int-expressivity}
-
-Not all RDF resources can be expressed as JSON documents
-annotated with `@context` and `@type`:
-this specification is limited by the possibilities
-of [Section 6.1 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld).
-On the other hand, since this approach
-delegates almost all the processing to of JSON-LD,
-as long as JSON-LD evolves
-it will cover further use cases.
-
-## Disjoint with JSON-LD {#int-no-jsonld}
-
-This specification is not designed to pre-process
-or mangle JSON-LD documents
-(e.g. to add a missing `@type` to a JSON-LD document),
-but only to support schemas that do not describe JSON-LD documents.
-
-Applications exchanging JSON-LD documents
-need to explicitly populate `@type` and `@context`,
-and use a proper media type
-since Linked Data processing and interpretation
-requires further checks.
-
-If these applications describe messages using [JSONSCHEMA] or [OAS],
-they need to
-process them with a JSON-LD processor
-and declare all required properties
-in the schema - like in the example below.
+To minimize context information, a common practice is to name
+JSON Schema properties after the corresponding RDF predicates.
 
 ~~~ yaml
-PersonLD:
+Place:
+  x-jsonld-type: Place
+  ...
+Occupation:
+  x-jsonld-type: Occupation
+  ...
+Person:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "@vocab": "https://schema.org/"
   type: object
-  required: [ "@context", "@type", "givenName", "familyName" ]
   properties:
-    "@context":
-      type: object
-      enum:
-      - "@vocab": "https://w3.org/ns/person#"
-    "@type":
-      type: string
-      enum:
-      - Person
-    givenName:
-      type: string
     familyName:
       type: string
+    givenName:
+      type: string
+    birthPlace:
+      $ref: "#/Place"
+    hasOccupation:
+      $ref: "#/Occupation"
 ~~~
-{: title="A JSON-Schema describing a JSON-LD document." #ex-jsonld-schema}
+{: title="A JSON Schema with properties named after RDF predicates." #ex-rdf-predicates}
+
+As we can see from the above schema, this can lead to inheriting
+non uniform naming conventions from the RDF vocabulary:
+for example, `birthPlace` and `hasOccupation` both target objects,
+while only `hasOccupation` starts with a verb (i.e. `has`).
+
+Another issue is related to the schema instance size
+when using very long property or class names such as https://schema.org/isAccessibleForFree
+and https://schema.org/IPTCDigitalSourceEnumeration.
+
+Mapping JSON Schema properties to RDF predicates in x-jsonld-context
+can reduce semantic risks when some ontologies changes, or when there's
+a need to switch to a different ontology:
+this is because having different names for the property and the predicate
+clarifies that the property may well evolve into a different predicate
+in time, like shown in the following example.
+
+Instead of using a generic `surname`, this schema uses
+the more specific `patronymicName` named after the corresponding RDF predicate.
+
+~~~ yaml
+Person:
+  x-jsonld-context:
+    "@vocab": "http://w3.org/ns/person#"
+  properties:
+    patronymicName:
+      type: string
+  example:
+    patronymicName: "Ericsson"
+  x-rdf: >-
+    _:b0 :patronymicName "Ericsson" .
+~~~
+
+If the service evolves to be more generic (e.g., moving to `foaf:`),
+the property name might be mapped
+to the `foaf:familyName` predicate, but the schema instance will remain the same
+thus retaining the information of a legacy ontology.
+
+A more flexible design would have been to use a generic `surname` property name,
+and either map it to `http://w3.org/ns/person#patronymicName` or `foaf:familyName` in the context.
 
 ## Composability {#int-composability}
 
-Limited composability can be achieved applying the process described
-in {{interpreting}}.
-Automatic composability is not an explicit goal of this specification
-because of its complexity. One of the issue is that
-the meaning of a JSON-LD keyword is affected by
-its position. For example, the `@type` keyword:
+Always prefer explicit context information  over implicit context composition.
+Different implementations of context composition may lead to different results,
+especially over large schemas with many nested objects.
 
-- in a node object, adds an `rdf:type` arc to the RDF graph
-  (it also has a few other effects on processing, e.g. by enabling type-scoped contexts);
-- in a value object, specifies the datatype of the produced literal;
-- in the context, and more precisely in a term definition,
-  specifies [type coercion](https://www.w3.org/TR/json-ld11/#type-coercion).
-  It only applies when the value of the term is a string.
+While composition is useful in the schema design phase,
+bundling and validating the composed context in the final
+schema definition reduces the risk of interoperability issues.
 
-These issues can be tackled in future versions of this specifications.
-
-Moreover, well-designed schemas do not usually have
-more than 3 or 4 nested levels.
-This means that, when needed, it is possible
-to assemble and optimize an instance context (see {{keywords}})
-at design time and use it to valorize x-jsonld-context
-(see {{ex-redundant-context}}).
-
-Once a context is assembled, the RDF data can be
-generated using the algorithms described in [JSONLD-11-API]
-for example through a library.
-
-~~~ python
-from pyld import jsonld
-...
-jsonld_text = jsonld.expand(schema_instance, context)
-~~~
 
 # Security Considerations {#sec}
 
-See the interoperability considerations for the media types
-and specifications used, including [YAML-IANA], [JSON], [OAS],
-[JSONSCHEMA] and [JSON-LD-11].
+
 
 ## Integrity and Authenticity {#sec-integrity}
 
-Adding a semantic context to a JSON document
-alters its value and, in an implementation-dependent way,
-can lead to reordering of fields.
-This process can thus affect the processing of digitally signed content.
+
 
 ## Conflicts {#sec-conflicts}
 
-If an OAS document includes the keywords defined in {{keywords}}
-the provider explicitly states that the semantic of the schema instance:
 
-- is defined at contract level;
-- is the same for every message;
-- and is not conveyed nor specific for each message.
-
-In this case, processing the semantic conveyed in a message
-might have security implications.
-
-An application that relies on this specification
-might want to define separate processing streams for JSON documents
-and RDF graphs, even when RDF graphs are serialized as JSON-LD documents.
-For example, it might want to raise an error
-when an `application/json` resource contains unexpected properties
-impacting on the application logic
-like `@type` and `@context`.
-
-# IANA Considerations {#iana}
-
-None
 
 --- back
 
@@ -832,91 +745,7 @@ and Vladimir Alexiev.
 # FAQ
 {: numbered="false" removeinrfc="true"}
 
-Q: Why this document?
-:  There's currently no standard way to provide machine-readable semantic
-   information in [OAS] / [JSONSCHEMA] to be used at contract time.
 
-Q: Does this document support the exchange of JSON-LD resources?
-:  This document is focused on annotating schemas that are used
-   at contract/design time, so that application can exchange compact
-   JSON object without dereferencing nor interpreting
-   external resources at runtime.
-
-   While you can use the provided semantic information to generate
-   JSON-LD objects, it is not the primary goal of this specification:
-   context information are not expected to be dereferenced at runtime
-   (see security considerations in JSON-LD)
-   and the semantics of exchanged messages is expected
-   to be constrained inside the application.
-
-Q: Why don't use existing [JSONSCHEMA] keywords like `externalDocs` ?
-:  We already tried, but this was actually squatting a keyword designed
-   for [human readable documents](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#externalDocumentationObject).
-
-Q: Why using `x-` keywords?
-:  OpenAPI 3.0 considers invalid unregistered keywords that don't start with `x-`,
-   and we want a solution that is valid for all OAS versions >= 3.0.
-
-Q: Why not using a full-semantic approach?
-:  This approach allows API providers to attach metadata to their
-   specification without modifying their actual services nor their
-   implementation, since custom keywords are ignored by OpenAPI toolings
-   like Gateways and code generators.
-
-Q: Why not defining a mechanism to attach semantic information to
-   non-object schemas (e.g. JSON Strings) like other implementations?
-:  This is actually problematic. Look at this example that reuses
-   the `TaxCode` schema and semantic in different properties.
-
-Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?
-:  Web and mobile developers consider JSON Schema is easier to use than SHACL.
-   Moreover, OWL restrictions are about semantics,
-   and are not designed to restrict the syntax.
-
-Q: Why don't design for composability first?
-:  JSON-LD is a complex specification.
-   Consider the following schemas, where `Contract` references `TaxCode`.
-
-~~~ yaml
-    TaxCode:
-      type: string
-      $linkedData:
-        "@id": "https://w3id.org/italia/onto/CPV/taxCode"
-        "term": "taxCode"
-    Contract:
-      ...
-      properties:
-        employer_tax_code:
-          # Beware! TaxCode.$linkedData.term == 'taxCode'
-          $ref: "#/components/schemas/TaxCode"
-        employee_tax_code:
-          # Here we are reusing not only the schema,
-          #   but even the same term.
-          $ref: "#/components/schemas/TaxCode"
-~~~
-
-  The result will be that only one of the properties will be correctly annotated.
-  For this reason, composability is limited to the object level.
-
-Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to reuse the same schema in different objects without modifying the `@context`?
-:  Under normal circumstances, i.e. when designing public or financial service APIs,
-   you don't want `x-jsonld-type` to be an `rdf:Property`.
-   The value of `x-jsonld-type` usually maps to a `owl:Class`, not an `owl:DataTypeProperty`;
-   for example a sensible value for `x-jsonld-type` would be `rdfs:Literal` (that is, the `rdfs:range` of `CPV:taxCode`),
-   but this would be mostly a syntactic information, which instead is provided by JSON Schema.
-
-~~~ yaml
-    TaxCode:
-      type: string
-      x-jsonld-type: "https://w3id.org/italia/onto/CPV/taxCode"
-      description: |-
-        This example is ambiguous, because:
-
-        1. it treats a CPV:taxCode as an owl:Class,
-           while it's an owl:DataTypeProperty;
-        2. the `rdfs:range` for CPV:taxCode is `rdfs:Literal`.
-~~~
-{: title="The above code is ambiguous, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
 
 # Change Log
 {: numbered="false" removeinrfc="true"}
