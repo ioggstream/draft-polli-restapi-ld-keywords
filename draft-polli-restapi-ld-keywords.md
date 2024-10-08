@@ -296,7 +296,8 @@ The x-jsonld-type value
 provides information on the RDF type of the associate
 schema instances.
 
-This value MUST be valid according to the JSON-LD `@type` keyword as described in [Section 3.5 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#specifying-the-type);
+This value MUST be valid according to the JSON-LD `@type` keyword
+as described in [Section 3.5 of JSON-LD-11](https://www.w3.org/TR/json-ld11/#specifying-the-type);
 it is thus related to the information provided via the x-jsonld-context keyword (see {{keywords-context}}).
 
 It SHOULD NOT reference an [RDF Datatype](https://www.w3.org/TR/rdf11-concepts/#section-Datatypes)
