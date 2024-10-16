@@ -102,7 +102,12 @@ for designing schemas using REST API Linked Data keywords.
 # Introduction
 
 This document provides guidance and examples
-for designing schemas using REST API Linked Data keywords.
+for JSON Schema modeling using
+and REST API Linked Data keywords.
+
+Since REST API Linked Data keywords only support
+JSON-LD compact notation, this document
+focuses on JSON objects.
 
 ## Goals and Design Choices
 
@@ -112,13 +117,262 @@ TBD
 
 {::boilerplate bcp14+}
 
-All JSON examples are represented in YAML format
+All JSON samples are represented in YAML format
 for readability and conciseness.
 
-The term "schema instance" referso to a JSON document
-that conforms to a JSON Schema.
+The terms "primitive types" and "structured types",
+ are from {{Section 1 of JSON}}.
 
-## Modeling an vocabulary-bases entry
+The terms "JSON document", "JSON object", "JSON array" are from {{JSON}}.
+
+The terms "schema", "schema instance", "keyword" are from {{JSONSCHEMA}};
+the term "schema instance" referso to a JSON document
+that conforms to a JSON Schema.
+Schema instances are conveyed in the `example`
+JSON Schema keyword.
+
+# Models based on non-object types
+
+To ensure that the API is extensible and that the data can be easily enriched with additional information,
+it is a best practice to only convey JSON objects,
+with other types (primitive or array) being used as references (i.e., using the `$ref` keyword).
+
+Moreover:
+
+- non-object values
+  cannot be directly mapped to an RDF triple,
+  as they require a subject and a predicate.
+- JSON-LD only supports JSON objects (compact form)
+  and JSON arrays (expanded form).
+
+For this reason, {{I-D.polli-restapi-ld-keywords}} does not support
+adding `x-jsonld-type` and `x-jsonld-context` to non-object schemas.
+
+For example, the schema instance associated with
+the following schema is the string `Diego Maria`.
+
+~~~ yaml
+    GivenName:
+      type: string
+      maxLength: 64
+      example: Diego Maria
+~~~
+{: title="A JSON Schema for a simple text entry." #ex-given-name }
+
+## Simple text values
+
+A modeling strategy for non-object values is to
+create reusable syntax blocks (i.e., constraining the length or the character set according to the specifications),
+and to defer the semantics to the containing JSON object.
+
+This approach ensures that the same schema can be used in different contexts.
+
+~~~ yaml
+    RegistryString:
+      type: string
+      maxLength: 64
+      description: >-
+        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+        associated with a naming property registry information.
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryString"
+        familyName:
+          $ref: "#/components/schemas/RegistryString"
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+~~~
+{: title="Reusing a syntactic schema with different semantics." #ex-registry-string}
+
+This allows focusing on the semantics of the JSON object,
+while isolating the efforts of properly constraining the syntax
+according to the requirement of the specific API.
+
+It is possible, in fact, that syntax constraints may change
+over time, while the semantics of the object remain the same.
+
+A specific service might require, for example, specific string
+constraints such as latinized uppercase.
+
+~~~ yaml
+    RegistryStringL:
+      type: string
+      maxLength: 64
+      description: >-
+        A latinized string.
+      pattern: "^[A-Z ]+$"
+    PersonL:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryStringL"
+        familyName:
+          $ref: "#/components/schemas/RegistryStringL"
+      example:
+        givenName: DIEGO MARIA
+        familyName: DE LA PENHA
+~~~
+{: title="A JSON Schema for a latinized string." #ex-latinized-string}
+
+The resulting RDF graph is
+
+~~~ text
+@prefix schema: <https://schema.org/> .
+
+_:b0 a schema:Person ;
+     schema:familyName "De La Vega" ;
+     schema:givenName "Diego Maria" .
+~~~
+
+
+## Modeling identifiers
+
+Identifiers are a special case of text-based entries,
+and isolating syntax from semantics can make things more
+readable.
+
+~~~ yaml
+    NumericTaxCode:
+      description: >-
+        Legal persons have a 11-digit tax code.
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "12345678901"
+    StringTaxCode:
+      description: >-
+        Natural persons have a 16-character tax code.
+      type: string
+      pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+      example: RSSMRO99A04H501A
+    TaxCode:
+      description: >-
+        This is a purely syntactic definition, and can
+        be used in different semantic contexts.
+      oneOf:
+        - $ref: "#/components/schemas/NumericTaxCode"
+        - $ref: "#/components/schemas/StringTaxCode"
+    PersonID:
+      description: >-
+        The Person identifier is a 16-character string.
+      type: string
+      pattern: "^[0-9]{16}$"
+      example: "1234567890123456"
+~~~
+{: title="Data models building blocks based on primitive types." #ex-primitive-types}
+
+These schemas can be reused both when using their values
+as identifiers or as simple property values.
+
+The following schema uses a tax code as an identifier.
+
+~~~ yaml
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        tax_code: "@id"
+        "@base": "urn:example:tax:it:"
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        tax_code: RSSMRO99A04H501A
+        children:
+        - tax_code: RSSLCC99A04H501A
+~~~
+
+The associated RDF graph is:
+
+~~~ text
+urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
+      schema:givenName "Mario" ;
+      schema:familyName "Rossi" ;
+      schema:children
+      urn:example:tax:it:RSSLCC99A04H501A
+.
+~~~
+
+This other schema uses `person_id` property as identifier,
+while `tax_code` is a simple property value.
+
+~~~ yaml
+    RegisteredPerson:
+      x-jsonld-type: RegisteredResidentPerson
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        "@base": "urn:example:anpr.it:"
+        person_id: "@id"
+        tax_code: taxCode
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        person_id:
+          $ref: "#/components/schemas/PersonID"
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegisteredPerson"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        person_id: "1234567890123456"
+        tax_code: RSSMRO99A04H501A
+        children:
+        - person_id: "2234567890123457"
+          tax_code: RSSLCC99A04H501A
+~~~
+
+The resulting RDF consists in two, linked nodes,
+where the identifier is the `person_id` property.
+
+~~~ text
+<urn:example:person:1234567890123456> a schema:RegisteredResidentPerson ;
+      schema:givenName "Mario" ;
+      schema:familyName "Rossi" ;
+      schema:taxCode "RSSMRO99A04H501A" ;
+      schema:children
+      <urn:example:person:2234567890123457>
+.
+<urn:example:person:2234567890123457> a schema:RegisteredResidentPerson ;
+      schema:taxCode "RSSLCC99A04H501A"
+.
+~~~
+
+Note that the changes to the schema instances
+were minimal: just the addition of the `person_id` JSON Schema property.
+
+# Modeling an vocabulary-bases entry
 
 There are different ways to model a vocabulary-based entry,
 e.g., a list of countries or a list of currencies.
@@ -134,12 +388,7 @@ Normally, you would use a JSON Schema (e.g., with an `enum` keyword):
 {: title="A JSON Schema for a Country enumeration." #ex-country-enum }
 
 The resulting schema instance is a simple string
-(e.g. `ITA`),
-while JSON-LD only supports JSON objects (in compact form)
-or JSON arrays (in expanded forms).
-Please note that the expanded form is not supported by
-{{?I-D.polli-restapi-ld-keywords}}.
-
+(e.g. `ITA`).
 To be able to represent the entry in JSON-LD,
 an enumerated entry can be modeled using
 a specific property for the identifier,
@@ -162,7 +411,10 @@ Linked Data keywords provide a context.
 Different contexts can lead to different
 RDF representations for the same schema instances (i.e. the actual data).
 
-1. Isomorphic representation: the RDF representation preserves the structure of the JSON object.
+1. A "property-to-property" representation preserves the mapping between JSON object members and RDF properties;
+with the only addition of the `@type` keyword if `x-jsonld-type` is present.
+
+The following schema instance
 
 ~~~ yaml
     CountryBlankNode:
@@ -180,7 +432,7 @@ RDF representations for the same schema instances (i.e. the actual data).
         name: Italy
 ~~~
 
-results in the following RDF graph using a blank node:
+results in this RDF graph with a blank node:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
@@ -189,7 +441,7 @@ _:b0 schema:identifier "ITA" ;
 ~~~
 {: title="An RDF graph with a blank node." #ex-country-rdf-blank-node}
 
-2. Non-isomorphic representation: one property maps to the node name.
+2. A non-isomorphic representation maps one property to the node name.
 
 Associating a property with the `@id` keyword and a `@base` prefix,
 we state that the corresponding value is the name of the node.
