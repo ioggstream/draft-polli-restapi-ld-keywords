@@ -1,0 +1,85 @@
+openapi: 3.0.1
+info:
+  title: Examples in section 1
+  version: 1.0.0
+components:
+  schemas:
+    CountryCode:
+      type: string
+      example: ITA
+    Country:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+    CountryBlankNode:
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+    CountryURI:
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        identifier: "@id"
+        "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        nationality:
+          "@type": "@id"
+          "@context":
+            "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        nationality:
+          $ref: "#/components/schemas/CountryCode"
+      example:
+        givenName: John
+        familyName: Doe
+        nationality: ITA
+    NestedPerson:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        nationality:
+          $ref: "#/components/schemas/CountryURI"
+      example:
+        givenName: John
+        familyName: Doe
+        nationality:
+          identifier: ITA
+          name: Italy
