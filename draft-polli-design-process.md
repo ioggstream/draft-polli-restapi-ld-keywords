@@ -132,6 +132,8 @@ that conforms to a JSON Schema.
 Schema instances are conveyed in the `example`
 JSON Schema keyword.
 
+Examples can be viewed opening [this link in the schema editor](https://par-tec.github.io/dati-semantic-schema-editor/latest/?url=https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/main/tests/text-based-entries.oas3.yaml).
+
 # Models based on non-object types
 
 To ensure that the API is extensible and that the data can be easily enriched with additional information,
@@ -229,9 +231,10 @@ The resulting RDF graph is
 ~~~ text
 @prefix schema: <https://schema.org/> .
 
-_:b0 a schema:Person ;
-     schema:familyName "De La Vega" ;
-     schema:givenName "Diego Maria" .
+_:b0
+  a schema:Person ;
+  schema:familyName "De La Vega" ;
+  schema:givenName "Diego Maria" .
 ~~~
 
 
@@ -308,11 +311,12 @@ The following schema uses a tax code as an identifier.
 The associated RDF graph is:
 
 ~~~ text
-urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
-      schema:givenName "Mario" ;
-      schema:familyName "Rossi" ;
-      schema:children
-      urn:example:tax:it:RSSLCC99A04H501A
+urn:example:tax:it:RSSMRO99A04H501A
+  a schema:Person ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:children
+  urn:example:tax:it:RSSLCC99A04H501A
 .
 ~~~
 
@@ -358,15 +362,17 @@ The resulting RDF consists in two, linked nodes,
 where the identifier is the `person_id` property.
 
 ~~~ text
-<urn:example:person:1234567890123456> a schema:RegisteredResidentPerson ;
-      schema:givenName "Mario" ;
-      schema:familyName "Rossi" ;
-      schema:taxCode "RSSMRO99A04H501A" ;
-      schema:children
-      <urn:example:person:2234567890123457>
+<urn:example:person:1234567890123456>
+  a schema:RegisteredResidentPerson ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:taxCode "RSSMRO99A04H501A" ;
+  schema:children
+  <urn:example:person:2234567890123457>
 .
-<urn:example:person:2234567890123457> a schema:RegisteredResidentPerson ;
-      schema:taxCode "RSSLCC99A04H501A"
+<urn:example:person:2234567890123457>
+  a schema:RegisteredResidentPerson ;
+  schema:taxCode "RSSLCC99A04H501A"
 .
 ~~~
 
@@ -437,8 +443,10 @@ results in this RDF graph with a blank node:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
-_:b0 schema:identifier "ITA" ;
-     schema:name "Italy" .
+
+_:b0
+  schema:identifier "ITA" ;
+  schema:name "Italy" .
 ~~~
 {: title="An RDF graph with a blank node." #ex-country-rdf-blank-node}
 
@@ -518,10 +526,11 @@ results in the following RDF graph:
 @prefix schema: <https://schema.org/> .
 @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
 
-_:b0 a schema:Person ;
-     schema:familyName "Doe" ;
-     schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA .
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA .
 ~~~
 {: title="An RDF graph with a named node." #ex-person-rdf}
 
@@ -558,13 +567,15 @@ results in the following RDF graph:
 @prefix schema: <https://schema.org/> .
 @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
 
-_:b0 a schema:Person ;
-     schema:familyName "Doe" ;
-     schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA
-     .
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA
+.
 iso_3166_3:ITA
-  schema:name "Italy" .
+  schema:name "Italy"
+.
 ~~~
 {: title="An RDF graph with two nodes." #ex-nested-person-rdf}
 
@@ -605,17 +616,21 @@ Person:
 ~~~
 {: title="A JSON Schema with properties named after RDF predicates." #ex-rdf-predicates}
 
-As we can see from the above schema, this can lead to inheriting
+As we can see from the above schema,
+this practice can lead to inheriting
 non uniform naming conventions from the RDF vocabulary:
 for example, `birthPlace` and `hasOccupation` both target objects,
 while only `hasOccupation` starts with a verb (i.e. `has`).
 
 Another issue is related to the schema instance size
-when using very long property or class names such as https://schema.org/isAccessibleForFree
-and https://schema.org/IPTCDigitalSourceEnumeration.
+when using very long property or class names such as
+https://schema.org/isAccessibleForFree
+and
+https://schema.org/IPTCDigitalSourceEnumeration.
 
 Mapping JSON Schema properties to RDF predicates in x-jsonld-context
-can reduce semantic risks when some ontologies changes, or when there's
+can reduce semantic risks when an ontology changes,
+or when there's
 a need to switch to a different ontology:
 this is because having different names for the property and the predicate
 clarifies that the property may well evolve into a different predicate
@@ -636,13 +651,14 @@ Person:
   x-rdf: >-
     _:b0 :patronymicName "Ericsson" .
 ~~~
+{: title="Drawbacks of using RDF property names as JSON Schema properties." #ex-inheriting-property-names}
 
 If the service evolves to be more generic (e.g., moving to `foaf:`),
 the property name might be mapped
 to the `foaf:familyName` predicate, but the schema instance will remain the same
 thus retaining the information of a legacy ontology.
 
-A more flexible design would have been to use a generic `surname` property name,
+A more flexible design would have considered using a generic `surname` property name,
 and either map it to `http://w3.org/ns/person#patronymicName` or `foaf:familyName` in the context.
 
 ## Composability {#int-composability}
