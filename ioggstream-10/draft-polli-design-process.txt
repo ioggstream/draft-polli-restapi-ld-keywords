@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                            8 October 2024
-Expires: 11 April 2025
+Intended status: Informational                           23 October 2024
+Expires: 26 April 2025
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2025.
+   This Internet-Draft will expire on 26 April 2025.
 
 Copyright Notice
 
@@ -65,18 +65,21 @@ Table of Contents
    1.  Introduction
      1.1.  Goals and Design Choices
      1.2.  Notational Conventions
-     1.3.  Modeling an vocabulary-bases entry
-     1.4.  Modeling an object with references
-     1.5.  Interpreting schema instances
-   2.  Interoperability Considerations
-     2.1.  JSON Schema property names
-     2.2.  Composability
-   3.  Security Considerations
-     3.1.  Integrity and Authenticity
-     3.2.  Conflicts
-   4.  References
-     4.1.  Normative References
-     4.2.  Informative References
+   2.  Models based on non-object types
+     2.1.  Simple text values
+     2.2.  Modeling identifiers
+   3.  Modeling an vocabulary-bases entry
+     3.1.  Modeling an object with references
+     3.2.  Interpreting schema instances
+   4.  Interoperability Considerations
+     4.1.  JSON Schema property names
+     4.2.  Composability
+   5.  Security Considerations
+     5.1.  Integrity and Authenticity
+     5.2.  Conflicts
+   6.  References
+     6.1.  Normative References
+     6.2.  Informative References
    Appendix A.  Examples
      A.1.  Schema with semantic information
      A.2.  Schema with semantic and vocabulary information
@@ -89,8 +92,11 @@ Table of Contents
 
 1.  Introduction
 
-   This document provides guidance and examples for designing schemas
-   using REST API Linked Data keywords.
+   This document provides guidance and examples for JSON Schema modeling
+   using and REST API Linked Data keywords.
+
+   Since REST API Linked Data keywords only support JSON-LD compact
+   notation, this document focuses on JSON objects.
 
 1.1.  Goals and Design Choices
 
@@ -106,13 +112,249 @@ Table of Contents
    document in lower case as plain English words, absent their normative
    meanings.
 
-   All JSON examples are represented in YAML format for readability and
+   All JSON samples are represented in YAML format for readability and
    conciseness.
 
-   The term "schema instance" referso to a JSON document that conforms
-   to a JSON Schema.
+   The terms "primitive types" and "structured types", are from
+   Section 1 of [JSON].
 
-1.3.  Modeling an vocabulary-bases entry
+   The terms "JSON document", "JSON object", "JSON array" are from
+   [JSON].
+
+   The terms "schema", "schema instance", "keyword" are from
+   [JSONSCHEMA]; the term "schema instance" referso to a JSON document
+   that conforms to a JSON Schema.  Schema instances are conveyed in the
+   example JSON Schema keyword.
+
+2.  Models based on non-object types
+
+   To ensure that the API is extensible and that the data can be easily
+   enriched with additional information, it is a best practice to only
+   convey JSON objects, with other types (primitive or array) being used
+   as references (i.e., using the $ref keyword).
+
+   Moreover:
+
+   *  non-object values cannot be directly mapped to an RDF triple, as
+      they require a subject and a predicate.
+
+   *  JSON-LD only supports JSON objects (compact form) and JSON arrays
+      (expanded form).
+
+   For this reason, [LD-KEYWORDS] does not support adding x-jsonld-type
+   and x-jsonld-context to non-object schemas.
+
+   For example, the schema instance associated with the following schema
+   is the string Diego Maria.
+
+       GivenName:
+         type: string
+         maxLength: 64
+         example: Diego Maria
+
+              Figure 1: A JSON Schema for a simple text entry.
+
+2.1.  Simple text values
+
+   A modeling strategy for non-object values is to create reusable
+   syntax blocks (i.e., constraining the length or the character set
+   according to the specifications), and to defer the semantics to the
+   containing JSON object.
+
+   This approach ensures that the same schema can be used in different
+   contexts.
+
+       RegistryString:
+         type: string
+         maxLength: 64
+         description: >-
+           A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+           associated with a naming property registry information.
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           givenName:
+             $ref: "#/components/schemas/RegistryString"
+           familyName:
+             $ref: "#/components/schemas/RegistryString"
+         example:
+           givenName: Diego Maria
+           familyName: De La Peña
+
+       Figure 2: Reusing a syntactic schema with different semantics.
+
+   This allows focusing on the semantics of the JSON object, while
+   isolating the efforts of properly constraining the syntax according
+   to the requirement of the specific API.
+
+   It is possible, in fact, that syntax constraints may change over
+   time, while the semantics of the object remain the same.
+
+   A specific service might require, for example, specific string
+   constraints such as latinized uppercase.
+
+       RegistryStringL:
+         type: string
+         maxLength: 64
+         description: >-
+           A latinized string.
+         pattern: "^[A-Z ]+$"
+       PersonL:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           givenName:
+             $ref: "#/components/schemas/RegistryStringL"
+           familyName:
+             $ref: "#/components/schemas/RegistryStringL"
+         example:
+           givenName: DIEGO MARIA
+           familyName: DE LA PENHA
+
+              Figure 3: A JSON Schema for a latinized string.
+
+   The resulting RDF graph is
+
+   @prefix schema: <https://schema.org/> .
+
+   _:b0 a schema:Person ;
+        schema:familyName "De La Vega" ;
+        schema:givenName "Diego Maria" .
+
+2.2.  Modeling identifiers
+
+   Identifiers are a special case of text-based entries, and isolating
+   syntax from semantics can make things more readable.
+
+       NumericTaxCode:
+         description: >-
+           Legal persons have a 11-digit tax code.
+         type: string
+         pattern: "^[0-9]{11}$"
+         example: "12345678901"
+       StringTaxCode:
+         description: >-
+           Natural persons have a 16-character tax code.
+         type: string
+         pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+         example: RSSMRO99A04H501A
+       TaxCode:
+         description: >-
+           This is a purely syntactic definition, and can
+           be used in different semantic contexts.
+         oneOf:
+           - $ref: "#/components/schemas/NumericTaxCode"
+           - $ref: "#/components/schemas/StringTaxCode"
+       PersonID:
+         description: >-
+           The Person identifier is a 16-character string.
+         type: string
+         pattern: "^[0-9]{16}$"
+         example: "1234567890123456"
+
+      Figure 4: Data models building blocks based on primitive types.
+
+   These schemas can be reused both when using their values as
+   identifiers or as simple property values.
+
+   The following schema uses a tax code as an identifier.
+
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           tax_code: "@id"
+           "@base": "urn:example:tax:it:"
+           given_name: givenName
+           family_name: familyName
+         type: object
+         required: [tax_code]
+         properties:
+           tax_code:
+             $ref: "#/components/schemas/TaxCode"
+           given_name:
+             $ref: "#/components/schemas/RegistryString"
+           family_name:
+             $ref: "#/components/schemas/RegistryString"
+           children:
+             type: array
+             items:
+               $ref: "#/components/schemas/Person"
+         example:
+           given_name: Mario
+           family_name: Rossi
+           tax_code: RSSMRO99A04H501A
+           children:
+           - tax_code: RSSLCC99A04H501A
+
+   The associated RDF graph is:
+
+   urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
+         schema:givenName "Mario" ;
+         schema:familyName "Rossi" ;
+         schema:children
+         urn:example:tax:it:RSSLCC99A04H501A
+   .
+
+   This other schema uses person_id property as identifier, while
+   tax_code is a simple property value.
+
+       RegisteredPerson:
+         x-jsonld-type: RegisteredResidentPerson
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           "@base": "urn:example:anpr.it:"
+           person_id: "@id"
+           tax_code: taxCode
+           given_name: givenName
+           family_name: familyName
+         type: object
+         required: [tax_code]
+         properties:
+           person_id:
+             $ref: "#/components/schemas/PersonID"
+           tax_code:
+             $ref: "#/components/schemas/TaxCode"
+           given_name:
+             $ref: "#/components/schemas/RegistryString"
+           family_name:
+             $ref: "#/components/schemas/RegistryString"
+           children:
+             type: array
+             items:
+               $ref: "#/components/schemas/RegisteredPerson"
+         example:
+           given_name: Mario
+           family_name: Rossi
+           person_id: "1234567890123456"
+           tax_code: RSSMRO99A04H501A
+           children:
+           - person_id: "2234567890123457"
+             tax_code: RSSLCC99A04H501A
+
+   The resulting RDF consists in two, linked nodes, where the identifier
+   is the person_id property.
+
+   <urn:example:person:1234567890123456> a schema:RegisteredResidentPerson ;
+         schema:givenName "Mario" ;
+         schema:familyName "Rossi" ;
+         schema:taxCode "RSSMRO99A04H501A" ;
+         schema:children
+         <urn:example:person:2234567890123457>
+   .
+   <urn:example:person:2234567890123457> a schema:RegisteredResidentPerson ;
+         schema:taxCode "RSSLCC99A04H501A"
+   .
+
+   Note that the changes to the schema instances were minimal: just the
+   addition of the person_id JSON Schema property.
+
+3.  Modeling an vocabulary-bases entry
 
    There are different ways to model a vocabulary-based entry, e.g., a
    list of countries or a list of currencies.
@@ -124,16 +366,12 @@ Table of Contents
          enum: [ "ITA", "FRA", "DEU" ]
          example: ITA
 
-             Figure 1: A JSON Schema for a Country enumeration.
+             Figure 5: A JSON Schema for a Country enumeration.
 
-   The resulting schema instance is a simple string (e.g.  ITA), while
-   JSON-LD only supports JSON objects (in compact form) or JSON arrays
-   (in expanded forms).  Please note that the expanded form is not
-   supported by [I-D.polli-restapi-ld-keywords].
-
-   To be able to represent the entry in JSON-LD, an enumerated entry can
-   be modeled using a specific property for the identifier, and a JSON-
-   LD context.
+   The resulting schema instance is a simple string (e.g.  ITA).  To be
+   able to represent the entry in JSON-LD, an enumerated entry can be
+   modeled using a specific property for the identifier, and a JSON-LD
+   context.
 
        Country:
          type: object
@@ -150,8 +388,11 @@ Table of Contents
    to different RDF representations for the same schema instances (i.e.
    the actual data).
 
-   1.  Isomorphic representation: the RDF representation preserves the
-       structure of the JSON object.
+   1.  A "property-to-property" representation preserves the mapping
+       between JSON object members and RDF properties; with the only
+       addition of the @type keyword if x-jsonld-type is present.
+
+   The following schema instance
 
        CountryBlankNode:
          x-jsonld-type: Country
@@ -167,15 +408,15 @@ Table of Contents
            identifier: ITA
            name: Italy
 
-   results in the following RDF graph using a blank node:
+   results in this RDF graph with a blank node:
 
    @prefix schema: <https://schema.org/> .
    _:b0 schema:identifier "ITA" ;
         schema:name "Italy" .
 
-                 Figure 2: An RDF graph with a blank node.
+                 Figure 6: An RDF graph with a blank node.
 
-   1.  Non-isomorphic representation: one property maps to the node
+   1.  A non-isomorphic representation maps one property to the node
        name.
 
    Associating a property with the @id keyword and a @base prefix, we
@@ -208,9 +449,9 @@ Table of Contents
      schema:name "Italy"
    .
 
-                 Figure 3: An RDF graph with a named node.
+                 Figure 7: An RDF graph with a named node.
 
-1.4.  Modeling an object with references
+3.1.  Modeling an object with references
 
    When modeling an object with references, the parent's context will
    normally provide the context for the child.
@@ -252,7 +493,7 @@ Table of Contents
         schema:givenName "John" ;
         schema:nationality iso_3166_3:ITA .
 
-                 Figure 4: An RDF graph with a named node.
+                 Figure 8: An RDF graph with a named node.
 
    To provide a label or other properties for the country, we can use a
    nested object.
@@ -294,13 +535,13 @@ Table of Contents
    iso_3166_3:ITA
      schema:name "Italy" .
 
-                   Figure 5: An RDF graph with two nodes.
+                   Figure 9: An RDF graph with two nodes.
 
-1.5.  Interpreting schema instances
+3.2.  Interpreting schema instances
 
-2.  Interoperability Considerations
+4.  Interoperability Considerations
 
-2.1.  JSON Schema property names
+4.1.  JSON Schema property names
 
    To minimize context information, a common practice is to name JSON
    Schema properties after the corresponding RDF predicates.
@@ -326,7 +567,7 @@ Table of Contents
        hasOccupation:
          $ref: "#/Occupation"
 
-    Figure 6: A JSON Schema with properties named after RDF predicates.
+    Figure 10: A JSON Schema with properties named after RDF predicates.
 
    As we can see from the above schema, this can lead to inheriting non
    uniform naming conventions from the RDF vocabulary: for example,
@@ -368,7 +609,7 @@ Table of Contents
    property name, and either map it to http://w3.org/ns/
    person#patronymicName or foaf:familyName in the context.
 
-2.2.  Composability
+4.2.  Composability
 
    Always prefer explicit context information over implicit context
    composition.  Different implementations of context composition may
@@ -379,15 +620,15 @@ Table of Contents
    validating the composed context in the final schema definition
    reduces the risk of interoperability issues.
 
-3.  Security Considerations
+5.  Security Considerations
 
-3.1.  Integrity and Authenticity
+5.1.  Integrity and Authenticity
 
-3.2.  Conflicts
+5.2.  Conflicts
 
-4.  References
+6.  References
 
-4.1.  Normative References
+6.1.  Normative References
 
    [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
               Ed., "HTTP Semantics", STD 97, RFC 9110,
@@ -405,6 +646,12 @@ Table of Contents
    [JSONSCHEMA]
               "JSON Schema", n.d.,
               <https://json-schema.org/specification.html>.
+
+   [LD-KEYWORDS]
+              Polli, R., "REST API Linked Data Keywords", Work in
+              Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
+              04, 22 July 2024, <https://datatracker.ietf.org/doc/html/
+              draft-polli-restapi-ld-keywords-04>.
 
    [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
               Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
@@ -440,7 +687,7 @@ Table of Contents
               <https://www.iana.org/assignments/media-types/application/
               yaml>.
 
-4.2.  Informative References
+6.2.  Informative References
 
    [I-D.ietf-jsonpath-base]
               Gössner, S., Normington, G., and C. Bormann, "JSONPath:
@@ -448,12 +695,6 @@ Table of Contents
               Draft, draft-ietf-jsonpath-base-21, 24 September 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-
               jsonpath-base-21>.
-
-   [I-D.polli-restapi-ld-keywords]
-              Polli, R., "REST API Linked Data Keywords", Work in
-              Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
-              04, 22 July 2024, <https://datatracker.ietf.org/doc/html/
-              draft-polli-restapi-ld-keywords-04>.
 
    [JSON-POINTER]
               Bryan, P., Ed., Zyp, K., and M. Nottingham, Ed.,
@@ -507,7 +748,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 7: A JSON Schema data model with semantic context and type.
+    Figure 11: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -568,7 +809,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-     Figure 8: A JSON Schema data model with semantic context and type.
+    Figure 12: A JSON Schema data model with semantic context and type.
 
    The resulting RDF graph is
 
@@ -580,7 +821,7 @@ A.2.  Schema with semantic and vocabulary information
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
 
-           Figure 9: An RDF graph with semantic context and type.
+          Figure 13: An RDF graph with semantic context and type.
 
 A.3.  Cyclic schema
 
@@ -632,7 +873,7 @@ A.3.  Cyclic schema
      }
    }
 
-   Applying the workflow described in Section 1.5 just recursively
+   Applying the workflow described in Section 3.2 just recursively
    copying the x-jsonld-context, the instance context could have been
    more complex.
 
@@ -654,7 +895,7 @@ A.3.  Cyclic schema
      }
    }
 
-      Figure 10: An instance context containing redundant information
+      Figure 14: An instance context containing redundant information
 
 A.4.  Composite instance context
 
@@ -707,7 +948,7 @@ A.4.  Composite instance context
          province: LT
          country: ITA
 
-                 Figure 11: A schema with object contexts.
+                 Figure 15: A schema with object contexts.
 
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
@@ -749,7 +990,7 @@ A.4.  Composite instance context
      }
    }
 
-       Figure 12: A @context that includes information from different
+       Figure 16: A @context that includes information from different
                                   schemas.
 
    That can be serialized as text/turtle as
@@ -769,7 +1010,7 @@ A.4.  Composite instance context
      itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
    .
 
-                 Figure 13: The above entry in text/turtle
+                 Figure 17: The above entry in text/turtle
 
 Appendix B.  Acknowledgements
 
