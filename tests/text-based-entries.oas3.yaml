@@ -1,0 +1,152 @@
+#
+# This is a blank template for a schema collection.
+#
+openapi: 3.0.3
+info:
+  title: Modeling text based entries
+  version: 202108.01.00
+  x-summary: A schema collection based on the CPV ontology.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: robipolli@gmail.com
+    url: https://www.par-tec.it
+  description: |-
+    Modeling text based entries, with or without identifiers.
+components:
+  schemas:
+    RegistryString:
+      type: string
+      maxLength: 64
+      description: >-
+        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+        associated with a naming property registry information.
+    NumericTaxCode:
+      description: >-
+        Legal persons have a 11-digit tax code.
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "12345678901"
+    StringTaxCode:
+      description: >-
+        Natural persons have a 16-character tax code.
+      type: string
+      pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+      example: RSSMRO99A04H501A
+    TaxCode:
+      description: >-
+        This is a purely syntactic definition, and can
+        be used in different semantic contexts.
+      oneOf:
+        - $ref: "#/components/schemas/NumericTaxCode"
+        - $ref: "#/components/schemas/StringTaxCode"
+    PersonId:
+      description: >-
+        The Person identifier is a 16-character string.
+      type: string
+      pattern: "^[0-9]{16}$"
+      example: "1234567890123456"
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        tax_code: "@id"
+        "@base": "urn:example:tax:it:"
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        tax_code: RSSMRO99A04H501A
+        children:
+        - tax_code: RSSLCC99A04H501A
+      x-rdf: >-
+        urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
+             schema:givenName "Mario" ;
+             schema:familyName "Rossi" ;
+             schema:children
+             urn:example:tax:it:RSSLCC99A04H501A
+        .
+    RegistryStringL:
+      type: string
+      maxLength: 64
+      description: >-
+        A latinized string.
+      pattern: "^[A-Z ]+$"
+    PersonL:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryStringL"
+        familyName:
+          $ref: "#/components/schemas/RegistryStringL"
+      example:
+        givenName: DIEGO MARIA
+        familyName: DE LA PENA
+    RegisteredPerson:
+      x-jsonld-type: RegisteredResidentPerson
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        "@base": "urn:example:anpr.it:"
+        person_id: "@id"
+        tax_code: taxCode
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        tax_code:
+          $ref: "#/components/schemas/PersonId"
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegisteredPerson"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        person_id: "1234567890123456"
+        tax_code: RSSMRO99A04H501A
+        children:
+        - person_id: "2234567890123457"
+          tax_code: RSSLCC99A04H501A
+      x-rdf: >-
+        <urn:example:person:1234567890123456> a schema:RegisteredResidentPerson ;
+             schema:givenName "Mario" ;
+             schema:familyName "Rossi" ;
+             schema:taxCode "RSSMRO99A04H501A" ;
+             schema:children
+             <urn:example:person:2234567890123457>
+        .
+        <urn:example:person:2234567890123457> a schema:RegisteredResidentPerson ;
+             schema:taxCode "RSSLCC99A04H501A"
+        .
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []
