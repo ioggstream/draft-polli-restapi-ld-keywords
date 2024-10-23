@@ -28,6 +28,7 @@ author:
     country: Italy
 
 normative:
+  LD-KEYWORDS: I-D.polli-restapi-ld-keywords
   YAML:
     title: YAML Ain't Markup Language Version 1.2
     date: 2021-10-01
@@ -145,7 +146,7 @@ Moreover:
 - JSON-LD only supports JSON objects (compact form)
   and JSON arrays (expanded form).
 
-For this reason, {{I-D.polli-restapi-ld-keywords}} does not support
+For this reason, {{LD-KEYWORDS}} does not support
 adding `x-jsonld-type` and `x-jsonld-context` to non-object schemas.
 
 For example, the schema instance associated with
