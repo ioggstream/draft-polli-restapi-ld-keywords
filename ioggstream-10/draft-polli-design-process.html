@@ -1263,6 +1263,7 @@ the term "schema instance" referso to a JSON document
 that conforms to a JSON Schema.
 Schema instances are conveyed in the <code>example</code>
 JSON Schema keyword.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<p id="section-1.2-6">Examples can be viewed opening <a href="https://par-tec.github.io/dati-semantic-schema-editor/latest/?url=https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/main/tests/text-based-entries.oas3.yaml">this link in the schema editor</a>.<a href="#section-1.2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1384,9 +1385,10 @@ constraints such as latinized uppercase.<a href="#section-2.1-6" class="pilcrow"
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
 
-_:b0 a schema:Person ;
-     schema:familyName "De La Vega" ;
-     schema:givenName "Diego Maria" .
+_:b0
+  a schema:Person ;
+  schema:familyName "De La Vega" ;
+  schema:givenName "Diego Maria" .
 </pre><a href="#section-2.1-9" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1471,11 +1473,12 @@ as identifiers or as simple property values.<a href="#section-2.2-3" class="pilc
 <p id="section-2.2-6">The associated RDF graph is:<a href="#section-2.2-6" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.2-7">
 <pre>
-urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
-      schema:givenName "Mario" ;
-      schema:familyName "Rossi" ;
-      schema:children
-      urn:example:tax:it:RSSLCC99A04H501A
+urn:example:tax:it:RSSMRO99A04H501A
+  a schema:Person ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:children
+  urn:example:tax:it:RSSLCC99A04H501A
 .
 </pre><a href="#section-2.2-7" class="pilcrow">¶</a>
 </div>
@@ -1521,15 +1524,17 @@ while <code>tax_code</code> is a simple property value.<a href="#section-2.2-8" 
 where the identifier is the <code>person_id</code> property.<a href="#section-2.2-10" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.2-11">
 <pre>
-&lt;urn:example:person:1234567890123456&gt; a schema:RegisteredResidentPerson ;
-      schema:givenName "Mario" ;
-      schema:familyName "Rossi" ;
-      schema:taxCode "RSSMRO99A04H501A" ;
-      schema:children
-      &lt;urn:example:person:2234567890123457&gt;
+&lt;urn:example:person:1234567890123456&gt;
+  a schema:RegisteredResidentPerson ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:taxCode "RSSMRO99A04H501A" ;
+  schema:children
+  &lt;urn:example:person:2234567890123457&gt;
 .
-&lt;urn:example:person:2234567890123457&gt; a schema:RegisteredResidentPerson ;
-      schema:taxCode "RSSLCC99A04H501A"
+&lt;urn:example:person:2234567890123457&gt;
+  a schema:RegisteredResidentPerson ;
+  schema:taxCode "RSSLCC99A04H501A"
 .
 </pre><a href="#section-2.2-11" class="pilcrow">¶</a>
 </div>
@@ -1614,8 +1619,10 @@ with the only addition of the <code>@type</code> keyword if <code>x-jsonld-type<
         <div class="lang-text sourcecode" id="section-3-11.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
-_:b0 schema:identifier "ITA" ;
-     schema:name "Italy" .
+
+_:b0
+  schema:identifier "ITA" ;
+  schema:name "Italy" .
 </pre>
 </div>
 <figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
@@ -1710,10 +1717,11 @@ though there is no space in the schema instance to provide a name for the countr
 @prefix schema: &lt;https://schema.org/&gt; .
 @prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
 
-_:b0 a schema:Person ;
-     schema:familyName "Doe" ;
-     schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA .
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA .
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
@@ -1754,13 +1762,15 @@ and will then integrate the information present in <code>CountryURI/x-jsonld-con
 @prefix schema: &lt;https://schema.org/&gt; .
 @prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
 
-_:b0 a schema:Person ;
-     schema:familyName "Doe" ;
-     schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA
-     .
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA
+.
 iso_3166_3:ITA
-  schema:name "Italy" .
+  schema:name "Italy"
+.
 </pre>
 </div>
 <figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
@@ -1820,22 +1830,28 @@ Person:
 <a href="#name-a-json-schema-with-properti" class="selfRef">A JSON Schema with properties named after RDF predicates.</a>
           </figcaption></figure>
 </div>
-<p id="section-4.1-3">As we can see from the above schema, this can lead to inheriting
+<p id="section-4.1-3">As we can see from the above schema,
+this practice can lead to inheriting
 non uniform naming conventions from the RDF vocabulary:
 for example, <code>birthPlace</code> and <code>hasOccupation</code> both target objects,
 while only <code>hasOccupation</code> starts with a verb (i.e. <code>has</code>).<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">Another issue is related to the schema instance size
-when using very long property or class names such as https://schema.org/isAccessibleForFree
-and https://schema.org/IPTCDigitalSourceEnumeration.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+when using very long property or class names such as
+https://schema.org/isAccessibleForFree
+and
+https://schema.org/IPTCDigitalSourceEnumeration.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">Mapping JSON Schema properties to RDF predicates in x-jsonld-context
-can reduce semantic risks when some ontologies changes, or when there's
+can reduce semantic risks when an ontology changes,
+or when there's
 a need to switch to a different ontology:
 this is because having different names for the property and the predicate
 clarifies that the property may well evolve into a different predicate
 in time, like shown in the following example.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
 <p id="section-4.1-6">Instead of using a generic <code>surname</code>, this schema uses
 the more specific <code>patronymicName</code> named after the corresponding RDF predicate.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
-<div class="lang-yaml sourcecode" id="section-4.1-7">
+<span id="name-drawbacks-of-using-rdf-prop"></span><div id="ex-inheriting-property-names">
+<figure id="figure-11">
+          <div class="lang-yaml sourcecode" id="section-4.1-7.1">
 <pre>
 Person:
   x-jsonld-context:
@@ -1847,13 +1863,17 @@ Person:
     patronymicName: "Ericsson"
   x-rdf: &gt;-
     _:b0 :patronymicName "Ericsson" .
-</pre><a href="#section-4.1-7" class="pilcrow">¶</a>
+</pre>
+</div>
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<a href="#name-drawbacks-of-using-rdf-prop" class="selfRef">Drawbacks of using RDF property names as JSON Schema properties.</a>
+          </figcaption></figure>
 </div>
 <p id="section-4.1-8">If the service evolves to be more generic (e.g., moving to <code>foaf:</code>),
 the property name might be mapped
 to the <code>foaf:familyName</code> predicate, but the schema instance will remain the same
 thus retaining the information of a legacy ontology.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
-<p id="section-4.1-9">A more flexible design would have been to use a generic <code>surname</code> property name,
+<p id="section-4.1-9">A more flexible design would have considered using a generic <code>surname</code> property name,
 and either map it to <code>http://w3.org/ns/person#patronymicName</code> or <code>foaf:familyName</code> in the context.<a href="#section-4.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2012,7 +2032,7 @@ schema definition reduces the risk of interoperability issues.<a href="#section-
 Person JSON Schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wi"></span><div id="ex-base">
-<figure id="figure-11">
+<figure id="figure-12">
           <div class="lang-example sourcecode" id="appendix-A.1-2.1">
 <pre>
 Person:
@@ -2039,7 +2059,7 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
 <a href="#name-a-json-schema-data-model-wi" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2082,7 +2102,7 @@ _:b0 rdf:type schema:Person    ;
 "Person" schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wit"></span><div id="ex-complete-example">
-<figure id="figure-12">
+<figure id="figure-13">
           <div class="lang-example sourcecode" id="appendix-A.2-2.1">
 <pre>
 Person:
@@ -2116,13 +2136,13 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
 <a href="#name-a-json-schema-data-model-wit" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
 <p id="appendix-A.2-3">The resulting RDF graph is<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
 <span id="name-an-rdf-graph-with-semantic-"></span><div id="ex-rdf-from-json">
-<figure id="figure-13">
+<figure id="figure-14">
           <div class="lang-text sourcecode" id="appendix-A.2-4.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
@@ -2134,7 +2154,7 @@ Person:
   schema:addressCountry country:FRA .
 </pre>
 </div>
-<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
 <a href="#name-an-rdf-graph-with-semantic-" class="selfRef">An RDF graph with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2201,7 +2221,7 @@ results in the following JSON-LD document.<a href="#appendix-A.3-3" class="pilcr
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.<a href="#appendix-A.3-5" class="pilcrow">¶</a></p>
 <span id="name-an-instance-context-contain"></span><div id="ex-redundant-context">
-<figure id="figure-14">
+<figure id="figure-15">
           <div class="lang-json sourcecode" id="appendix-A.3-6.1">
 <pre>
 {
@@ -2223,7 +2243,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 }
 </pre>
 </div>
-<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
 <a href="#name-an-instance-context-contain" class="selfRef">An instance context containing redundant information</a>
           </figcaption></figure>
 </div>
@@ -2237,7 +2257,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 <p id="appendix-A.4-1">In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
 <span id="name-a-schema-with-object-contex"></span><div id="ex-object-contexts">
-<figure id="figure-15">
+<figure id="figure-16">
           <div class="lang-yaml sourcecode" id="appendix-A.4-2.1">
 <pre>
 BirthPlace:
@@ -2288,7 +2308,7 @@ Citizen:
 
 </pre>
 </div>
-<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
+<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
 <a href="#name-a-schema-with-object-contex" class="selfRef">A schema with object contexts.</a>
           </figcaption></figure>
 </div>
@@ -2297,7 +2317,7 @@ results in the following JSON-LD document.
 The instance context contains information from both
 "Citizen" and "BirthPlace" semantic keywords.<a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
 <span id="name-a-context-that-includes-inf"></span><div id="ex-composite-context">
-<figure id="figure-16">
+<figure id="figure-17">
           <div class="lang-json sourcecode" id="appendix-A.4-4.1">
 <pre>
 {
@@ -2337,13 +2357,13 @@ The instance context contains information from both
 }
 </pre>
 </div>
-<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
+<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
 <a href="#name-a-context-that-includes-inf" class="selfRef">A @context that includes information from different schemas.</a>
           </figcaption></figure>
 </div>
 <p id="appendix-A.4-5">That can be serialized as <code>text/turtle</code> as<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
 <span id="name-the-above-entry-in-text-tur"></span><div id="ex-composite-context-turtle">
-<figure id="figure-17">
+<figure id="figure-18">
           <div class="lang-text sourcecode" id="appendix-A.4-6.1">
 <pre>
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
@@ -2362,7 +2382,7 @@ _:b0 rdf:type itl:Feature ;
 .
 </pre>
 </div>
-<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
+<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
 <a href="#name-the-above-entry-in-text-tur" class="selfRef">The above entry in text/turtle</a>
           </figcaption></figure>
 </div>
