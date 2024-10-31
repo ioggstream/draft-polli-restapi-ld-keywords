@@ -4,20 +4,18 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>REST API Linked Data Keywords</title>
+<title>Designing APIs with REST API Linked Data Keywords</title>
 <meta content="Roberto Polli" name="author">
 <meta content="
-       This document defines two
-keywords to provide semantic information in
-OpenAPI Specification and JSON Schema documents,
-and support contract-first semantic schema design. 
+       This document provides guidance
+for designing schemas using REST API Linked Data keywords. 
     " name="description">
-<meta content="xml2rfc 3.23.1" name="generator">
+<meta content="xml2rfc 3.23.2" name="generator">
 <meta content="Internet-Draft" name="keyword">
-<meta content="draft-polli-restapi-ld-keywords-latest" name="ietf.draft">
+<meta content="draft-polli-design-process-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.23.1
-    Python 3.12.6
+  xml2rfc 3.23.2
+    Python 3.12.7
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -30,7 +28,7 @@ and support contract-first semantic schema design.
     setuptools 70.3.0
     wcwidth 0.2.13
 -->
-<link href="draft-polli-restapi-ld-keywords.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-polli-design-process.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -164,31 +162,6 @@ and support contract-first semantic schema design.
 }
 
 @font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
-}
-@font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
   font-family: 'Oxygen Mono';
   font-style: normal;
   font-weight: 400;
@@ -205,6 +178,77 @@ and support contract-first semantic schema design.
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   color-scheme: light dark;
   --background-color: #fff;
@@ -217,6 +261,7 @@ and support contract-first semantic schema design.
   --pilcrow-strong: #bbb;
   --small-font-size: 14.5px;
   --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
   scrollbar-color: #bbb #eee;
 }
 body {
@@ -235,8 +280,8 @@ body {
 
 /* headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Cabin Condensed", sans-serif;
-  font-weight: 600;
+  font-family: var(--font-title);
+  font-weight: 680;
   margin: 0.8em 0 0.3em;
   font-size-adjust: 0.5;
   color: var(--title-color);
@@ -644,6 +689,12 @@ sub, sup {
   padding: 0.75em 0 2em 0;
   margin-bottom: 1em;
 }
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+  }
+}
 #toc nav ul {
   margin: 0 0.5em 0 0;
   padding: 0;
@@ -1026,12 +1077,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">REST API Linked Data Keywords</td>
-<td class="right">September 2024</td>
+<td class="center">Designing APIs with REST API Linked Data</td>
+<td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Polli</td>
-<td class="center">Expires 27 March 2025</td>
+<td class="center">Expires 4 May 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1041,31 +1092,29 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dt class="label-workgroup">Workgroup:</dt>
 <dd class="workgroup">Network Working Group</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-polli-restapi-ld-keywords-latest</dd>
+<dd class="internet-draft">draft-polli-design-process-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-09-23" class="published">23 September 2024</time>
+<time datetime="2024-10-31" class="published">31 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-03-27">27 March 2025</time></dd>
+<dd class="expires"><time datetime="2025-05-04">4 May 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
       <div class="author-name">R. Polli</div>
-<div class="org">Digital Transformation Department, Italian Government</div>
+<div class="org">Par-Tec S.p.A.</div>
 </div>
 </dd>
 </dl>
 </div>
-<h1 id="title">REST API Linked Data Keywords</h1>
+<h1 id="title">Designing APIs with REST API Linked Data Keywords</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines two
-keywords to provide semantic information in
-OpenAPI Specification and JSON Schema documents,
-and support contract-first semantic schema design.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document provides guidance
+for designing schemas using REST API Linked Data keywords.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1073,7 +1122,7 @@ and support contract-first semantic schema design.<a href="#section-abstract-1" 
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
 <p id="section-note.1-2">
-        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/">https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-polli-design-process/">https://datatracker.ietf.org/doc/draft-polli-design-process/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
 <p id="section-note.1-3">
          information can be found at <span><a href="https://github.com/ioggstream/draft-polli-restapi-ld-keywords">https://github.com/ioggstream/draft-polli-restapi-ld-keywords</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <p id="section-note.1-4">Source for this draft and an issue tracker can be found at
@@ -1098,7 +1147,7 @@ and support contract-first semantic schema design.<a href="#section-abstract-1" 
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 27 March 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 4 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1128,103 +1177,110 @@ and support contract-first semantic schema design.<a href="#section-abstract-1" 
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-goals-and-design-choices" class="internal xref">Goals and Design Choices</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-prosaic-semantics" class="internal xref">Prosaic semantics</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
-                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-notational-conventions" class="internal xref">Notational Conventions</a></p>
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-notational-conventions" class="internal xref">Notational Conventions</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-json-schema-keywords" class="internal xref">JSON Schema keywords</a></p>
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-models-based-on-non-object-" class="internal xref">Models based on non-object types</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-the-x-jsonld-type-json-sche" class="internal xref">The x-jsonld-type JSON Schema keyword</a></p>
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-simple-text-values" class="internal xref">Simple text values</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
-                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-the-x-jsonld-context-json-s" class="internal xref">The x-jsonld-context JSON Schema keyword</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
-                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-interpreting-schema-instanc" class="internal xref">Interpreting schema instances</a></p>
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-modeling-identifiers" class="internal xref">Modeling identifiers</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-interoperability-considerat" class="internal xref">Interoperability Considerations</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-modeling-an-vocabulary-base" class="internal xref">Modeling an vocabulary-bases entry</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-syntax-is-out-of-scope" class="internal xref">Syntax is out of scope</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-modeling-an-object-with-ref" class="internal xref">Modeling an object with references</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-limited-expressivity" class="internal xref">Limited expressivity</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-disjoint-with-json-ld" class="internal xref">Disjoint with JSON-LD</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
-                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-composability" class="internal xref">Composability</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-interpreting-schema-instanc" class="internal xref">Interpreting schema instances</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-reusability" class="internal xref">Reusability</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-integrity-and-authenticity" class="internal xref">Integrity and Authenticity</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-conflicts" class="internal xref">Conflicts</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-bundling" class="internal xref">Bundling</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-interoperability-considerat" class="internal xref">Interoperability Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-json-schema-property-names" class="internal xref">JSON Schema property names</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-composability" class="internal xref">Composability</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-integrity-and-authenticity" class="internal xref">Integrity and Authenticity</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-conflicts" class="internal xref">Conflicts</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-references" class="internal xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-schema-with-semantic-inform" class="internal xref">Schema with semantic information</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-schema-with-semantic-and-vo" class="internal xref">Schema with semantic and vocabulary information</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-cyclic-schema" class="internal xref">Cyclic schema</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-composite-instance-context" class="internal xref">Composite instance context</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-schema-with-semantic-inform" class="internal xref">Schema with semantic information</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-schema-with-semantic-and-vo" class="internal xref">Schema with semantic and vocabulary information</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-cyclic-schema" class="internal xref">Cyclic schema</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
+                <p id="section-toc.1-1.8.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-composite-instance-context" class="internal xref">Composite instance context</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
+                <p id="section-toc.1-1.8.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-bundling-tools" class="internal xref">Bundling tools</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-faq" class="internal xref">FAQ</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-change-log" class="internal xref">Change Log</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-faq" class="internal xref">FAQ</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-change-log" class="internal xref">Change Log</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1235,558 +1291,851 @@ and support contract-first semantic schema design.<a href="#section-abstract-1" 
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">API providers usually specify semantic information in text or out-of-band documents;
-at best, this information is described in prose into specific sections of interface definition documents (see <a href="#prosaic-semantics" class="auto internal xref">Section 1.2</a>).<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">This is because API providers do not always value machine-readable semantics,
-or because they have no knowledge of semantic technologies -
-that are perceived as unnecessarily complex.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">A full-semantic approach (e.g. writing RDF oriented APIs) has not become widespread
-because
-transferring and processing the semantics on every message
-significantly increases data transfer and computation requirements.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">Moreover the semantic landscape do not provide easy ways of defining / constraining
-the syntax of an object:
-tools like <span>[<a href="#SHACL" class="cite xref">SHACL</a>]</span> and <span>[<a href="#OWL" class="cite xref">OWL</a>]</span> restrictions are considered
-computationally intensive to process and complex to use
-from web and mobile developers.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This document provides a simple mechanism
-to attach semantic information to REST APIs
-that rely on different dialects of <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>,
-thus supporting a contract-first schema design.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">For example, the OpenAPI Specifications (see <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>)
-allow to describe REST APIs
-interactions and capabilities using a machine-readable format
-based on <span>[<a href="#JSON" class="cite xref">JSON</a>]</span> or <span>[<a href="#YAML" class="cite xref">YAML</a>]</span>.
-OAS 3.0 is based on JSON Schema draft-4
-while OAS 3.1 relies on the latest JSON Schema draft.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-1">This document provides guidance and examples
+for JSON Schema modeling using
+and REST API Linked Data keywords.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Since REST API Linked Data keywords only support
+JSON-LD compact notation, this document
+focuses on JSON objects.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="goals-and-design-choices">
 <section id="section-1.1">
         <h3 id="name-goals-and-design-choices">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-goals-and-design-choices" class="section-name selfRef">Goals and Design Choices</a>
         </h3>
-<p id="section-1.1-1">This document has the following goals:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1.1-2.1">
-            <p id="section-1.1-2.1.1">describe in a single specification document backed by <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>
-(e.g. an OpenAPI document)
-both the syntax and semantics of JSON objects.
-This information can be either be provided
-editing the document by hand or via automated tools;<a href="#section-1.1-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-2.2">
-            <p id="section-1.1-2.2.1">easy for non-semantic experts and with reduced complexity;<a href="#section-1.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-2.3">
-            <p id="section-1.1-2.3.1">support for OAS 3.0 / JSON Schema Draft4;<a href="#section-1.1-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-1.1-3">while it is not intended to:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1.1-4.1">
-            <p id="section-1.1-4.1.1">integrate the syntax defined using <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>;<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-4.2">
-            <p id="section-1.1-4.2.1">infer semantic information where it is not provided;<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-4.3">
-            <p id="section-1.1-4.3.1">convert <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> documents to RDF Schema (see <span>[<a href="#RDFS" class="cite xref">RDFS</a>]</span>) or XML Schema.<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-1.1-5">Thus, the following design choices have been made:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1.1-6.1">
-            <p id="section-1.1-6.1.1">the semantic context of a JSON object will be described
-using <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span> and its keywords;<a href="#section-1.1-6.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-6.2">
-            <p id="section-1.1-6.2.1">property names are limited to characters that can be used in variable
-names (e.g. excluding <code>:</code> and <code>.</code>)
-to avoid interoperability issues with code-generation tools;<a href="#section-1.1-6.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-6.3">
-            <p id="section-1.1-6.3.1">privilege a deterministic behavior over automation and composability;<a href="#section-1.1-6.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-6.4">
-            <p id="section-1.1-6.4.1">interoperable with the mechanisms described in Section 6.1 of <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>
-for conveying semantic context in REST APIs.<a href="#section-1.1-6.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
-<div id="prosaic-semantics">
-<section id="section-1.2">
-        <h3 id="name-prosaic-semantics">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-prosaic-semantics" class="section-name selfRef">Prosaic semantics</a>
-        </h3>
-<p id="section-1.2-1"><span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> allows to define the structure of the exchanged data using specific keywords.
-Properties' semantics can be expressed in prose via the <code>description</code> keyword.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
-<span id="name-example-of-json-schema-mode"></span><div id="ex-semantic-prose">
-<figure id="figure-1">
-          <div class="lang-yaml sourcecode" id="section-1.2-2.1">
-<pre>
-Person:
-  description: A Person.
-  type: object
-  properties:
-    givenName:
-      description: The given name of a Person.
-      type: string
-    familyName:
-      description: The family name, or surname, of a Person.
-      type: string
-  example:
-    givenName: John
-    familyName: Doe
-</pre>
-</div>
-<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
-<a href="#name-example-of-json-schema-mode" class="selfRef">Example of JSON Schema model that provides semantic prose.</a>
-          </figcaption></figure>
-</div>
-<p id="section-1.2-3"><span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span> defines a way to interpret a JSON object as JSON-LD:
-the example schema instance (a JSON document conformant to a given schema)
-provided in the above "Person" schema can be integrated with
-semantic information adding the <code>@type</code> and <code>@context</code> properties.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
-<span id="name-example-of-a-schema-instanc"></span><div id="ex-json-ld">
-<figure id="figure-2">
-          <div class="lang-json sourcecode" id="section-1.2-4.1">
-<pre>
-{
-  "@context": {
-    "@vocab": "https://w3.org/ns/person#"
-  },
-  "@type": "Person",
-  "givenName": "John",
-  "familyName": "Doe"
-}
-</pre>
-</div>
-<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
-<a href="#name-example-of-a-schema-instanc" class="selfRef">Example of a schema instance transformed in a JSON-LD object.</a>
-          </figcaption></figure>
-</div>
-<p id="section-1.2-5">This document shows how
-to integrate into a JSON Schema document
-information that can be used
-to add the <code>@context</code> and <code>@type</code>
-properties to the associated JSON Schema instances.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">TBD<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="notational-conventions">
-<section id="section-1.3">
+<section id="section-1.2">
         <h3 id="name-notational-conventions">
-<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
         </h3>
-<p id="section-1.3-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+<p id="section-1.2-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
 NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
 "MAY", and "OPTIONAL" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.
 These words may also appear in this document in
-lower case as plain English words, absent their normative meanings.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
-<p id="section-1.3-2">The terms  "content", "content negotiation", "resource",
-and "user agent"
-in this document are to be interpreted as in <span>[<a href="#HTTP" class="cite xref">HTTP</a>]</span>.<a href="#section-1.3-2" class="pilcrow">¶</a></p>
-<p id="section-1.3-3">The terms "fragment" and "fragment identifier"
-in this document are to be interpreted as in <span>[<a href="#URI" class="cite xref">URI</a>]</span>.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
-<p id="section-1.3-4">The terms "node", "alias node", "anchor" and "named anchor"
-in this document are to be intepreded as in <span>[<a href="#YAML" class="cite xref">YAML</a>]</span>.<a href="#section-1.3-4" class="pilcrow">¶</a></p>
-<p id="section-1.3-5">The terms "schema" and "schema instance"
-in this document are to be intepreded as in <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>
-draft-4 and higher.<a href="#section-1.3-5" class="pilcrow">¶</a></p>
-<p id="section-1.3-6">The terms "JSON object", "JSON document", "member", "member name"
-in this document are to be intepreded as in <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>.
-The term "property" - when referred to a JSON document
-such as a schema instance -
-is a synonym of "member name",
-and the term "property value" is a synonym of "member value".<a href="#section-1.3-6" class="pilcrow">¶</a></p>
-<p id="section-1.3-7">The terms "@context", "@type", "@id", "@value" and "@language" are to be interpreted as JSON-LD keywords in <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>,
-whereas the term "context" is to be interpreted as a JSON-LD Context
-defined in the same document.<a href="#section-1.3-7" class="pilcrow">¶</a></p>
-<p id="section-1.3-8">Since JSON-LD is a serialization format for RDF,
-the document can use JSON-LD and RDF interchangeably
-when it refers to the semantic interpretation of a resource.<a href="#section-1.3-8" class="pilcrow">¶</a></p>
-<p id="section-1.3-9">The JSON Schema keywords defined in <a href="#keywords" class="auto internal xref">Section 2</a>
-are collectively named "semantic keywords".<a href="#section-1.3-9" class="pilcrow">¶</a></p>
+lower case as plain English words, absent their normative meanings.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-2">All JSON samples are represented in YAML format
+for readability and conciseness.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">The terms "primitive types" and "structured types",
+ are from <span><a href="https://rfc-editor.org/rfc/rfc8259#section-1" class="relref">Section 1</a> of [<a href="#JSON" class="cite xref">JSON</a>]</span>.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">The terms "JSON document", "JSON object", "JSON array" are from <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-5">The terms "schema", "schema instance", "keyword" are from <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>;
+the term "schema instance" referso to a JSON document
+that conforms to a JSON Schema.
+Schema instances are conveyed in the <code>example</code>
+JSON Schema keyword.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<p id="section-1.2-6">Examples can be viewed opening <a href="https://par-tec.github.io/dati-semantic-schema-editor/latest/?url=https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/main/tests/text-based-entries.oas3.yaml">this link in the schema editor</a>.<a href="#section-1.2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
-<div id="keywords">
+<div id="models-based-on-non-object-types">
 <section id="section-2">
-      <h2 id="name-json-schema-keywords">
-<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-json-schema-keywords" class="section-name selfRef">JSON Schema keywords</a>
+      <h2 id="name-models-based-on-non-object-">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-models-based-on-non-object-" class="section-name selfRef">Models based on non-object types</a>
       </h2>
-<p id="section-2-1">A schema (see <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span>) MAY
-use the following JSON Schema keywords,
-collectively named "semantic keywords"
-to provide semantic information
-for all related schema instances.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-2-2">
-        <dt id="section-2-2.1">x-jsonld-type:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.2">
-          <p id="section-2-2.2.1">This keyword conveys an RDF type (see <span>[<a href="#RDF" class="cite xref">RDF</a>]</span>)
- for the JSON schema instances described by the associate
- schema. It is defined in <a href="#keywords-type" class="auto internal xref">Section 2.1</a>.<a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="section-2-2.3">x-jsonld-context:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.4">
-          <p id="section-2-2.4.1">This keyword conveys a JSON-LD context
- for the JSON schema instances described by the associate
- schema. It is defined in <a href="#keywords-context" class="auto internal xref">Section 2.2</a>.<a href="#section-2-2.4.1" class="pilcrow">¶</a></p>
-</dd>
-      <dd class="break"></dd>
-</dl>
-<p id="section-2-3">This specification MAY be used to:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-1">To ensure that the API is extensible and that the data can be easily enriched with additional information,
+it is a best practice to only convey JSON objects,
+with other types (primitive or array) being used as references (i.e., using the <code>$ref</code> keyword).<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">Moreover:<a href="#section-2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2-4.1">
-          <p id="section-2-4.1.1">populate the <code>@type</code> property along the schema instance objects;<a href="#section-2-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2-3.1">
+          <p id="section-2-3.1.1">non-object values
+cannot be directly mapped to an RDF triple,
+as they require a subject and a predicate.<a href="#section-2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-2-4.2">
-          <p id="section-2-4.2.1">compose an "instance context" to populate the <code>@context</code>
-property at the root of the schema instance.<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-2-3.2">
+          <p id="section-2-3.2.1">JSON-LD only supports JSON objects (compact form)
+and JSON arrays (expanded form).<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-2-5">The schema MUST be of type "object".
-This is because <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span> does not define a way
-to provide semantic information on JSON values that
-are not JSON objects.<a href="#section-2-5" class="pilcrow">¶</a></p>
-<p id="section-2-6">The schema MUST NOT describe a JSON-LD
-(e.g. of <code>application/ld+json</code> media type)
-or conflicts will arise, such as
-which is the correct <code>@context</code> or <code>@type</code>
-(see <a href="#sec-conflicts" class="auto internal xref">Section 4.2</a>).<a href="#section-2-6" class="pilcrow">¶</a></p>
-<p id="section-2-7">Both JSON Schema keywords defined in this document
-might contain URI references.
-Those references MUST NOT be dereferenced automatically,
-since there is no guarantee that they point to actual
-locations.
-Moreover they could reference unsecured resources
-(e.g. using the "http://" URI scheme <span>[<a href="#HTTP" class="cite xref">HTTP</a>]</span>).<a href="#section-2-7" class="pilcrow">¶</a></p>
-<p id="section-2-8"><a href="#ex" class="auto internal xref">Appendix A</a> provides various examples of integrating
-semantic information in schema instances.<a href="#section-2-8" class="pilcrow">¶</a></p>
-<div id="keywords-type">
-<section id="section-2.1">
-        <h3 id="name-the-x-jsonld-type-json-sche">
-<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-the-x-jsonld-type-json-sche" class="section-name selfRef">The x-jsonld-type JSON Schema keyword</a>
-        </h3>
-<p id="section-2.1-1">The x-jsonld-type value
-provides information on the RDF type of the associate
-schema instances.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.1-2">It SHOULD NOT reference an <a href="https://www.w3.org/TR/rdf11-concepts/#section-Datatypes">RDF Datatype</a>, because
-it is not intended to provide
-syntax information, but only semantic ones.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="keywords-context">
-<section id="section-2.2">
-        <h3 id="name-the-x-jsonld-context-json-s">
-<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-the-x-jsonld-context-json-s" class="section-name selfRef">The x-jsonld-context JSON Schema keyword</a>
-        </h3>
-<p id="section-2.2-1">The x-jsonld-context value
-provides the information required to interpret the associate
-schema instances as JSON-LD
-according to the specification in <a href="https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld">Section 6.1 of JSON-LD-11</a>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">Its value MUST be a valid JSON-LD Context
-(see
-<a href="https://www.w3.org/TR/json-ld11/#context-definitions">Section 9.15 of JSON-LD-11</a>
-).<a href="#section-2.2-2" class="pilcrow">¶</a></p>
-<p id="section-2.2-3">When context composition (see <a href="#int-composability" class="auto internal xref">Section 3.4</a>) is needed,
-the context SHOULD be provided in the form of a JSON object;
-in fact, if the x-jsonld-context is an URL string,
-to generate the instance context that URL needs to be
-dereferenced and processed.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
-<span id="name-composing-url-contexts-requ"></span><div id="ex-url-contexts">
-<figure id="figure-3">
-          <div class="lang-yaml sourcecode" id="section-2.2-4.1">
+<p id="section-2-4">For this reason, <span>[<a href="#LD-KEYWORDS" class="cite xref">LD-KEYWORDS</a>]</span> does not support
+adding <code>x-jsonld-type</code> and <code>x-jsonld-context</code> to non-object schemas.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">For example, the schema instance associated with
+the following schema is the string <code>Diego Maria</code>.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<span id="name-a-json-schema-for-a-simple-"></span><div id="ex-given-name">
+<figure id="figure-1">
+        <div class="lang-yaml sourcecode" id="section-2-6.1">
 <pre>
-Place:
-  type: object
-  x-jsonld-context:
-    "@vocab": "https://my.context/location.jsonld"
-  properties:
-    country: {type: string}
-
-Person:
-  x-jsonld-context: https://my.context/person.jsonld
-  type: object
-  properties:
-    birthplace:
-      $ref: "#/Place"
+    GivenName:
+      type: string
+      maxLength: 64
+      example: Diego Maria
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-a-json-schema-for-a-simple-" class="selfRef">A JSON Schema for a simple text entry.</a>
+        </figcaption></figure>
+</div>
+<div id="simple-text-values">
+<section id="section-2.1">
+        <h3 id="name-simple-text-values">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-simple-text-values" class="section-name selfRef">Simple text values</a>
+        </h3>
+<p id="section-2.1-1">A modeling strategy for non-object values is to
+create reusable syntax blocks (i.e., constraining the length or the character set according to the specifications),
+and to defer the semantics to the containing JSON object.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">This approach ensures that the same schema can be used in different contexts.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<span id="name-reusing-a-syntactic-schema-"></span><div id="ex-registry-string">
+<figure id="figure-2">
+          <div class="lang-yaml sourcecode" id="section-2.1-3.1">
+<pre>
+    RegistryString:
+      type: string
+      maxLength: 64
+      description: &gt;-
+        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+        associated with a naming property registry information.
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryString"
+        familyName:
+          $ref: "#/components/schemas/RegistryString"
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-reusing-a-syntactic-schema-" class="selfRef">Reusing a syntactic schema with different semantics.</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.1-4">This allows focusing on the semantics of the JSON object,
+while isolating the efforts of properly constraining the syntax
+according to the requirement of the specific API.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<p id="section-2.1-5">It is possible, in fact, that syntax constraints may change
+over time, while the semantics of the object remain the same.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+<p id="section-2.1-6">A specific service might require, for example, specific string
+constraints such as latinized uppercase.<a href="#section-2.1-6" class="pilcrow">¶</a></p>
+<span id="name-a-json-schema-for-a-latiniz"></span><div id="ex-latinized-string">
+<figure id="figure-3">
+          <div class="lang-yaml sourcecode" id="section-2.1-7.1">
+<pre>
+    RegistryStringL:
+      type: string
+      maxLength: 64
+      description: &gt;-
+        A latinized string.
+      pattern: "^[A-Z ]+$"
+    PersonL:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryStringL"
+        familyName:
+          $ref: "#/components/schemas/RegistryStringL"
+      example:
+        givenName: DIEGO MARIA
+        familyName: DE LA PENHA
 </pre>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
-<a href="#name-composing-url-contexts-requ" class="selfRef">Composing URL contexts requires dereferencing them.</a>
+<a href="#name-a-json-schema-for-a-latiniz" class="selfRef">A JSON Schema for a latinized string.</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.1-8">The resulting RDF graph is<a href="#section-2.1-8" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.1-9">
+<pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+
+_:b0
+  a schema:Person ;
+  schema:familyName "De La Vega" ;
+  schema:givenName "Diego Maria" .
+</pre><a href="#section-2.1-9" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="modeling-identifiers">
+<section id="section-2.2">
+        <h3 id="name-modeling-identifiers">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-modeling-identifiers" class="section-name selfRef">Modeling identifiers</a>
+        </h3>
+<p id="section-2.2-1">Identifiers are a special case of text-based entries,
+and isolating syntax from semantics can make things more
+readable.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<span id="name-data-models-building-blocks"></span><div id="ex-primitive-types">
+<figure id="figure-4">
+          <div class="lang-yaml sourcecode" id="section-2.2-2.1">
+<pre>
+    NumericTaxCode:
+      description: &gt;-
+        Legal persons have a 11-digit tax code.
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "12345678901"
+    StringTaxCode:
+      description: &gt;-
+        Natural persons have a 16-character tax code.
+      type: string
+      pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+      example: RSSMRO99A04H501A
+    TaxCode:
+      description: &gt;-
+        This is a purely syntactic definition, and can
+        be used in different semantic contexts.
+      oneOf:
+        - $ref: "#/components/schemas/NumericTaxCode"
+        - $ref: "#/components/schemas/StringTaxCode"
+    PersonID:
+      description: &gt;-
+        The Person identifier is a 16-character string.
+      type: string
+      pattern: "^[0-9]{16}$"
+      example: "1234567890123456"
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-data-models-building-blocks" class="selfRef">Data models building blocks based on primitive types.</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.2-3">These schemas can be reused both when using their values
+as identifiers or as simple property values.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-4">The following schema uses a tax code as an identifier.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-2.2-5">
+<pre>
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        tax_code: "@id"
+        "@base": "urn:example:tax:it:"
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        tax_code: RSSMRO99A04H501A
+        children:
+        - tax_code: RSSLCC99A04H501A
+</pre><a href="#section-2.2-5" class="pilcrow">¶</a>
+</div>
+<p id="section-2.2-6">The associated RDF graph is:<a href="#section-2.2-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.2-7">
+<pre>
+urn:example:tax:it:RSSMRO99A04H501A
+  a schema:Person ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:children
+  urn:example:tax:it:RSSLCC99A04H501A
+.
+</pre><a href="#section-2.2-7" class="pilcrow">¶</a>
+</div>
+<p id="section-2.2-8">This other schema uses <code>person_id</code> property as identifier,
+while <code>tax_code</code> is a simple property value.<a href="#section-2.2-8" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-2.2-9">
+<pre>
+    RegisteredPerson:
+      x-jsonld-type: RegisteredResidentPerson
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        "@base": "urn:example:anpr.it:"
+        person_id: "@id"
+        tax_code: taxCode
+        given_name: givenName
+        family_name: familyName
+      type: object
+      required: [tax_code]
+      properties:
+        person_id:
+          $ref: "#/components/schemas/PersonID"
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        given_name:
+          $ref: "#/components/schemas/RegistryString"
+        family_name:
+          $ref: "#/components/schemas/RegistryString"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegisteredPerson"
+      example:
+        given_name: Mario
+        family_name: Rossi
+        person_id: "1234567890123456"
+        tax_code: RSSMRO99A04H501A
+        children:
+        - person_id: "2234567890123457"
+          tax_code: RSSLCC99A04H501A
+</pre><a href="#section-2.2-9" class="pilcrow">¶</a>
+</div>
+<p id="section-2.2-10">The resulting RDF consists in two, linked nodes,
+where the identifier is the <code>person_id</code> property.<a href="#section-2.2-10" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-2.2-11">
+<pre>
+&lt;urn:example:person:1234567890123456&gt;
+  a schema:RegisteredResidentPerson ;
+  schema:givenName "Mario" ;
+  schema:familyName "Rossi" ;
+  schema:taxCode "RSSMRO99A04H501A" ;
+  schema:children
+  &lt;urn:example:person:2234567890123457&gt;
+.
+&lt;urn:example:person:2234567890123457&gt;
+  a schema:RegisteredResidentPerson ;
+  schema:taxCode "RSSLCC99A04H501A"
+.
+</pre><a href="#section-2.2-11" class="pilcrow">¶</a>
+</div>
+<p id="section-2.2-12">Note that the changes to the schema instances
+were minimal: just the addition of the <code>person_id</code> JSON Schema property.<a href="#section-2.2-12" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="modeling-an-vocabulary-bases-entry">
+<section id="section-3">
+      <h2 id="name-modeling-an-vocabulary-base">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-modeling-an-vocabulary-base" class="section-name selfRef">Modeling an vocabulary-bases entry</a>
+      </h2>
+<p id="section-3-1">There are different ways to model a vocabulary-based entry,
+e.g., a list of countries or a list of currencies.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Normally, you would use a JSON Schema (e.g., with an <code>enum</code> keyword):<a href="#section-3-2" class="pilcrow">¶</a></p>
+<span id="name-a-json-schema-for-a-country"></span><div id="ex-country-enum">
+<figure id="figure-5">
+        <div class="lang-yaml sourcecode" id="section-3-3.1">
+<pre>
+    CountryCode:
+      type: string
+      enum: [ "ITA", "FRA", "DEU" ]
+      example: ITA
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-a-json-schema-for-a-country" class="selfRef">A JSON Schema for a Country enumeration.</a>
+        </figcaption></figure>
+</div>
+<p id="section-3-4">The resulting schema instance is a simple string
+(e.g. <code>ITA</code>).
+To be able to represent the entry in JSON-LD,
+an enumerated entry can be modeled using
+a specific property for the identifier,
+and a JSON-LD context.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-3-5">
+<pre>
+    Country:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+</pre><a href="#section-3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3-6">Linked Data keywords provide a context.
+Different contexts can lead to different
+RDF representations for the same schema instances (i.e. the actual data).<a href="#section-3-6" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3-7">
+<li id="section-3-7.1">
+          <p id="section-3-7.1.1">A "property-to-property" representation preserves the mapping between JSON object members and RDF properties;
+with the only addition of the <code>@type</code> keyword if <code>x-jsonld-type</code> is present.<a href="#section-3-7.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-3-8">The following schema instance<a href="#section-3-8" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-3-9">
+<pre>
+    CountryBlankNode:
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        identifier:
+          "$ref": "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+</pre><a href="#section-3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3-10">results in this RDF graph with a blank node:<a href="#section-3-10" class="pilcrow">¶</a></p>
+<span id="name-an-rdf-graph-with-a-blank-n"></span><div id="ex-country-rdf-blank-node">
+<figure id="figure-6">
+        <div class="lang-text sourcecode" id="section-3-11.1">
+<pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+
+_:b0
+  schema:identifier "ITA" ;
+  schema:name "Italy" .
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-an-rdf-graph-with-a-blank-n" class="selfRef">An RDF graph with a blank node.</a>
+        </figcaption></figure>
+</div>
+<ol start="1" type="1" class="normal type-1" id="section-3-12">
+<li id="section-3-12.1">
+          <p id="section-3-12.1.1">A non-isomorphic representation maps one property to the node name.<a href="#section-3-12.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-3-13">Associating a property with the <code>@id</code> keyword and a <code>@base</code> prefix,
+we state that the corresponding value is the name of the node.
+This schema<a href="#section-3-13" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-3-14">
+<pre>
+    CountryURI:
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        identifier: "@id"
+        "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/CountryCode"
+        name:
+          type: string
+      example:
+        identifier: ITA
+        name: Italy
+</pre><a href="#section-3-14" class="pilcrow">¶</a>
+</div>
+<p id="section-3-15">results in the following RDF graph using a named node:<a href="#section-3-15" class="pilcrow">¶</a></p>
+<span id="name-an-rdf-graph-with-a-named-n"></span><div id="ex-country-rdf-named-node">
+<figure id="figure-7">
+        <div class="lang-text sourcecode" id="section-3-16.1">
+<pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+
+iso_3166_3:ITA
+  a schema:Country;
+  schema:name "Italy"
+.
+</pre>
+</div>
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<a href="#name-an-rdf-graph-with-a-named-n" class="selfRef">An RDF graph with a named node.</a>
+        </figcaption></figure>
+</div>
+<div id="modeling-an-object-with-references">
+<section id="section-3.1">
+        <h3 id="name-modeling-an-object-with-ref">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-modeling-an-object-with-ref" class="section-name selfRef">Modeling an object with references</a>
+        </h3>
+<p id="section-3.1-1">When modeling an object with references,
+the parent's context will normally provide the context for the child.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The following example models a <code>Person</code> object with a <code>nationality</code> property
+referencing the <code>CountryCode</code> schema.
+The x-jsonld-context ensures that the <code>nationality</code> property will be resolved to an URI,
+though there is no space in the schema instance to provide a name for the country.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-3.1-3">
+<pre>
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        nationality:
+          "@type": "@id"
+          "@context":
+            "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        nationality:
+          $ref: "#/components/schemas/CountryCode"
+      example:
+        givenName: John
+        familyName: Doe
+        nationality: ITA
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-4">results in the following RDF graph:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<span id="name-an-rdf-graph-with-a-named-no"></span><div id="ex-person-rdf">
+<figure id="figure-8">
+          <div class="lang-text sourcecode" id="section-3.1-5.1">
+<pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA .
+</pre>
+</div>
+<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
+<a href="#name-an-rdf-graph-with-a-named-no" class="selfRef">An RDF graph with a named node.</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.1-6">To provide a label or other properties for the country, we can use a nested object.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<div class="lang-yaml sourcecode" id="section-3.1-7">
+<pre>
+    NestedPerson:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+        nationality:
+          $ref: "#/components/schemas/CountryURI"
+      example:
+        givenName: John
+        familyName: Doe
+        nationality:
+          identifier: ITA
+          name: Italy
+</pre><a href="#section-3.1-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-8">An implementation supporting context composition
+will check that the value of <code>NestedPerson/x-jsonld-context/nationality/@context</code> is undefined,
+and will then integrate the information present in <code>CountryURI/x-jsonld-context</code> into the instance context.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<p id="section-3.1-9">results in the following RDF graph:<a href="#section-3.1-9" class="pilcrow">¶</a></p>
+<span id="name-an-rdf-graph-with-two-nodes"></span><div id="ex-nested-person-rdf">
+<figure id="figure-9">
+          <div class="lang-text sourcecode" id="section-3.1-10.1">
+<pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+
+_:b0
+  a schema:Person ;
+  schema:familyName "Doe" ;
+  schema:givenName "John" ;
+  schema:nationality iso_3166_3:ITA
+.
+iso_3166_3:ITA
+  schema:name "Italy"
+.
+</pre>
+</div>
+<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<a href="#name-an-rdf-graph-with-two-nodes" class="selfRef">An RDF graph with two nodes.</a>
           </figcaption></figure>
 </div>
 </section>
 </div>
 <div id="interpreting">
-<section id="section-2.3">
+<section id="section-3.2">
         <h3 id="name-interpreting-schema-instanc">
-<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-interpreting-schema-instanc" class="section-name selfRef">Interpreting schema instances</a>
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-interpreting-schema-instanc" class="section-name selfRef">Interpreting schema instances</a>
+      </h3>
+</section>
+</div>
+</section>
+</div>
+<div id="reusability">
+<section id="section-4">
+      <h2 id="name-reusability">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-reusability" class="section-name selfRef">Reusability</a>
+      </h2>
+<div id="bundling">
+<section id="section-4.1">
+        <h3 id="name-bundling">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-bundling" class="section-name selfRef">Bundling</a>
         </h3>
-<p id="section-2.3-1">This section describes an OPTIONAL workflow
-to interpret a schema instance as JSON-LD.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.3-2">
-<li id="section-2.3-2.1">
-            <p id="section-2.3-2.1.1">ensure that the initial schema instance does not contain
-any <code>@context</code> or <code>@type</code> property.
-For further information see <a href="#sec-conflicts" class="auto internal xref">Section 4.2</a>;<a href="#section-2.3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.2">
-            <p id="section-2.3-2.2.1">add the <code>@context</code> property with the value of x-jsonld-context.
-This will be the initial "instance context": the only one that will be mangled;<a href="#section-2.3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.3">
-            <p id="section-2.3-2.3.1">add the <code>@type</code> property with the value of x-jsonld-type;<a href="#section-2.3-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.4">
-            <p id="section-2.3-2.4.1">iterate on each instance property like the following:<a href="#section-2.3-2.4.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-2.3-2.4.2.1">
-                <p id="section-2.3-2.4.2.1.1">identify the sub-schema associated to the property
-(e.g. resolving $refs)
-and check the presence of semantic keywords;<a href="#section-2.3-2.4.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-2.3-2.4.2.2">
-                <p id="section-2.3-2.4.2.2.1">for the x-jsonld-type, add the <code>@type</code> property to the sub-instance;<a href="#section-2.3-2.4.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-2.3-2.4.2.3">
-                <p id="section-2.3-2.4.2.3.1">for the x-jsonld-context, integrate its information in the instance context
-when they are not already present;<a href="#section-2.3-2.4.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-2.3-2.4.2.4">
-                <p id="section-2.3-2.4.2.4.1">iterate this process in case of nested entries.<a href="#section-2.3-2.4.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-        </ol>
-<p id="section-2.3-3">The specific algorithm
-for integrating the values of x-jsonld-context
-present in sub-schemas
-into the instance context (see <a href="#keywords" class="auto internal xref">Section 2</a>)
-is an implementation detail.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">When creating schemas, it is convenient to consolidate reusable components
+in separate resources.
+This eases maintenance and enables component reuse,
+like shown in the following two examples.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<span id="name-a-definitionsyaml-with-reus"></span><div id="ex-definitions">
+<figure id="figure-10">
+          <div class="lang-yaml sourcecode" id="section-4.1-2.1">
+<pre>
+# A definitions.yaml with reusable components at https://example.com/definitions.yaml
+openapi: 3.0.0
+...
+components:
+  schemas:
+    NumericTaxCode:
+      description: &gt;-
+        Legal persons have a 11-digit tax code.
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "12345678901"
+    StringTaxCode:
+      description: &gt;-
+        Natural persons have a 16-character tax code.
+      type: string
+      pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+      example: RSSMRO99A04H501A
+    TaxCode:
+      description: &gt;-
+        This is a purely syntactic definition, and can
+        be used in different semantic contexts.
+      oneOf:
+        - $ref: "#/components/schemas/NumericTaxCode"
+        - $ref: "#/components/schemas/StringTaxCode"
+</pre>
+</div>
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<a href="#name-a-definitionsyaml-with-reus" class="selfRef">A definitions.yaml with reusable components.</a>
+          </figcaption></figure>
+</div>
+<span id="name-a-schema-using-an-external-"></span><div id="ex-bundled-schema-definitions">
+<figure id="figure-11">
+          <div class="lang-yaml sourcecode" id="section-4.1-3.1">
+<pre>
+openapi: 3.0.0
+...
+components:
+  schemas:
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        tax_code:
+          $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+        ...
+    ResidentPerson:
+      x-jsonld-type: RPO:RegisteredResidentPerson
+      x-jsonld-context:
+        RPO: https://w3id.org/italia/onto/RPO/
+        tax_code: '@id'
+        '@base': 'urn:example:tax:it:'
+      type: object
+      properties:
+        tax_code:
+          $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+        ...
+
+</pre>
+</div>
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<a href="#name-a-schema-using-an-external-" class="selfRef">A schema using an external component.</a>
+          </figcaption></figure>
+</div>
+<p id="section-4.1-4">Bundling is the process of combining multiple OpenAPI and JSON schema documents in a single document
+in order to distribute a consolidated service specification in a single file.
+Bundling ensures that all necessary schema components are contained within a single file,
+and avoids the need to resolve external references.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">Bundling resolves all remote references,
+adds them to the schema,
+and replaces the associated <code>$ref</code> with a local reference.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<span id="name-a-bundled-schema"></span><div id="ex-bundled-schema">
+<figure id="figure-12">
+          <div class="lang-yaml sourcecode" id="section-4.1-6.1">
+<pre>
+openapi: 3.0.0
+...
+components:
+  schemas:
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        tax_code:
+          $ref: "#/components/schemas/TaxCode"
+        ...
+    ResidentPerson:
+      x-jsonld-type: RPO:RegisteredResidentPerson
+      x-jsonld-context:
+        RPO: https://w3id.org/italia/onto/RPO/
+        tax_code: '@id'
+        '@base': 'urn:example:tax:it:'
+      type: object
+      required:
+        - tax_code
+      properties:
+        tax_code:
+          $ref: '#/components/schemas/TaxCode'
+        ...
+    #
+    # The bundler adds the following components to the schema.
+    #
+    NumericTaxCode:
+      description: Legal persons have a 11-digit tax code.
+      type: string
+      pattern: ^[0-9]{11}$
+      example: '12345678901'
+    StringTaxCode:
+      description: Natural persons have a 16-character tax code.
+      type: string
+      pattern: ^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$
+      example: RSSMRO99A04H501A
+    TaxCode:
+      description: This is a purely syntactic definition, and can be used in different semantic contexts.
+      oneOf:
+        - $ref: '#/components/schemas/NumericTaxCode'
+        - $ref: '#/components/schemas/StringTaxCode'
+</pre>
+</div>
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<a href="#name-a-bundled-schema" class="selfRef">A bundled schema.</a>
+          </figcaption></figure>
+</div>
+<p id="section-4.1-7">Bundling can be done in different ways.
+<a href="#ex-bundling-tools" class="auto internal xref">Appendix A.5</a> contains a list of bundling tools.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="int">
-<section id="section-3">
+<section id="section-5">
       <h2 id="name-interoperability-considerat">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
       </h2>
-<p id="section-3-1">See the interoperability considerations for the media types
-and specifications used, including <span>[<a href="#YAML-IANA" class="cite xref">YAML-IANA</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
-<span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">Annotating a schema with semantic keywords
-containing JSON-LD keywords
-(e.g. <code>@context</code>, <code>@type</code> and <code>@language</code>)
-may hinder its ability to be interpreted as a JSON-LD document
-(e.g. using the <a href="https://www.w3.org/2019/wot/json-schema#json-ld11-ctx">JSON-LD 1.1 context for the JSON Schema vocabulary</a>);
-this can be mitigated extending that context and specifying
-that Linked Data keywords are JSON Literals.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-3-3">
+<div id="int-property-names">
+<section id="section-5.1">
+        <h3 id="name-json-schema-property-names">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-json-schema-property-names" class="section-name selfRef">JSON Schema property names</a>
+        </h3>
+<p id="section-5.1-1">To minimize context information, a common practice is to name
+JSON Schema properties after the corresponding RDF predicates.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<span id="name-a-json-schema-with-properti"></span><div id="ex-rdf-predicates">
+<figure id="figure-13">
+          <div class="lang-yaml sourcecode" id="section-5.1-2.1">
 <pre>
-{ "@context": {
-    "x-jsonld-context: { "@type": "@json"},
-    "x-jsonld-type: { "@type": "@json"}
-  }
-}
-</pre><a href="#section-3-3" class="pilcrow">¶</a>
-</div>
-<p id="section-3-4">This is generally not a problem, since a generic
-<span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> document cannot be reliably interpreted
-as JSON-LD using a single context: this is because the same
-JSON member keys can have different meanings depending
-on their JSON Schema position (see <a href="https://www.w3.org/2019/wot/json-schema#interpreting-json-schema-as-json-ld-1-1">the notes in the  Interpreting JSON Schema as JSON-LD 1.1</a> section of <span>[<a href="#JSON-SCHEMA-RDF" class="cite xref">JSON-SCHEMA-RDF</a>]</span>).<a href="#section-3-4" class="pilcrow">¶</a></p>
-<div id="int-syntax-oos">
-<section id="section-3.1">
-        <h3 id="name-syntax-is-out-of-scope">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-syntax-is-out-of-scope" class="section-name selfRef">Syntax is out of scope</a>
-        </h3>
-<p id="section-3.1-1">This specification is not designed to restrict
-the syntax of a JSON value nor to support a conversion
-between JSON Schema and XMLSchema
-(see <a href="#keywords-type" class="auto internal xref">Section 2.1</a>).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="int-expressivity">
-<section id="section-3.2">
-        <h3 id="name-limited-expressivity">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-limited-expressivity" class="section-name selfRef">Limited expressivity</a>
-        </h3>
-<p id="section-3.2-1">Not all RDF resources can be expressed as JSON documents
-annotated with <code>@context</code> and <code>@type</code>:
-this specification is limited by the possibilities
-of <a href="https://www.w3.org/TR/json-ld11/#interpreting-json-as-json-ld">Section 6.1 of JSON-LD-11</a>.
-On the other hand, since this approach
-delegates almost all the processing to of JSON-LD,
-as long as JSON-LD evolves
-it will cover further use cases.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="int-no-jsonld">
-<section id="section-3.3">
-        <h3 id="name-disjoint-with-json-ld">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-disjoint-with-json-ld" class="section-name selfRef">Disjoint with JSON-LD</a>
-        </h3>
-<p id="section-3.3-1">This specification is not designed to pre-process
-or mangle JSON-LD documents
-(e.g. to add a missing <code>@type</code> to a JSON-LD document),
-but only to support schemas that do not describe JSON-LD documents.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">Applications exchanging JSON-LD documents
-need to explicitly populate <code>@type</code> and <code>@context</code>,
-and use a proper media type
-since Linked Data processing and interpretation
-requires further checks.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">If these applications describe messages using <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> or <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
-they need to
-process them with a JSON-LD processor
-and declare all required properties
-in the schema - like in the example below.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<span id="name-a-json-schema-describing-a-"></span><div id="ex-jsonld-schema">
-<figure id="figure-4">
-          <div class="lang-yaml sourcecode" id="section-3.3-4.1">
-<pre>
-PersonLD:
+Place:
+  x-jsonld-type: Place
+  ...
+Occupation:
+  x-jsonld-type: Occupation
+  ...
+Person:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "@vocab": "https://schema.org/"
   type: object
-  required: [ "@context", "@type", "givenName", "familyName" ]
   properties:
-    "@context":
-      type: object
-      enum:
-      - "@vocab": "https://w3.org/ns/person#"
-    "@type":
-      type: string
-      enum:
-      - Person
-    givenName:
-      type: string
     familyName:
       type: string
+    givenName:
+      type: string
+    birthPlace:
+      $ref: "#/Place"
+    hasOccupation:
+      $ref: "#/Occupation"
 </pre>
 </div>
-<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
-<a href="#name-a-json-schema-describing-a-" class="selfRef">A JSON-Schema describing a JSON-LD document.</a>
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<a href="#name-a-json-schema-with-properti" class="selfRef">A JSON Schema with properties named after RDF predicates.</a>
           </figcaption></figure>
 </div>
+<p id="section-5.1-3">As we can see from the above schema,
+this practice can lead to inheriting
+non uniform naming conventions from the RDF vocabulary:
+for example, <code>birthPlace</code> and <code>hasOccupation</code> both target objects,
+while only <code>hasOccupation</code> starts with a verb (i.e. <code>has</code>).<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">Another issue is related to the schema instance size
+when using very long property or class names such as
+https://schema.org/isAccessibleForFree
+and
+https://schema.org/IPTCDigitalSourceEnumeration.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5">Mapping JSON Schema properties to RDF predicates in x-jsonld-context
+can reduce semantic risks when an ontology changes,
+or when there's
+a need to switch to a different ontology:
+this is because having different names for the property and the predicate
+clarifies that the property may well evolve into a different predicate
+in time, like shown in the following example.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">Instead of using a generic <code>surname</code>, this schema uses
+the more specific <code>patronymicName</code> named after the corresponding RDF predicate.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<span id="name-drawbacks-of-using-rdf-prop"></span><div id="ex-inheriting-property-names">
+<figure id="figure-14">
+          <div class="lang-yaml sourcecode" id="section-5.1-7.1">
+<pre>
+Person:
+  x-jsonld-context:
+    "@vocab": "http://w3.org/ns/person#"
+  properties:
+    patronymicName:
+      type: string
+  example:
+    patronymicName: "Ericsson"
+  x-rdf: &gt;-
+    _:b0 :patronymicName "Ericsson" .
+</pre>
+</div>
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<a href="#name-drawbacks-of-using-rdf-prop" class="selfRef">Drawbacks of using RDF property names as JSON Schema properties.</a>
+          </figcaption></figure>
+</div>
+<p id="section-5.1-8">If the service evolves to be more generic (e.g., moving to <code>foaf:</code>),
+the property name might be mapped
+to the <code>foaf:familyName</code> predicate, but the schema instance will remain the same
+thus retaining the information of a legacy ontology.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9">A more flexible design would have considered using a generic <code>surname</code> property name,
+and either map it to <code>http://w3.org/ns/person#patronymicName</code> or <code>foaf:familyName</code> in the context.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="int-composability">
-<section id="section-3.4">
+<section id="section-5.2">
         <h3 id="name-composability">
-<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-composability" class="section-name selfRef">Composability</a>
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-composability" class="section-name selfRef">Composability</a>
         </h3>
-<p id="section-3.4-1">Limited composability can be achieved applying the process described
-in <a href="#interpreting" class="auto internal xref">Section 2.3</a>.
-Automatic composability is not an explicit goal of this specification
-because of its complexity. One of the issue is that
-the meaning of a JSON-LD keyword is affected by
-its position. For example, the <code>@type</code> keyword:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.4-2.1">
-            <p id="section-3.4-2.1.1">in a node object, adds an <code>rdf:type</code> arc to the RDF graph
-(it also has a few other effects on processing, e.g. by enabling type-scoped contexts);<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.4-2.2">
-            <p id="section-3.4-2.2.1">in a value object, specifies the datatype of the produced literal;<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.4-2.3">
-            <p id="section-3.4-2.3.1">in the context, and more precisely in a term definition,
-specifies <a href="https://www.w3.org/TR/json-ld11/#type-coercion">type coercion</a>.
-It only applies when the value of the term is a string.<a href="#section-3.4-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-3.4-3">These issues can be tackled in future versions of this specifications.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
-<p id="section-3.4-4">Moreover, well-designed schemas do not usually have
-more than 3 or 4 nested levels.
-This means that, when needed, it is possible
-to assemble and optimize an instance context (see <a href="#keywords" class="auto internal xref">Section 2</a>)
-at design time and use it to valorize x-jsonld-context
-(see <a href="#ex-redundant-context" class="auto internal xref">Figure 8</a>).<a href="#section-3.4-4" class="pilcrow">¶</a></p>
-<p id="section-3.4-5">Once a context is assembled, the RDF data can be
-generated using the algorithms described in <span>[<a href="#JSONLD-11-API" class="cite xref">JSONLD-11-API</a>]</span>
-for example through a library.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
-<div class="lang-python sourcecode" id="section-3.4-6">
-<pre>
-from pyld import jsonld
-...
-jsonld_text = jsonld.expand(schema_instance, context)
-</pre><a href="#section-3.4-6" class="pilcrow">¶</a>
-</div>
+<p id="section-5.2-1">Always prefer explicit context information  over implicit context composition.
+Different implementations of context composition may lead to different results,
+especially over large schemas with many nested objects.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">While composition is useful in the schema design phase,
+bundling and validating the composed context in the final
+schema definition reduces the risk of interoperability issues.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="sec">
-<section id="section-4">
+<section id="section-6">
       <h2 id="name-security-considerations">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-4-1">See the interoperability considerations for the media types
-and specifications used, including <span>[<a href="#YAML-IANA" class="cite xref">YAML-IANA</a>]</span>, <span>[<a href="#JSON" class="cite xref">JSON</a>]</span>, <span>[<a href="#OAS" class="cite xref">OAS</a>]</span>,
-<span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> and <span>[<a href="#JSON-LD-11" class="cite xref">JSON-LD-11</a>]</span>.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <div id="sec-integrity">
-<section id="section-4.1">
+<section id="section-6.1">
         <h3 id="name-integrity-and-authenticity">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-integrity-and-authenticity" class="section-name selfRef">Integrity and Authenticity</a>
-        </h3>
-<p id="section-4.1-1">Adding a semantic context to a JSON document
-alters its value and, in an implementation-dependent way,
-can lead to reordering of fields.
-This process can thus affect the processing of digitally signed content.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-integrity-and-authenticity" class="section-name selfRef">Integrity and Authenticity</a>
+      </h3>
 </section>
 </div>
 <div id="sec-conflicts">
-<section id="section-4.2">
+<section id="section-6.2">
         <h3 id="name-conflicts">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-conflicts" class="section-name selfRef">Conflicts</a>
-        </h3>
-<p id="section-4.2-1">If an OAS document includes the keywords defined in <a href="#keywords" class="auto internal xref">Section 2</a>
-the provider explicitly states that the semantic of the schema instance:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-4.2-2.1">
-            <p id="section-4.2-2.1.1">is defined at contract level;<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-4.2-2.2">
-            <p id="section-4.2-2.2.1">is the same for every message;<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-4.2-2.3">
-            <p id="section-4.2-2.3.1">and is not conveyed nor specific for each message.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-4.2-3">In this case, processing the semantic conveyed in a message
-might have security implications.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">An application that relies on this specification
-might want to define separate processing streams for JSON documents
-and RDF graphs, even when RDF graphs are serialized as JSON-LD documents.
-For example, it might want to raise an error
-when an <code>application/json</code> resource contains unexpected properties
-impacting on the application logic
-like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-conflicts" class="section-name selfRef">Conflicts</a>
+      </h3>
 </section>
 </div>
-</section>
-</div>
-<div id="iana">
-<section id="section-5">
-      <h2 id="name-iana-considerations">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
-      </h2>
-<p id="section-5-1">None<a href="#section-5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-references">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-6.1">
+<section id="section-7.1">
         <h3 id="name-normative-references">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="HTTP">[HTTP]</dt>
@@ -1804,6 +2153,10 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 <dt id="JSONSCHEMA">[JSONSCHEMA]</dt>
         <dd>
 <span class="refTitle">"JSON Schema"</span>, <span>n.d.</span>, <span>&lt;<a href="https://json-schema.org/specification.html">https://json-schema.org/specification.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="LD-KEYWORDS">[LD-KEYWORDS]</dt>
+        <dd>
+<span class="refAuthor">Polli, R.</span>, <span class="refTitle">"REST API Linked Data Keywords"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-polli-restapi-ld-keywords-04</span>, <time datetime="2024-07-22" class="refDate">22 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-polli-restapi-ld-keywords-04">https://datatracker.ietf.org/doc/html/draft-polli-restapi-ld-keywords-04</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="OAS">[OAS]</dt>
         <dd>
@@ -1841,9 +2194,9 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-6.2">
+<section id="section-7.2">
         <h3 id="name-informative-references">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.ietf-jsonpath-base">[I-D.ietf-jsonpath-base]</dt>
@@ -1893,7 +2246,7 @@ like <code>@type</code> and <code>@context</code>.<a href="#section-4.2-4" class
 Person JSON Schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wi"></span><div id="ex-base">
-<figure id="figure-5">
+<figure id="figure-15">
           <div class="lang-example sourcecode" id="appendix-A.1-2.1">
 <pre>
 Person:
@@ -1920,7 +2273,7 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
 <a href="#name-a-json-schema-data-model-wi" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -1963,7 +2316,7 @@ _:b0 rdf:type schema:Person    ;
 "Person" schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wit"></span><div id="ex-complete-example">
-<figure id="figure-6">
+<figure id="figure-16">
           <div class="lang-example sourcecode" id="appendix-A.2-2.1">
 <pre>
 Person:
@@ -1997,13 +2350,13 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
 <a href="#name-a-json-schema-data-model-wit" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
 <p id="appendix-A.2-3">The resulting RDF graph is<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
 <span id="name-an-rdf-graph-with-semantic-"></span><div id="ex-rdf-from-json">
-<figure id="figure-7">
+<figure id="figure-17">
           <div class="lang-text sourcecode" id="appendix-A.2-4.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
@@ -2015,7 +2368,7 @@ Person:
   schema:addressCountry country:FRA .
 </pre>
 </div>
-<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
 <a href="#name-an-rdf-graph-with-semantic-" class="selfRef">An RDF graph with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2078,11 +2431,11 @@ results in the following JSON-LD document.<a href="#appendix-A.3-3" class="pilcr
 }
 </pre><a href="#appendix-A.3-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.3-5">Applying the workflow described in <a href="#interpreting" class="auto internal xref">Section 2.3</a>
+<p id="appendix-A.3-5">Applying the workflow described in <a href="#interpreting" class="auto internal xref">Section 3.2</a>
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.<a href="#appendix-A.3-5" class="pilcrow">¶</a></p>
 <span id="name-an-instance-context-contain"></span><div id="ex-redundant-context">
-<figure id="figure-8">
+<figure id="figure-18">
           <div class="lang-json sourcecode" id="appendix-A.3-6.1">
 <pre>
 {
@@ -2104,7 +2457,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 }
 </pre>
 </div>
-<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
+<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
 <a href="#name-an-instance-context-contain" class="selfRef">An instance context containing redundant information</a>
           </figcaption></figure>
 </div>
@@ -2118,7 +2471,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 <p id="appendix-A.4-1">In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
 <span id="name-a-schema-with-object-contex"></span><div id="ex-object-contexts">
-<figure id="figure-9">
+<figure id="figure-19">
           <div class="lang-yaml sourcecode" id="appendix-A.4-2.1">
 <pre>
 BirthPlace:
@@ -2169,7 +2522,7 @@ Citizen:
 
 </pre>
 </div>
-<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<figcaption><a href="#figure-19" class="selfRef">Figure 19</a>:
 <a href="#name-a-schema-with-object-contex" class="selfRef">A schema with object contexts.</a>
           </figcaption></figure>
 </div>
@@ -2178,7 +2531,7 @@ results in the following JSON-LD document.
 The instance context contains information from both
 "Citizen" and "BirthPlace" semantic keywords.<a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
 <span id="name-a-context-that-includes-inf"></span><div id="ex-composite-context">
-<figure id="figure-10">
+<figure id="figure-20">
           <div class="lang-json sourcecode" id="appendix-A.4-4.1">
 <pre>
 {
@@ -2218,13 +2571,13 @@ The instance context contains information from both
 }
 </pre>
 </div>
-<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<figcaption><a href="#figure-20" class="selfRef">Figure 20</a>:
 <a href="#name-a-context-that-includes-inf" class="selfRef">A @context that includes information from different schemas.</a>
           </figcaption></figure>
 </div>
 <p id="appendix-A.4-5">That can be serialized as <code>text/turtle</code> as<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
 <span id="name-the-above-entry-in-text-tur"></span><div id="ex-composite-context-turtle">
-<figure id="figure-11">
+<figure id="figure-21">
           <div class="lang-text sourcecode" id="appendix-A.4-6.1">
 <pre>
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
@@ -2243,10 +2596,26 @@ _:b0 rdf:type itl:Feature ;
 .
 </pre>
 </div>
-<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
 <a href="#name-the-above-entry-in-text-tur" class="selfRef">The above entry in text/turtle</a>
           </figcaption></figure>
 </div>
+</section>
+</div>
+<div id="ex-bundling-tools">
+<section id="appendix-A.5">
+        <h3 id="name-bundling-tools">
+<a href="#appendix-A.5" class="section-number selfRef">A.5. </a><a href="#name-bundling-tools" class="section-name selfRef">Bundling tools</a>
+        </h3>
+<p id="appendix-A.5-1">The following is a list of some bundling tools:<a href="#appendix-A.5-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.5-2.1">
+            <p id="appendix-A.5-2.1.1">https://redocly.com/docs/cli;<a href="#appendix-A.5-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.5-2.2">
+            <p id="appendix-A.5-2.2.1">https://www.npmjs.com/package/swagger-cli.<a href="#appendix-A.5-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
@@ -2272,123 +2641,6 @@ and Vladimir Alexiev.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
 <a href="#name-faq" class="section-name selfRef">FAQ</a>
       </h2>
 <p id="appendix-C-1">This section is to be removed before publishing as an RFC.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="appendix-C-2">
-        <dt id="appendix-C-2.1">Q: Why this document?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.2">
-          <p id="appendix-C-2.2.1">There's currently no standard way to provide machine-readable semantic
-information in <span>[<a href="#OAS" class="cite xref">OAS</a>]</span> / <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> to be used at contract time.<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.3">Q: Does this document support the exchange of JSON-LD resources?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.4">
-          <p id="appendix-C-2.4.1">This document is focused on annotating schemas that are used
-at contract/design time, so that application can exchange compact
-JSON object without dereferencing nor interpreting
-external resources at runtime.<a href="#appendix-C-2.4.1" class="pilcrow">¶</a></p>
-<p id="appendix-C-2.4.2">While you can use the provided semantic information to generate
-JSON-LD objects, it is not the primary goal of this specification:
-context information are not expected to be dereferenced at runtime
-(see security considerations in JSON-LD)
-and the semantics of exchanged messages is expected
-to be constrained inside the application.<a href="#appendix-C-2.4.2" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.5">Q: Why don't use existing <span>[<a href="#JSONSCHEMA" class="cite xref">JSONSCHEMA</a>]</span> keywords like <code>externalDocs</code> ?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.6">
-          <p id="appendix-C-2.6.1">We already tried, but this was actually squatting a keyword designed
-for <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#externalDocumentationObject">human readable documents</a>.<a href="#appendix-C-2.6.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.7">Q: Why using <code>x-</code> keywords?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.8">
-          <p id="appendix-C-2.8.1">OpenAPI 3.0 considers invalid unregistered keywords that don't start with <code>x-</code>,
-and we want a solution that is valid for all OAS versions &gt;= 3.0.<a href="#appendix-C-2.8.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.9">Q: Why not using a full-semantic approach?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.10">
-          <p id="appendix-C-2.10.1">This approach allows API providers to attach metadata to their
-specification without modifying their actual services nor their
-implementation, since custom keywords are ignored by OpenAPI toolings
-like Gateways and code generators.<a href="#appendix-C-2.10.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.11">Q: Why not defining a mechanism to attach semantic information to</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.12">
-          <p id="appendix-C-2.12.1"></p><a href="#appendix-C-2.12" class="pilcrow">¶</a>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.13">   non-object schemas (e.g. JSON Strings) like other implementations?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.14">
-          <p id="appendix-C-2.14.1">This is actually problematic. Look at this example that reuses
-the <code>TaxCode</code> schema and semantic in different properties.<a href="#appendix-C-2.14.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.15">Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.16">
-          <p id="appendix-C-2.16.1">Web and mobile developers consider JSON Schema is easier to use than SHACL.
-Moreover, OWL restrictions are about semantics,
-and are not designed to restrict the syntax.<a href="#appendix-C-2.16.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="appendix-C-2.17">Q: Why don't design for composability first?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-2.18">
-          <p id="appendix-C-2.18.1">JSON-LD is a complex specification.
-Consider the following schemas, where <code>Contract</code> references <code>TaxCode</code>.<a href="#appendix-C-2.18.1" class="pilcrow">¶</a></p>
-</dd>
-      <dd class="break"></dd>
-</dl>
-<div class="lang-yaml sourcecode" id="appendix-C-3">
-<pre>
-    TaxCode:
-      type: string
-      $linkedData:
-        "@id": "https://w3id.org/italia/onto/CPV/taxCode"
-        "term": "taxCode"
-    Contract:
-      ...
-      properties:
-        employer_tax_code:
-          # Beware! TaxCode.$linkedData.term == 'taxCode'
-          $ref: "#/components/schemas/TaxCode"
-        employee_tax_code:
-          # Here we are reusing not only the schema,
-          #   but even the same term.
-          $ref: "#/components/schemas/TaxCode"
-</pre><a href="#appendix-C-3" class="pilcrow">¶</a>
-</div>
-<p id="appendix-C-4">The result will be that only one of the properties will be correctly annotated.
-  For this reason, composability is limited to the object level.<a href="#appendix-C-4" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="appendix-C-5">
-        <dt id="appendix-C-5.1">Q: Can the value of <code>x-jsonld-type</code> be an <code>rdf:Property</code>? Would this allow to reuse the same schema in different objects without modifying the <code>@context</code>?</dt>
-        <dd style="margin-left: 1.5em" id="appendix-C-5.2">
-          <p id="appendix-C-5.2.1">Under normal circumstances, i.e. when designing public or financial service APIs,
-you don't want <code>x-jsonld-type</code> to be an <code>rdf:Property</code>.
-The value of <code>x-jsonld-type</code> usually maps to a <code>owl:Class</code>, not an <code>owl:DataTypeProperty</code>;
-for example a sensible value for <code>x-jsonld-type</code> would be <code>rdfs:Literal</code> (that is, the <code>rdfs:range</code> of <code>CPV:taxCode</code>),
-but this would be mostly a syntactic information, which instead is provided by JSON Schema.<a href="#appendix-C-5.2.1" class="pilcrow">¶</a></p>
-</dd>
-      <dd class="break"></dd>
-</dl>
-<span id="name-the-above-code-is-ambiguous"></span><div id="ex-invalid-x-jsonld-type">
-<figure id="figure-12">
-        <div class="lang-yaml sourcecode" id="appendix-C-6.1">
-<pre>
-    TaxCode:
-      type: string
-      x-jsonld-type: "https://w3id.org/italia/onto/CPV/taxCode"
-      description: |-
-        This example is ambiguous, because:
-
-        1. it treats a CPV:taxCode as an owl:Class,
-           while it's an owl:DataTypeProperty;
-        2. the `rdfs:range` for CPV:taxCode is `rdfs:Literal`.
-</pre>
-</div>
-<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
-<a href="#name-the-above-code-is-ambiguous" class="selfRef">The above code is ambiguous, because the rdfs:range of CPV:taxCode is rdfs:Literal</a>
-        </figcaption></figure>
-</div>
 </section>
 </div>
 <div id="change-log">
@@ -2407,7 +2659,7 @@ but this would be mostly a syntactic information, which instead is provided by J
       </h2>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Roberto Polli</span></div>
-<div dir="auto" class="left"><span class="org">Digital Transformation Department, Italian Government</span></div>
+<div dir="auto" class="left"><span class="org">Par-Tec S.p.A.</span></div>
 <div dir="auto" class="left"><span class="country-name">Italy</span></div>
 <div class="email">
 <span>Email:</span>
