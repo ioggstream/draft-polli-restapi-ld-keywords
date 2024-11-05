@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                           23 October 2024
-Expires: 26 April 2025
+Intended status: Informational                           5 November 2024
+Expires: 9 May 2025
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2025.
+   This Internet-Draft will expire on 9 May 2025.
 
 Copyright Notice
 
@@ -71,20 +71,23 @@ Table of Contents
    3.  Modeling an vocabulary-bases entry
      3.1.  Modeling an object with references
      3.2.  Interpreting schema instances
-   4.  Interoperability Considerations
-     4.1.  JSON Schema property names
-     4.2.  Composability
-   5.  Security Considerations
-     5.1.  Integrity and Authenticity
-     5.2.  Conflicts
-   6.  References
-     6.1.  Normative References
-     6.2.  Informative References
+   4.  Reusability
+     4.1.  Bundling
+   5.  Interoperability Considerations
+     5.1.  JSON Schema property names
+     5.2.  Composability
+   6.  Security Considerations
+     6.1.  Integrity and Authenticity
+     6.2.  Conflicts
+   7.  References
+     7.1.  Normative References
+     7.2.  Informative References
    Appendix A.  Examples
      A.1.  Schema with semantic information
      A.2.  Schema with semantic and vocabulary information
      A.3.  Cyclic schema
      A.4.  Composite instance context
+     A.5.  Bundling tools
    Appendix B.  Acknowledgements
    FAQ
    Change Log
@@ -554,9 +557,130 @@ Table of Contents
 
 3.2.  Interpreting schema instances
 
-4.  Interoperability Considerations
+4.  Reusability
 
-4.1.  JSON Schema property names
+4.1.  Bundling
+
+   When creating schemas, it is convenient to consolidate reusable
+   components in separate resources.  This eases maintenance and enables
+   component reuse, like shown in the following two examples.
+
+   # A definitions.yaml with reusable components at https://example.com/definitions.yaml
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       NumericTaxCode:
+         description: >-
+           Legal persons have a 11-digit tax code.
+         type: string
+         pattern: "^[0-9]{11}$"
+         example: "12345678901"
+       StringTaxCode:
+         description: >-
+           Natural persons have a 16-character tax code.
+         type: string
+         pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+         example: RSSMRO99A04H501A
+       TaxCode:
+         description: >-
+           This is a purely syntactic definition, and can
+           be used in different semantic contexts.
+         oneOf:
+           - $ref: "#/components/schemas/NumericTaxCode"
+           - $ref: "#/components/schemas/StringTaxCode"
+
+          Figure 10: A definitions.yaml with reusable components.
+
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           tax_code:
+             $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+           ...
+       ResidentPerson:
+         x-jsonld-type: RPO:RegisteredResidentPerson
+         x-jsonld-context:
+           RPO: https://w3id.org/italia/onto/RPO/
+           tax_code: '@id'
+           '@base': 'urn:example:tax:it:'
+         type: object
+         properties:
+           tax_code:
+             $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+           ...
+
+              Figure 11: A schema using an external component.
+
+   Bundling is the process of combining multiple OpenAPI and JSON schema
+   documents in a single document in order to distribute a consolidated
+   service specification in a single file.  Bundling ensures that all
+   necessary schema components are contained within a single file, and
+   avoids the need to resolve external references.
+
+   Bundling resolves all remote references, adds them to the schema, and
+   replaces the associated $ref with a local reference.
+
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           tax_code:
+             $ref: "#/components/schemas/TaxCode"
+           ...
+       ResidentPerson:
+         x-jsonld-type: RPO:RegisteredResidentPerson
+         x-jsonld-context:
+           RPO: https://w3id.org/italia/onto/RPO/
+           tax_code: '@id'
+           '@base': 'urn:example:tax:it:'
+         type: object
+         required:
+           - tax_code
+         properties:
+           tax_code:
+             $ref: '#/components/schemas/TaxCode'
+           ...
+       #
+       # The bundler adds the following components to the schema.
+       #
+       NumericTaxCode:
+         description: Legal persons have a 11-digit tax code.
+         type: string
+         pattern: ^[0-9]{11}$
+         example: '12345678901'
+       StringTaxCode:
+         description: Natural persons have a 16-character tax code.
+         type: string
+         pattern: ^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$
+         example: RSSMRO99A04H501A
+       TaxCode:
+         description: This is a purely syntactic definition, and can be used in different semantic contexts.
+         oneOf:
+           - $ref: '#/components/schemas/NumericTaxCode'
+           - $ref: '#/components/schemas/StringTaxCode'
+
+                        Figure 12: A bundled schema.
+
+   Bundling can be done in different ways.  Appendix A.5 contains a list
+   of bundling tools.
+
+5.  Interoperability Considerations
+
+5.1.  JSON Schema property names
 
    To minimize context information, a common practice is to name JSON
    Schema properties after the corresponding RDF predicates.
@@ -582,7 +706,7 @@ Table of Contents
        hasOccupation:
          $ref: "#/Occupation"
 
-    Figure 10: A JSON Schema with properties named after RDF predicates.
+    Figure 13: A JSON Schema with properties named after RDF predicates.
 
    As we can see from the above schema, this practice can lead to
    inheriting non uniform naming conventions from the RDF vocabulary:
@@ -615,7 +739,7 @@ Table of Contents
      x-rdf: >-
        _:b0 :patronymicName "Ericsson" .
 
-      Figure 11: Drawbacks of using RDF property names as JSON Schema
+      Figure 14: Drawbacks of using RDF property names as JSON Schema
                                 properties.
 
    If the service evolves to be more generic (e.g., moving to foaf:),
@@ -627,7 +751,7 @@ Table of Contents
    property name, and either map it to http://w3.org/ns/
    person#patronymicName or foaf:familyName in the context.
 
-4.2.  Composability
+5.2.  Composability
 
    Always prefer explicit context information over implicit context
    composition.  Different implementations of context composition may
@@ -638,15 +762,15 @@ Table of Contents
    validating the composed context in the final schema definition
    reduces the risk of interoperability issues.
 
-5.  Security Considerations
+6.  Security Considerations
 
-5.1.  Integrity and Authenticity
+6.1.  Integrity and Authenticity
 
-5.2.  Conflicts
+6.2.  Conflicts
 
-6.  References
+7.  References
 
-6.1.  Normative References
+7.1.  Normative References
 
    [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
               Ed., "HTTP Semantics", STD 97, RFC 9110,
@@ -705,7 +829,7 @@ Table of Contents
               <https://www.iana.org/assignments/media-types/application/
               yaml>.
 
-6.2.  Informative References
+7.2.  Informative References
 
    [I-D.ietf-jsonpath-base]
               Gössner, S., Normington, G., and C. Bormann, "JSONPath:
@@ -766,7 +890,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 12: A JSON Schema data model with semantic context and type.
+    Figure 15: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -827,7 +951,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 13: A JSON Schema data model with semantic context and type.
+    Figure 16: A JSON Schema data model with semantic context and type.
 
    The resulting RDF graph is
 
@@ -839,7 +963,7 @@ A.2.  Schema with semantic and vocabulary information
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
 
-          Figure 14: An RDF graph with semantic context and type.
+          Figure 17: An RDF graph with semantic context and type.
 
 A.3.  Cyclic schema
 
@@ -913,7 +1037,7 @@ A.3.  Cyclic schema
      }
    }
 
-      Figure 15: An instance context containing redundant information
+      Figure 18: An instance context containing redundant information
 
 A.4.  Composite instance context
 
@@ -966,7 +1090,7 @@ A.4.  Composite instance context
          province: LT
          country: ITA
 
-                 Figure 16: A schema with object contexts.
+                 Figure 19: A schema with object contexts.
 
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
@@ -1008,7 +1132,7 @@ A.4.  Composite instance context
      }
    }
 
-       Figure 17: A @context that includes information from different
+       Figure 20: A @context that includes information from different
                                   schemas.
 
    That can be serialized as text/turtle as
@@ -1028,7 +1152,15 @@ A.4.  Composite instance context
      itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
    .
 
-                 Figure 18: The above entry in text/turtle
+                 Figure 21: The above entry in text/turtle
+
+A.5.  Bundling tools
+
+   The following is a list of some bundling tools:
+
+   *  https://redocly.com/docs/cli;
+
+   *  https://www.npmjs.com/package/swagger-cli.
 
 Appendix B.  Acknowledgements
 
