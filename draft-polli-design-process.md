@@ -93,6 +93,7 @@ informative:
   XS:
     title: XML Schema
     target: https://www.w3.org/2001/XMLSchema
+
 --- abstract
 
 This document provides guidance
@@ -587,6 +588,34 @@ iso_3166_3:ITA
 
 
 # Reusability
+
+## YAML Anchors and Merge Keys {#yaml-anchors}
+
+YAML anchors [YAML] can be used to define reusable components.
+
+~~~ yaml
+---
+    # A reusable schema component
+    RegistryString:
+      type: string
+      maxLength: 64 &maxlength
+    RegistryStringL:
+      type: string
+      maxLength: *maxlength
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context: &Person/context
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        givenName:
+          $ref: "#/components/schemas/RegistryString"
+        familyName:
+          $ref: "#/components/schemas/RegistryString"
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+~~~
 
 ## Bundling {#bundling}
 
