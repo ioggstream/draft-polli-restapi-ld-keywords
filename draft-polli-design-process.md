@@ -581,11 +581,7 @@ iso_3166_3:ITA
 {: title="An RDF graph with two nodes." #ex-nested-person-rdf}
 
 
-
-
 ## Interpreting schema instances {#interpreting}
-
-
 
 # Reusability
 
@@ -594,8 +590,11 @@ iso_3166_3:ITA
 YAML anchors [YAML] can be used to define reusable components.
 
 ~~~ yaml
----
-    # A reusable schema component
+# A reusable schema component
+openapi: 3.0.0
+...
+components:
+  schemas:
     RegistryString:
       type: string
       maxLength: 64 &maxlength
@@ -604,7 +603,7 @@ YAML anchors [YAML] can be used to define reusable components.
       maxLength: *maxlength
     Person:
       x-jsonld-type: Person
-      x-jsonld-context: &Person/context
+      x-jsonld-context: &Person_context
         "@vocab": "https://schema.org/"
       type: object
       properties:
@@ -616,6 +615,56 @@ YAML anchors [YAML] can be used to define reusable components.
         givenName: Diego Maria
         familyName: De La Peña
 ~~~
+
+YAML 1.1 support merge keys, which can be used to merge multiple mappings into a single mapping.
+
+This feature is not supported by all YAML parsers, but it is useful for reusing schema components.
+To increase interoperability, it is possible to post-process the schema to replace merge keys with the corresponding components before releasing it,
+similarly to what bundling tools do (see {{bundling}}).
+
+~~~ yaml
+openapi: 3.0.0
+...
+components:
+  schemas:
+    BasePerson:
+      type: object
+      properties: &BasePerson_properties
+        givenName:
+          $ref: "#/components/schemas/RegistryString"
+        familyName:
+          $ref: "#/components/schemas/RegistryString"
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context: &Person_context
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        <<: *BasePerson_properties
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+    MedicalCondition:
+      ...
+    Patient:
+      x-jsonld-type: Patient
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        # Include all the properties of BasePerson..
+        <<: *BasePerson_properties
+        # .. and add "diagnosis".
+        diagnosis:
+          $ref: "#/components/schemas/MedicalCondition"
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+~~~
+{: title="Reusing schema components with merge keys." #ex-merge-keys}
+
+
+
 
 ## Bundling {#bundling}
 
