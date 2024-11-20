@@ -1,0 +1,52 @@
+#
+# A schema using merge-keys to include all the properties of BasePerson and add "diagnosis".
+#
+openapi: 3.0.3
+# ...
+components:
+  schemas:
+    RegistryString:
+      type: string
+      maxLength: 64
+      description: >-
+        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+        associated with a naming property registry information.
+    BasePerson:
+      type: object
+      properties: &BasePerson_properties
+        givenName:
+          $ref: "#/components/schemas/RegistryString"
+        familyName:
+          $ref: "#/components/schemas/RegistryString"
+    Person:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        <<: *BasePerson_properties
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
+    MedicalCondition:
+      x-jsonld-type: MedicalCondition
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        epidemiology:
+          type: string
+    Patient:
+      x-jsonld-type: Patient
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+      type: object
+      properties:
+        # Include all the properties of BasePerson..
+        <<: *BasePerson_properties
+        # .. and add "diagnosis".
+        diagnosis:
+          $ref: "#/components/schemas/MedicalCondition"
+      example:
+        givenName: Diego Maria
+        familyName: De La Peña
