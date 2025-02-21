@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: Servizio consultazione anagrafe per gestione anagrafica evento di stato civile
+  version: '1.4.0'
+servers:
+  - url: https://anscservice.anpr.interno.it/services/service/ricerca
+    description: Servizio di produzione      
+  - url: https://anscservicepre.anpr.interno.it/services/service/ricerca
+    description: Servizio di preproduzione
+  - url: http://localhost:8088
+    description: Servizio mock locale
+paths:
+  /consultazione/anagrafica/{version}:
+    post:
+      parameters:
+        - name: version
+          in: path
+          required: true
+          description: La versione del servizio invocato
+          schema:
+            type: string
+      requestBody:
+         required: true
+         content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultazioneANPRRequest'
+      responses:
+       200:
+          description: Atto richiesto dalla ricerca
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ConsultazioneANPRResponse'
+       403:
+         description: Non autorizzato
+         content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ConsultazioneANPRResponse'
+       400:
+         description: Se non arriva una firma valida (deve essere diversa da null)
+         content:
+           application/json:
+              schema:
+                 $ref: '#/components/schemas/ConsultazioneANPRResponse'
+components:
+  schemas:
+    FiltroRicercaModel:
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
+      properties:
+        idAnpr:
+          type: string
+          description: Id Anpr
+        idAnsc:
+          type: string
+          description: Id Ansc
+        nomeUtente:
+          type: string
+          description: Nome dell'utente
+        cfUtente:
+         type: string
+         description: Codice Fiscale dell'utente
+        credenziale1:
+         type: string
+         description: Prima credenziale della firma
+        credenziale2:
+         type: string
+         description: Seconda credenziale della firma
+    ConsultazioneANPRRequest:
+      description: Ritorno del servizio specializzato per la consultazione ANPR
+      allOf:
+        - $ref: 'https://italia.github.io/ansc/docs/openapi/base_servizi.yaml#/components/schemas/AnscRequest'
+        - type: object
+          properties:         
+            filtroRicercaModel:
+                $ref: '#/components/schemas/FiltroRicercaModel'
+    ConsultazioneANPRResponse:
+      description: Ritorno del servizio specializzato per la consultazione ANP
+      allOf:
+        - $ref: 'https://italia.github.io/ansc/docs/openapi/base_servizi.yaml#/components/schemas/AnscResponse'
+        - type: object
+          properties:         
+            modelEvento:
+                 $ref: 'https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/test-anpr/tests/anpr-models.oas3.yaml#/components/schemas/ModelEvento'
