@@ -65,7 +65,7 @@ normative:
   URI: RFC3986
   RDF:
     title: RDF Concepts and Abstract Syntax
-    target: https://www.w3.org/TR/rdf11/
+    target: https://www.w3.org/TR/rdf11-concepts/
   RDFS:
     title: RDF Schema 1.1
     target: https://www.w3.org/TR/rdf-schema/
