@@ -663,8 +663,131 @@ components:
 ~~~
 {: title="Reusing schema components with merge keys." #ex-merge-keys}
 
+## Context propagation and composability
 
+In JSON-LD, context propagates from the parent object.
+See [Context Propagation](https://w3c.github.io/json-ld-syntax/#context-propagation) for more information.
+For example, the RDF representation of
 
+~~~ yaml
+"@context":
+  "@vocab": "https://schema.org/"
+  email: "@id"
+  "@base": "mailto:"
+email: homer@exampe.com
+children:
+- email: lisa@example.com
+  givenName: Lisa
+~~~
+
+is
+
+~~~ text
+@prefix : <https://schema.org/> .
+<mailto:homer@example.com> :children <mailto:lisa@example.com> .
+<mailto:lisa@example.com> :givenName "Lisa" .
+~~~
+
+This means that a child object inherits the context of the parent object even when the `$ref`d schema does not contain a context.
+
+For example, the following schema
+
+~~~ yaml
+openapi: 3.0.0
+# ...
+components:
+  schemas:
+    Child:
+      description: |-
+        A generic child, without any specific context.
+      type: object
+      properties:
+        telephone:
+          type: string
+        email:
+          type: string
+    Parent:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        email: "@id"
+        "@base": "mailto:"
+      type: object
+      properties:
+        telephone:
+          type: string
+        email:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Child"
+      example:
+        email: homer@example.com
+        children:
+        - email: lisa@example.com
+          telephone: +1-1234
+
+~~~
+
+produces this RDF graph:
+
+~~~ text
+@prefix : <https://schema.org/> .
+
+<mailto:homer@example.com> a schema.org:Person .
+<mailto:homer@example.com> :children <mailto:lisa@example.com> .
+<mailto:lisa@example.com> :telephone "+1-1234" .
+~~~
+
+If this behavior is not desired:
+
+1. it is possible to use the [`@propagate` keyword](https://w3c.github.io/json-ld-syntax/#context-propagation);
+2. the context of the child object can be explicitly defined;
+3. conflicting keywords should be re-defined in the referenced context.
+
+This is shown in the following example:
+
+~~~ yaml
+openapi: 3.0.0
+# ...
+components:
+  schemas:
+    Child:
+      description: |-
+        A generic child, without any specific context.
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        telephone: "@id"
+        "@base": "tel:"
+      type: object
+      properties:
+        telephone:
+          type: string
+        email:
+          type: string
+    Parent:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://schema.org/"
+        email: "@id"
+        "@base": "mailto:"
+      type: object
+      properties:
+        telephone:
+          type: string
+        email:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Child"
+      example:
+        email: homer@example.com
+        children:
+        - email: lisa@example.com
+          telephone: +1-1234
+~~~
 
 ## Bundling {#bundling}
 
