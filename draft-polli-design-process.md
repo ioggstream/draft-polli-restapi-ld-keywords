@@ -241,9 +241,14 @@ _:b0
 
 ## Modeling identifiers
 
-Identifiers are a special case of text-based entries,
-and isolating syntax from semantics can make things more
+Identifiers are a special case of text-based entries
+whose values may represent IRIs
+(see [Section 5.2 of JSON-LD 1.1](https://www.w3.org/TR/json-ld11-api/#iri-expansion)).
+Isolating syntax from semantics can make things more
 readable.
+
+Identifiers to be used as `@id` values
+are expected to be strings.
 
 ~~~ yaml
     NumericTaxCode:
@@ -487,6 +492,20 @@ iso_3166_3:ITA
 .
 ~~~
 {: title="An RDF graph with a named node." #ex-country-rdf-named-node}
+
+### Caveats on identifiers
+
+Typical ways to associate an identifier to a resource
+in RDF are using predicates as `skos:notation` or `dcterms:identifier`.
+
+Their values are typed literals (i.e., not words and so
+without language tags,
+see  [SKOS Primier](https://www.w3.org/TR/skos-primer/#secnotations))
+
+When an identifier is used as an URI part
+
+
+
 
 ## Modeling an object with references
 

@@ -840,6 +840,33 @@ _:b0 rdf:type itl:Feature ;
 ~~~
 {:title="The above entry in text/turtle" #ex-composite-context-turtle}
 
+## Identifiers and IRI Expansion {#ex-iri-expansions}
+
+IRI expansion expects string identifiers,
+so an `@id` that should be expanded in conjunction with a `@base`
+can only be assigned to `string` properties.
+
+~~~ yaml
+
+Person:
+  type: object
+  x-jsonld-type: "Person"
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CPV/"
+    "@base": "https://example.org/people/"
+    taxCode: "@id"  # taxCode is a string property.
+  required:
+  - taxCode
+  properties:
+    # Since taxCode is an identifier to be expanded
+    #   with @base, it must be a string.
+    taxCode:
+      type: string
+  example:
+    taxCode: "RSSMRA85M01H501U"
+~~~
+{: title="A schema that uses IRI expansion with a string property." #ex-iri-expansion}
+
 # Acknowledgements
 
 Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.
