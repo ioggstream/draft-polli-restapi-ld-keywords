@@ -4,9 +4,11 @@ on:
   push:
     paths:
     - "draft-*.md"
+    - .github/workflows/*.yml
   pull_request:
     paths:
     - "draft-*.md"
+    - .github/workflows/*.yml
 jobs:
   build:
     name: "Update Editor's Copy"
