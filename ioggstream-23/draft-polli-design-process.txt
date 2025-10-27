@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                           23 October 2024
-Expires: 26 April 2025
+Intended status: Informational                           27 October 2025
+Expires: 30 April 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,11 +44,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2025.
+   This Internet-Draft will expire on 30 April 2026.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -69,22 +69,29 @@ Table of Contents
      2.1.  Simple text values
      2.2.  Modeling identifiers
    3.  Modeling an vocabulary-bases entry
-     3.1.  Modeling an object with references
-     3.2.  Interpreting schema instances
-   4.  Interoperability Considerations
-     4.1.  JSON Schema property names
-     4.2.  Composability
-   5.  Security Considerations
-     5.1.  Integrity and Authenticity
-     5.2.  Conflicts
-   6.  References
-     6.1.  Normative References
-     6.2.  Informative References
+     3.1.  Caveats on identifiers
+     3.2.  Modeling an object with references
+     3.3.  Interpreting schema instances
+   4.  Reusability
+     4.1.  YAML Anchors and Merge Keys
+     4.2.  Context propagation and composability
+   5.  Reusability
+     5.1.  Bundling
+   6.  Interoperability Considerations
+     6.1.  JSON Schema property names
+     6.2.  Composability
+   7.  Security Considerations
+     7.1.  Integrity and Authenticity
+     7.2.  Conflicts
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
    Appendix A.  Examples
      A.1.  Schema with semantic information
      A.2.  Schema with semantic and vocabulary information
      A.3.  Cyclic schema
      A.4.  Composite instance context
+     A.5.  Bundling tools
    Appendix B.  Acknowledgements
    FAQ
    Change Log
@@ -235,8 +242,12 @@ Table of Contents
 
 2.2.  Modeling identifiers
 
-   Identifiers are a special case of text-based entries, and isolating
+   Identifiers are a special case of text-based entries whose values may
+   represent IRIs (see Section 5.2 of JSON-LD 1.1
+   (https://www.w3.org/TR/json-ld11-api/#iri-expansion)).  Isolating
    syntax from semantics can make things more readable.
+
+   Identifiers to be used as @id values are expected to be strings.
 
        NumericTaxCode:
          description: >-
@@ -378,7 +389,7 @@ Table of Contents
 
              Figure 5: A JSON Schema for a Country enumeration.
 
-   The resulting schema instance is a simple string (e.g.  ITA).  To be
+   The resulting schema instance is a simple string (e.g. ITA).  To be
    able to represent the entry in JSON-LD, an enumerated entry can be
    modeled using a specific property for the identifier, and a JSON-LD
    context.
@@ -463,7 +474,18 @@ Table of Contents
 
                  Figure 7: An RDF graph with a named node.
 
-3.1.  Modeling an object with references
+3.1.  Caveats on identifiers
+
+   Typical ways to associate an identifier to a resource in RDF are
+   using predicates as skos:notation or dcterms:identifier.
+
+   Their values are typed literals (i.e., not words and so without
+   language tags, see SKOS Primier (https://www.w3.org/TR/skos-
+   primer/#secnotations))
+
+   When an identifier is used as an URI part
+
+3.2.  Modeling an object with references
 
    When modeling an object with references, the parent's context will
    normally provide the context for the child.
@@ -552,11 +574,333 @@ Table of Contents
 
                    Figure 9: An RDF graph with two nodes.
 
-3.2.  Interpreting schema instances
+3.3.  Interpreting schema instances
 
-4.  Interoperability Considerations
+4.  Reusability
 
-4.1.  JSON Schema property names
+4.1.  YAML Anchors and Merge Keys
+
+   YAML anchors [YAML] can be used to define reusable components.
+
+   # A reusable schema component
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       RegistryString:
+         type: string
+         maxLength: 64 &maxlength
+       RegistryStringL:
+         type: string
+         maxLength: *maxlength
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context: &Person_context
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           givenName:
+             $ref: "#/components/schemas/RegistryString"
+           familyName:
+             $ref: "#/components/schemas/RegistryString"
+         example:
+           givenName: Diego Maria
+           familyName: De La Peña
+
+   YAML 1.1 support merge keys, which can be used to merge multiple
+   mappings into a single mapping.
+
+   This feature is not supported by all YAML parsers, but it is useful
+   for reusing schema components.  To increase interoperability, it is
+   possible to post-process the schema to replace merge keys with the
+   corresponding components before releasing it, similarly to what
+   bundling tools do (see Section 5.1).
+
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       BasePerson:
+         type: object
+         properties: &BasePerson_properties
+           givenName:
+             $ref: "#/components/schemas/RegistryString"
+           familyName:
+             $ref: "#/components/schemas/RegistryString"
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context: &Person_context
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           <<: *BasePerson_properties
+         example:
+           givenName: Diego Maria
+           familyName: De La Peña
+       MedicalCondition:
+         ...
+       Patient:
+         x-jsonld-type: Patient
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           # Include all the properties of BasePerson..
+           <<: *BasePerson_properties
+           # .. and add "diagnosis".
+           diagnosis:
+             $ref: "#/components/schemas/MedicalCondition"
+         example:
+           givenName: Diego Maria
+           familyName: De La Peña
+
+           Figure 10: Reusing schema components with merge keys.
+
+4.2.  Context propagation and composability
+
+   In JSON-LD, context propagates from the parent object.  See Context
+   Propagation (https://w3c.github.io/json-ld-syntax/#context-
+   propagation) for more information.  For example, the RDF
+   representation of
+
+   "@context":
+     "@vocab": "https://schema.org/"
+     email: "@id"
+     "@base": "mailto:"
+   email: homer@exampe.com
+   children:
+   - email: lisa@example.com
+     givenName: Lisa
+
+   is
+
+   @prefix : <https://schema.org/> .
+   <mailto:homer@example.com> :children <mailto:lisa@example.com> .
+   <mailto:lisa@example.com> :givenName "Lisa" .
+
+   This means that a child object inherits the context of the parent
+   object even when the $refd schema does not contain a context.
+
+   For example, the following schema
+
+   openapi: 3.0.0
+   # ...
+   components:
+     schemas:
+       Child:
+         description: |-
+           A generic child, without any specific context.
+         type: object
+         properties:
+           telephone:
+             type: string
+           email:
+             type: string
+       Parent:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           email: "@id"
+           "@base": "mailto:"
+         type: object
+         properties:
+           telephone:
+             type: string
+           email:
+             type: string
+           children:
+             type: array
+             items:
+               $ref: "#/components/schemas/Child"
+         example:
+           email: homer@example.com
+           children:
+           - email: lisa@example.com
+             telephone: +1-1234
+
+   produces this RDF graph:
+
+   @prefix : <https://schema.org/> .
+
+   <mailto:homer@example.com> a schema.org:Person .
+   <mailto:homer@example.com> :children <mailto:lisa@example.com> .
+   <mailto:lisa@example.com> :telephone "+1-1234" .
+
+   If this behavior is not desired:
+
+   1.  it is possible to use the @propagate keyword
+       (https://w3c.github.io/json-ld-syntax/#context-propagation);
+
+   2.  the context of the child object can be explicitly defined;
+
+   3.  conflicting keywords should be re-defined in the referenced
+       context;
+
+   as shown in the following example:
+
+   openapi: 3.0.0
+   # ...
+   components:
+     schemas:
+       Child:
+         description: |-
+           A generic child, without any specific context.
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           telephone: "@id"
+           "@base": "tel:"
+         type: object
+         properties:
+           telephone:
+             type: string
+           email:
+             type: string
+       Parent:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+           email: "@id"
+           "@base": "mailto:"
+         type: object
+         properties:
+           telephone:
+             type: string
+           email:
+             type: string
+           children:
+             type: array
+             items:
+               $ref: "#/components/schemas/Child"
+         example:
+           email: homer@example.com
+           children:
+           - email: lisa@example.com
+             telephone: +1-1234
+
+5.  Reusability
+
+5.1.  Bundling
+
+   When creating schemas, it is convenient to consolidate reusable
+   components in separate resources.  This eases maintenance and enables
+   component reuse, like shown in the following two examples.
+
+   # A definitions.yaml with reusable components at https://example.com/definitions.yaml
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       NumericTaxCode:
+         description: >-
+           Legal persons have a 11-digit tax code.
+         type: string
+         pattern: "^[0-9]{11}$"
+         example: "12345678901"
+       StringTaxCode:
+         description: >-
+           Natural persons have a 16-character tax code.
+         type: string
+         pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
+         example: RSSMRO99A04H501A
+       TaxCode:
+         description: >-
+           This is a purely syntactic definition, and can
+           be used in different semantic contexts.
+         oneOf:
+           - $ref: "#/components/schemas/NumericTaxCode"
+           - $ref: "#/components/schemas/StringTaxCode"
+
+          Figure 11: A definitions.yaml with reusable components.
+
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           tax_code:
+             $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+           ...
+       ResidentPerson:
+         x-jsonld-type: RPO:RegisteredResidentPerson
+         x-jsonld-context:
+           RPO: https://w3id.org/italia/onto/RPO/
+           tax_code: '@id'
+           '@base': 'urn:example:tax:it:'
+         type: object
+         properties:
+           tax_code:
+             $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
+           ...
+
+              Figure 12: A schema using an external component.
+
+   Bundling is the process of combining multiple OpenAPI and JSON schema
+   documents in a single document in order to distribute a consolidated
+   service specification in a single file.  Bundling ensures that all
+   necessary schema components are contained within a single file, and
+   avoids the need to resolve external references.
+
+   Bundling resolves all remote references, adds them to the schema, and
+   replaces the associated $ref with a local reference.
+
+   openapi: 3.0.0
+   ...
+   components:
+     schemas:
+       Person:
+         x-jsonld-type: Person
+         x-jsonld-context:
+           "@vocab": "https://schema.org/"
+         type: object
+         properties:
+           tax_code:
+             $ref: "#/components/schemas/TaxCode"
+           ...
+       ResidentPerson:
+         x-jsonld-type: RPO:RegisteredResidentPerson
+         x-jsonld-context:
+           RPO: https://w3id.org/italia/onto/RPO/
+           tax_code: '@id'
+           '@base': 'urn:example:tax:it:'
+         type: object
+         required:
+           - tax_code
+         properties:
+           tax_code:
+             $ref: '#/components/schemas/TaxCode'
+           ...
+       #
+       # The bundler adds the following components to the schema.
+       #
+       NumericTaxCode:
+         description: Legal persons have a 11-digit tax code.
+         type: string
+         pattern: ^[0-9]{11}$
+         example: '12345678901'
+       StringTaxCode:
+         description: Natural persons have a 16-character tax code.
+         type: string
+         pattern: ^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$
+         example: RSSMRO99A04H501A
+       TaxCode:
+         description: This is a purely syntactic definition, and can be used in different semantic contexts.
+         oneOf:
+           - $ref: '#/components/schemas/NumericTaxCode'
+           - $ref: '#/components/schemas/StringTaxCode'
+
+                        Figure 13: A bundled schema.
+
+   Bundling can be done in different ways.  Appendix A.5 contains a list
+   of bundling tools.
+
+6.  Interoperability Considerations
+
+6.1.  JSON Schema property names
 
    To minimize context information, a common practice is to name JSON
    Schema properties after the corresponding RDF predicates.
@@ -582,7 +926,7 @@ Table of Contents
        hasOccupation:
          $ref: "#/Occupation"
 
-    Figure 10: A JSON Schema with properties named after RDF predicates.
+    Figure 14: A JSON Schema with properties named after RDF predicates.
 
    As we can see from the above schema, this practice can lead to
    inheriting non uniform naming conventions from the RDF vocabulary:
@@ -615,7 +959,7 @@ Table of Contents
      x-rdf: >-
        _:b0 :patronymicName "Ericsson" .
 
-      Figure 11: Drawbacks of using RDF property names as JSON Schema
+      Figure 15: Drawbacks of using RDF property names as JSON Schema
                                 properties.
 
    If the service evolves to be more generic (e.g., moving to foaf:),
@@ -627,7 +971,7 @@ Table of Contents
    property name, and either map it to http://w3.org/ns/
    person#patronymicName or foaf:familyName in the context.
 
-4.2.  Composability
+6.2.  Composability
 
    Always prefer explicit context information over implicit context
    composition.  Different implementations of context composition may
@@ -638,15 +982,15 @@ Table of Contents
    validating the composed context in the final schema definition
    reduces the risk of interoperability issues.
 
-5.  Security Considerations
+7.  Security Considerations
 
-5.1.  Integrity and Authenticity
+7.1.  Integrity and Authenticity
 
-5.2.  Conflicts
+7.2.  Conflicts
 
-6.  References
+8.  References
 
-6.1.  Normative References
+8.1.  Normative References
 
    [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
               Ed., "HTTP Semantics", STD 97, RFC 9110,
@@ -668,8 +1012,8 @@ Table of Contents
    [LD-KEYWORDS]
               Polli, R., "REST API Linked Data Keywords", Work in
               Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
-              04, 22 July 2024, <https://datatracker.ietf.org/doc/html/
-              draft-polli-restapi-ld-keywords-04>.
+              06, 23 April 2025, <https://datatracker.ietf.org/doc/html/
+              draft-polli-restapi-ld-keywords-06>.
 
    [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
               Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
@@ -705,7 +1049,7 @@ Table of Contents
               <https://www.iana.org/assignments/media-types/application/
               yaml>.
 
-6.2.  Informative References
+8.2.  Informative References
 
    [I-D.ietf-jsonpath-base]
               Gössner, S., Normington, G., and C. Bormann, "JSONPath:
@@ -766,7 +1110,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 12: A JSON Schema data model with semantic context and type.
+    Figure 16: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -827,7 +1171,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 13: A JSON Schema data model with semantic context and type.
+    Figure 17: A JSON Schema data model with semantic context and type.
 
    The resulting RDF graph is
 
@@ -839,7 +1183,7 @@ A.2.  Schema with semantic and vocabulary information
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
 
-          Figure 14: An RDF graph with semantic context and type.
+          Figure 18: An RDF graph with semantic context and type.
 
 A.3.  Cyclic schema
 
@@ -891,7 +1235,7 @@ A.3.  Cyclic schema
      }
    }
 
-   Applying the workflow described in Section 3.2 just recursively
+   Applying the workflow described in Section 3.3 just recursively
    copying the x-jsonld-context, the instance context could have been
    more complex.
 
@@ -913,7 +1257,7 @@ A.3.  Cyclic schema
      }
    }
 
-      Figure 15: An instance context containing redundant information
+      Figure 19: An instance context containing redundant information
 
 A.4.  Composite instance context
 
@@ -966,7 +1310,7 @@ A.4.  Composite instance context
          province: LT
          country: ITA
 
-                 Figure 16: A schema with object contexts.
+                 Figure 20: A schema with object contexts.
 
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
@@ -1008,7 +1352,7 @@ A.4.  Composite instance context
      }
    }
 
-       Figure 17: A @context that includes information from different
+       Figure 21: A @context that includes information from different
                                   schemas.
 
    That can be serialized as text/turtle as
@@ -1028,7 +1372,15 @@ A.4.  Composite instance context
      itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
    .
 
-                 Figure 18: The above entry in text/turtle
+                 Figure 22: The above entry in text/turtle
+
+A.5.  Bundling tools
+
+   The following is a list of some bundling tools:
+
+   *  https://redocly.com/docs/cli;
+
+   *  https://www.npmjs.com/package/swagger-cli.
 
 Appendix B.  Acknowledgements
 

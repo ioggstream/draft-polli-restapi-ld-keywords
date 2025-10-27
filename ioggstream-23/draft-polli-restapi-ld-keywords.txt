@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                           23 October 2024
-Expires: 26 April 2025
+Intended status: Informational                           27 October 2025
+Expires: 30 April 2026
 
 
                      REST API Linked Data Keywords
@@ -45,11 +45,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2025.
+   This Internet-Draft will expire on 30 April 2026.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -88,6 +88,7 @@ Table of Contents
      A.2.  Schema with semantic and vocabulary information
      A.3.  Cyclic schema
      A.4.  Composite instance context
+     A.5.  Identifiers and IRI Expansion
    Appendix B.  Acknowledgements
    FAQ
    Change Log
@@ -531,7 +532,7 @@ Table of Contents
               Specification 3.0.0", 26 July 2017.
 
    [RDF]      "RDF Concepts and Abstract Syntax", n.d.,
-              <https://www.w3.org/TR/rdf11/>.
+              <https://www.w3.org/TR/rdf11-concepts/>.
 
    [RDFS]     "RDF Schema 1.1", n.d.,
               <https://www.w3.org/TR/rdf-schema/>.
@@ -888,6 +889,31 @@ A.4.  Composite instance context
 
                  Figure 11: The above entry in text/turtle
 
+A.5.  Identifiers and IRI Expansion
+
+   IRI expansion expects string identifiers, so an @id that should be
+   expanded in conjunction with a @base can only be assigned to string
+   properties.
+
+   Person:
+     type: object
+     x-jsonld-type: "Person"
+     x-jsonld-context:
+       "@vocab": "https://w3id.org/italia/onto/CPV/"
+       "@base": "https://example.org/people/"
+       taxCode: "@id"  # taxCode is a string property.
+     required:
+     - taxCode
+     properties:
+       # Since taxCode is an identifier to be expanded
+       #   with @base, it must be a string.
+       taxCode:
+         type: string
+     example:
+       taxCode: "RSSMRA85M01H501U"
+
+    Figure 12: A schema that uses IRI expansion with a string property.
+
 Appendix B.  Acknowledgements
 
    Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being
@@ -940,10 +966,9 @@ FAQ
 
    Q: Why not defining a mechanism to attach semantic information to
 
-   non-object schemas (e.g.  JSON Strings) like other
-   implementations?  This is actually problematic.  Look at this example
-      that reuses the TaxCode schema and semantic in different
-      properties.
+   non-object schemas (e.g. JSON Strings) like other implementations?  T
+      his is actually problematic.  Look at this example that reuses the
+      TaxCode schema and semantic in different properties.
 
    Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?  W
       eb and mobile developers consider JSON Schema is easier to use
@@ -994,7 +1019,7 @@ FAQ
               while it's an owl:DataTypeProperty;
            2. the `rdfs:range` for CPV:taxCode is `rdfs:Literal`.
 
-     Figure 12: The above code is ambiguous, because the rdfs:range of
+     Figure 13: The above code is ambiguous, because the rdfs:range of
                         CPV:taxCode is rdfs:Literal
 
 Change Log
