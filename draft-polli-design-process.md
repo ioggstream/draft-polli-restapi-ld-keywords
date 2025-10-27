@@ -761,11 +761,11 @@ produces this RDF graph:
 
 If this behavior is not desired:
 
-1. it is possible to use the [`@propagate` keyword](https://w3c.github.io/json-ld-syntax/#context-propagation);
-2. the context of the child object can be explicitly defined;
-3. conflicting keywords should be re-defined in the referenced context.
+1. it is possible to use the [@propagate keyword](https://w3c.github.io/json-ld-syntax/#context-propagation);
+1. the context of the child object can be explicitly defined;
+1. conflicting keywords should be re-defined in the referenced context;
 
-This is shown in the following example:
+as shown in the following example:
 
 ~~~ yaml
 openapi: 3.0.0
@@ -807,131 +807,6 @@ components:
         - email: lisa@example.com
           telephone: +1-1234
 ~~~
-
-## Bundling {#bundling}
-
-When creating schemas, it is convenient to consolidate reusable components
-in separate resources.
-This eases maintenance and enables component reuse,
-like shown in the following two examples.
-
-~~~ yaml
-# A definitions.yaml with reusable components at https://example.com/definitions.yaml
-openapi: 3.0.0
-...
-components:
-  schemas:
-    NumericTaxCode:
-      description: >-
-        Legal persons have a 11-digit tax code.
-      type: string
-      pattern: "^[0-9]{11}$"
-      example: "12345678901"
-    StringTaxCode:
-      description: >-
-        Natural persons have a 16-character tax code.
-      type: string
-      pattern: "^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"
-      example: RSSMRO99A04H501A
-    TaxCode:
-      description: >-
-        This is a purely syntactic definition, and can
-        be used in different semantic contexts.
-      oneOf:
-        - $ref: "#/components/schemas/NumericTaxCode"
-        - $ref: "#/components/schemas/StringTaxCode"
-~~~
-{: title="A definitions.yaml with reusable components." #ex-definitions }
-
-~~~ yaml
-openapi: 3.0.0
-...
-components:
-  schemas:
-    Person:
-      x-jsonld-type: Person
-      x-jsonld-context:
-        "@vocab": "https://schema.org/"
-      type: object
-      properties:
-        tax_code:
-          $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
-        ...
-    ResidentPerson:
-      x-jsonld-type: RPO:RegisteredResidentPerson
-      x-jsonld-context:
-        RPO: https://w3id.org/italia/onto/RPO/
-        tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
-      type: object
-      properties:
-        tax_code:
-          $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
-        ...
-
-~~~
-{: title="A schema using an external component." #ex-bundled-schema-definitions }
-
-Bundling is the process of combining multiple OpenAPI and JSON schema documents in a single document
-in order to distribute a consolidated service specification in a single file.
-Bundling ensures that all necessary schema components are contained within a single file,
-and avoids the need to resolve external references.
-
-Bundling resolves all remote references,
-adds them to the schema,
-and replaces the associated `$ref` with a local reference.
-
-~~~ yaml
-openapi: 3.0.0
-...
-components:
-  schemas:
-    Person:
-      x-jsonld-type: Person
-      x-jsonld-context:
-        "@vocab": "https://schema.org/"
-      type: object
-      properties:
-        tax_code:
-          $ref: "#/components/schemas/TaxCode"
-        ...
-    ResidentPerson:
-      x-jsonld-type: RPO:RegisteredResidentPerson
-      x-jsonld-context:
-        RPO: https://w3id.org/italia/onto/RPO/
-        tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
-      type: object
-      required:
-        - tax_code
-      properties:
-        tax_code:
-          $ref: '#/components/schemas/TaxCode'
-        ...
-    #
-    # The bundler adds the following components to the schema.
-    #
-    NumericTaxCode:
-      description: Legal persons have a 11-digit tax code.
-      type: string
-      pattern: ^[0-9]{11}$
-      example: '12345678901'
-    StringTaxCode:
-      description: Natural persons have a 16-character tax code.
-      type: string
-      pattern: ^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$
-      example: RSSMRO99A04H501A
-    TaxCode:
-      description: This is a purely syntactic definition, and can be used in different semantic contexts.
-      oneOf:
-        - $ref: '#/components/schemas/NumericTaxCode'
-        - $ref: '#/components/schemas/StringTaxCode'
-~~~
-{: title="A bundled schema." #ex-bundled-schema}
-
-Bundling can be done in different ways.
-{{ex-bundling-tools}} contains a list of bundling tools.
-
 
 # Reusability
 
