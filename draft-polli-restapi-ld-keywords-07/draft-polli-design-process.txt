@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                           27 October 2025
-Expires: 30 April 2026
+Intended status: Informational                           3 November 2025
+Expires: 7 May 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 April 2026.
+   This Internet-Draft will expire on 7 May 2026.
 
 Copyright Notice
 
