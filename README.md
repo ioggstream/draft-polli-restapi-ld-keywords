@@ -10,7 +10,7 @@ Further information:
 
 * [slides](https://docs.google.com/presentation/d/1lkGNWacpAEE9YXmeuCW1XFZ5d9ubBZG7KifQa7J7K2M/edit#slide=id.g6340a851bc_0_156)
 * [whitepaper](https://docs.google.com/document/d/1fBRH2wtg1p_g4voNSTlHiSJmKgvfNaIsUXwPBO36RuM/edit#heading=h.thgum5f5v4vx)
-* [online editor](https://italia.github.io/swagger-editor/)
+* [online editor](https://teamdigitale.github.io/dati-semantic-schema-editor/)
 * [very basic demo](https://ioggstream.github.io/draft-polli-restapi-ld-keywords/demo.html)
 
 ## Building the Draft
