@@ -45,14 +45,19 @@ components:
       example:
         identifier: ITA
         name: Italy
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+
+        <https://en.wikipedia.org/wiki/ITA> a :Country ;
+            :name "Italy" .
     Person:
       x-jsonld-type: Person
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         nationality:
-          "@type": "@id"
+          "@type": "@vocab"
           "@context":
-            "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+            "@vocab": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
       type: object
       properties:
         givenName:
@@ -65,6 +70,13 @@ components:
         givenName: John
         familyName: Doe
         nationality: ITA
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+
+        [] a :Person ;
+            :familyName "Doe" ;
+            :givenName "John" ;
+            :nationality <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#ITA> .
     NestedPerson:
       x-jsonld-type: Person
       x-jsonld-context:

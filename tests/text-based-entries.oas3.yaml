@@ -54,7 +54,7 @@ components:
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         tax_code: "@id"
-        "@base": "urn:example:tax:it:"
+        "@base": "urn:example:tax:it/"
         given_name: givenName
         family_name: familyName
       type: object
@@ -76,13 +76,14 @@ components:
         tax_code: RSSMRO99A04H501A
         children:
         - tax_code: RSSLCC99A04H501A
-      x-rdf: >-
-        urn:example:tax:it:RSSMRO99A04H501A a schema:Person ;
-             schema:givenName "Mario" ;
-             schema:familyName "Rossi" ;
-             schema:children
-             urn:example:tax:it:RSSLCC99A04H501A
-        .
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+
+        <urn:example:tax:it/RSSMRO99A04H501A> a :Person ;
+            :children <urn:example:tax:it/RSSLCC99A04H501A> ;
+            :familyName "Rossi" ;
+            :givenName "Mario" .
+
     RegistryStringL:
       type: string
       maxLength: 64
@@ -106,7 +107,7 @@ components:
       x-jsonld-type: RegisteredResidentPerson
       x-jsonld-context:
         "@vocab": "https://schema.org/"
-        "@base": "urn:example:anpr.it:"
+        "@base": "urn:example:person/"
         person_id: "@id"
         tax_code: taxCode
         given_name: givenName
@@ -132,17 +133,17 @@ components:
         children:
         - person_id: "2234567890123457"
           tax_code: RSSLCC99A04H501A
-      x-rdf: >-
-        <urn:example:person:1234567890123456> a schema:RegisteredResidentPerson ;
-             schema:givenName "Mario" ;
-             schema:familyName "Rossi" ;
-             schema:taxCode "RSSMRO99A04H501A" ;
-             schema:children
-             <urn:example:person:2234567890123457>
-        .
-        <urn:example:person:2234567890123457> a schema:RegisteredResidentPerson ;
-             schema:taxCode "RSSLCC99A04H501A"
-        .
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+
+        <urn:example:person/1234567890123456> a :RegisteredResidentPerson ;
+            :children <urn:example:person/2234567890123457> ;
+            :familyName "Rossi" ;
+            :givenName "Mario" ;
+            :taxCode "RSSMRO99A04H501A" .
+
+        <urn:example:person/2234567890123457> :taxCode "RSSLCC99A04H501A" .
+
 #
 # If this is a schema-only file, you can leave the following sections empty.
 # Do not remove them, as they are required by the OpenAPI 3.0 specification.

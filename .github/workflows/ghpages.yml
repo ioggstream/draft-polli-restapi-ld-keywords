@@ -50,4 +50,3 @@ jobs:
         path: |
           draft-*.html
           draft-*.txt
-

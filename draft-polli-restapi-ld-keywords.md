@@ -603,9 +603,9 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@type": "@id"
+       "@type": "@vocab"
        "@context":
-          "@base": "http://publications.europa.eu/resource/authority/country/"
+          "@vocab": "http://publications.europa.eu/resource/authority/country/"
 
   type: object
   required:
@@ -733,14 +733,14 @@ BirthPlace:
     "@vocab": "https://w3id.org/italia/onto/CLV/"
     country:
       "@id": "hasCountry"
-      "@type": "@id"
+      "@type": "@vocab"
       "@context":
-        "@base": "http://publications.europa.eu/resource/authority/country/"
+        "@vocab": "http://publications.europa.eu/resource/authority/country/"
     province:
       "@id": "hasProvince"
-      "@type": "@id"
+      "@type": "@vocab"
       "@context":
-        "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+        "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
   type: object
   required:
     - province
@@ -801,16 +801,16 @@ The instance context contains information from both
         "city": "hasCity",
         "country": {
           "@id": "hasCountry",
-          "@type": "@id",
+          "@type": "@vocab",
           "@context": {
-            "@base": "http://publications.europa.eu/resource/authority/country/"
+            "@vocab": "http://publications.europa.eu/resource/authority/country/"
           }
         },
         "province": {
           "@id": "hasProvince",
-          "@type": "@id",
+          "@type": "@vocab",
           "@context": {
-            "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+            "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
           }
         }
       }

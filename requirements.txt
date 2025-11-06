@@ -1,5 +1,5 @@
 jsonschema==4.6.0
-PyLD==2.0.3
+PyLD==2.0.4
 pytest==7.1.2
 PyYAML
 typing_extensions==4.2.0
