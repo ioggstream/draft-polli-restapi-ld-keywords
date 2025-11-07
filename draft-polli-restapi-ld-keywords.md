@@ -644,6 +644,16 @@ The resulting RDF graph is
 ~~~
 {: title="An RDF graph with semantic context and type." #ex-rdf-from-json}
 
+Note that in the above example:
+
+- the `email` property is mapped to `@id`,
+  thus making the instance IRI dependent on its value.
+  Since it's not an absolute IRI,
+  the `@base` keyword is used to provide a base IRI
+  i.e. `https://example.org/people/` + `jon@doe.example`;
+- the `country` property is associated with the country
+  vocabulary using the `@type: @vocab` keyword.
+
 ## Cyclic schema {#ex-cyclic-schema}
 
 The following schema contains a cyclic reference.

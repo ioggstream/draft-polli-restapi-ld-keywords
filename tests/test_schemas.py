@@ -16,10 +16,12 @@ SPEC_MD = DATADIR.parent / "draft-polli-restapi-ld-keywords.md"
 DESIGN_MD = DATADIR.parent / "draft-polli-design-process.md"
 
 
-testfiles = [yaml.safe_load(x.read_text()) for x in DATADIR.glob("*.oas3.yaml")]
+testfiles = [
+    (yaml.safe_load(x.read_text()), x) for x in DATADIR.glob("section*.oas3.yaml")
+]
 testschemas = [
-    (schema_name, schema_content)
-    for f in testfiles
+    (schema_name, schema_content, f)
+    for f, fpath in testfiles
     for schema_name, schema_content in f["components"]["schemas"].items()
 ]
 
@@ -89,30 +91,32 @@ def test_ld_1():
     raise NotImplementedError
 
 
-@pytest.mark.parametrize("schema_name, schema_content", testschemas)
-def test_oas_annotated_schemas(schema_name, schema_content):
+@pytest.mark.parametrize("schema_name, schema_content, schemas", testschemas)
+def test_oas_annotated_schemas(schema_name, schema_content, schemas):
     if not (expected := schema_content.get("x-rdf")):
-        raise pytest.skip("No expected status  in schema")
+        raise pytest.skip(f"No expected status  in schema: {schema_name}")
 
     if not (i := schema_content["example"]):
         raise pytest.skip("Empty example in schema")
 
-    if not (c := schema_content.get("x-jsonld-context")):
+    if not (schema_content.get("x-jsonld-context")):
         raise pytest.skip("No context directive in schema")
 
-    t = (
-        {"@type": schema_content.get("x-jsonld-type")}
-        if schema_content.get("x-jsonld-type")
-        else {}
-    )
-    l = {"@context": c, **i, **t}
+    instance = schema_content["example"]
+
+    i = Instance(instance, schema_content)
+    i.process_instance(resolver=RefResolver(schemas))
+
+    g_instance = _parse_rdf(data=json.dumps(i.ld), format="application/ld+json")
+    assert (
+        len(g_instance) > 0
+    ), f"Test case {schema_name} produced empty graph: \n{yaml.safe_dump(i.ld)}"
 
     g = Graph()
-    g.parse(data=json.dumps(l), format="application/ld+json")
-    ttl = g.serialize(format="text/n3")
-    assert (
-        ttl.strip() == expected.strip()
-    ), f"Schema {schema_name} did not match expected RDF output"
+    g.parse(data=json.dumps(i.ld), format="application/ld+json")
+    g_expected = _parse_rdf(data=expected, format="text/turtle")
+
+    assert_isomorphic(g, g_expected)
 
 
 def parse_spec_md(mdfile: Path):
