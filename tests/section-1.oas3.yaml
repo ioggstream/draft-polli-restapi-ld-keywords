@@ -35,7 +35,7 @@ components:
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         identifier: "@id"
-        "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+        "@base": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         identifier:
@@ -45,14 +45,24 @@ components:
       example:
         identifier: ITA
         name: Italy
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+        @prefix country: <http://publications.europa.eu/resource/authority/country/> .
+
+        country:ITA a :Country ;
+            :name "Italy" .
     Person:
+      description: |-
+        A person where nationality
+        is represented as a country code
+        with @vocab mapping.
       x-jsonld-type: Person
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         nationality:
-          "@type": "@id"
+          "@type": "@vocab"
           "@context":
-            "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+            "@vocab": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         givenName:
@@ -65,6 +75,13 @@ components:
         givenName: John
         familyName: Doe
         nationality: ITA
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+
+        [] a :Person ;
+            :familyName "Doe" ;
+            :givenName "John" ;
+            :nationality <http://publications.europa.eu/resource/authority/country/ITA> .
     NestedPerson:
       x-jsonld-type: Person
       x-jsonld-context:
@@ -83,3 +100,15 @@ components:
         nationality:
           identifier: ITA
           name: Italy
+      x-rdf: |-
+        @prefix : <https://schema.org/> .
+        @prefix country: <http://publications.europa.eu/resource/authority/country/> .
+
+        [] a :Person ;
+            :familyName "Doe" ;
+            :givenName "John" ;
+            :nationality country:ITA .
+
+        country:ITA a :Country ;
+            :name "Italy"
+            .
