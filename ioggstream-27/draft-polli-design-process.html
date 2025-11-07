@@ -1165,13 +1165,18 @@ for designing schemas using REST API Linked Data keywords.<a href="#section-abst
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-modeling-an-vocabulary-base" class="internal xref">Modeling an vocabulary-bases entry</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-modeling-an-vocabulary-base" class="internal xref">Modeling an vocabulary-based entry</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
                 <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-caveats-on-identifiers" class="internal xref">Caveats on identifiers</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-modeling-an-object-with-ref" class="internal xref">Modeling an object with references</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-using-vocab-or-base-for-voc" class="internal xref">Using <code>@vocab</code> or <code>@base</code> for vocabulary references</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
                 <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-interpreting-schema-instanc" class="internal xref">Interpreting schema instances</a></p>
@@ -1596,17 +1601,17 @@ were minimal: just the addition of the <code>person_id</code> JSON Schema proper
 </div>
 </section>
 </div>
-<div id="modeling-an-vocabulary-bases-entry">
+<div id="modeling-an-vocabulary-based-entry">
 <section id="section-3">
       <h2 id="name-modeling-an-vocabulary-base">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-modeling-an-vocabulary-base" class="section-name selfRef">Modeling an vocabulary-bases entry</a>
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-modeling-an-vocabulary-base" class="section-name selfRef">Modeling an vocabulary-based entry</a>
       </h2>
 <p id="section-3-1">There are different ways to model a vocabulary-based entry,
 e.g., a list of countries or a list of currencies.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">Normally, you would use a JSON Schema (e.g., with an <code>enum</code> keyword):<a href="#section-3-2" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-for-a-country"></span><div id="ex-country-enum">
 <figure id="figure-5">
-        <div class="lang-yaml sourcecode" id="section-3-3.1">
+        <div class="lang-example sourcecode" id="section-3-3.1">
 <pre>
     CountryCode:
       type: string
@@ -1624,7 +1629,7 @@ To be able to represent the entry in JSON-LD,
 an enumerated entry can be modeled using
 a specific property for the identifier,
 and a JSON-LD context.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<div class="lang-yaml sourcecode" id="section-3-5">
+<div class="lang-example sourcecode" id="section-3-5">
 <pre>
     Country:
       type: object
@@ -1643,7 +1648,8 @@ Different contexts can lead to different
 RDF representations for the same schema instances (i.e. the actual data).<a href="#section-3-6" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3-7">
 <li id="section-3-7.1">
-          <p id="section-3-7.1.1">A "property-to-property" representation preserves the mapping between JSON object members and RDF properties;
+          <p id="section-3-7.1.1">A "property-to-property" representation preserves
+the mapping between JSON object members and RDF properties;
 with the only addition of the <code>@type</code> keyword if <code>x-jsonld-type</code> is present.<a href="#section-3-7.1.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
@@ -1683,11 +1689,11 @@ _:b0
 </div>
 <ol start="1" type="1" class="normal type-1" id="section-3-12">
 <li id="section-3-12.1">
-          <p id="section-3-12.1.1">A non-isomorphic representation maps one property to the node name.<a href="#section-3-12.1.1" class="pilcrow">¶</a></p>
+          <p id="section-3-12.1.1">A non-isomorphic representation maps one property to the node identifier.<a href="#section-3-12.1.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-3-13">Associating a property with the <code>@id</code> keyword and a <code>@base</code> prefix,
-we state that the corresponding value is the name of the node.
+<p id="section-3-13">Associating a property with the <code>@id</code> keyword and a <code>@base</code> URI,
+we state that the corresponding value is the identifier of the node.
 This schema<a href="#section-3-13" class="pilcrow">¶</a></p>
 <div class="lang-yaml sourcecode" id="section-3-14">
 <pre>
@@ -1696,7 +1702,7 @@ This schema<a href="#section-3-13" class="pilcrow">¶</a></p>
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         identifier: "@id"
-        "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+        "@base": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         identifier:
@@ -1714,9 +1720,9 @@ This schema<a href="#section-3-13" class="pilcrow">¶</a></p>
         <div class="lang-text sourcecode" id="section-3-16.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
-@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+@prefix country: &lt;http://publications.europa.eu/resource/authority/country/&gt; .
 
-iso_3166_3:ITA
+country:ITA
   a schema:Country;
   schema:name "Italy"
 .
@@ -1726,17 +1732,32 @@ iso_3166_3:ITA
 <a href="#name-an-rdf-graph-with-a-named-n" class="selfRef">An RDF graph with a named node.</a>
         </figcaption></figure>
 </div>
+<p id="section-3-17">Note that according to <span><a href="https://rfc-editor.org/rfc/rfc3986#section-5" class="relref">Section 5</a> of [<a href="#URI" class="cite xref">URI</a>]</span>,
+the "@base" value will be trimmed of any part after the last slash (<code>/</code>) or hash (<code>#</code>)s:
+this means that you cannot use this mechanism
+when the vocabulary uses fragment identifiers
+i.e., the following JSON-LD object<a href="#section-3-17" class="pilcrow">¶</a></p>
+<div class="lang-example sourcecode" id="section-3-18">
+<pre>
+{
+  "@context": {
+    "@base": "http://example.com/vocab#"
+  },
+  "@id": "MyTerm"
+}
+</pre><a href="#section-3-18" class="pilcrow">¶</a>
+</div>
+<p id="section-3-19">will result in the IRI <code>&lt;http://example.com/vocabMyTerm&gt;</code>.<a href="#section-3-19" class="pilcrow">¶</a></p>
 <div id="caveats-on-identifiers">
 <section id="section-3.1">
         <h3 id="name-caveats-on-identifiers">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-caveats-on-identifiers" class="section-name selfRef">Caveats on identifiers</a>
         </h3>
 <p id="section-3.1-1">Typical ways to associate an identifier to a resource
-in RDF are using predicates as <code>skos:notation</code> or <code>dcterms:identifier</code>.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+are using predicates as <code>skos:notation</code> or <code>dcterms:identifier</code>.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">Their values are typed literals (i.e., not words and so
 without language tags,
-see  <a href="https://www.w3.org/TR/skos-primer/#secnotations">SKOS Primier</a>)<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">When an identifier is used as an URI part<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+see  <a href="https://www.w3.org/TR/skos-primer/#secnotations">SKOS Primier</a>.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="modeling-an-object-with-references">
@@ -1759,7 +1780,7 @@ though there is no space in the schema instance to provide a name for the countr
         nationality:
           "@type": "@vocab"
           "@context":
-            "@vocab": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+            "@vocab": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         givenName:
@@ -1780,13 +1801,13 @@ though there is no space in the schema instance to provide a name for the countr
           <div class="lang-text sourcecode" id="section-3.2-5.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
-@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+@prefix country: &lt;http://publications.europa.eu/resource/authority/country/&gt; .
 
 _:b0
   a schema:Person ;
   schema:familyName "Doe" ;
   schema:givenName "John" ;
-  schema:nationality iso_3166_3:ITA .
+  schema:nationality country:ITA .
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
@@ -1819,21 +1840,21 @@ _:b0
 <p id="section-3.2-8">An implementation supporting context composition
 will check that the value of <code>NestedPerson/x-jsonld-context/nationality/@context</code> is undefined,
 and will then integrate the information present in <code>CountryURI/x-jsonld-context</code> into the instance context.<a href="#section-3.2-8" class="pilcrow">¶</a></p>
-<p id="section-3.2-9">results in the following RDF graph:<a href="#section-3.2-9" class="pilcrow">¶</a></p>
+<p id="section-3.2-9">This results in the following RDF graph:<a href="#section-3.2-9" class="pilcrow">¶</a></p>
 <span id="name-an-rdf-graph-with-two-nodes"></span><div id="ex-nested-person-rdf">
 <figure id="figure-9">
           <div class="lang-text sourcecode" id="section-3.2-10.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
-@prefix iso_3166_3: &lt;https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#&gt; .
+@prefix country: &lt;http://publications.europa.eu/resource/authority/country/&gt; .
 
 _:b0
   a schema:Person ;
   schema:familyName "Doe" ;
   schema:givenName "John" ;
-  schema:nationality iso_3166_3:ITA
+  schema:nationality country:ITA
 .
-iso_3166_3:ITA
+country:ITA
   schema:name "Italy"
 .
 </pre>
@@ -1841,6 +1862,18 @@ iso_3166_3:ITA
 <figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
 <a href="#name-an-rdf-graph-with-two-nodes" class="selfRef">An RDF graph with two nodes.</a>
           </figcaption></figure>
+</div>
+<div id="using-vocab-or-base-for-vocabulary-references">
+<section id="section-3.2.1">
+          <h4 id="name-using-vocab-or-base-for-voc">
+<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-using-vocab-or-base-for-voc" class="section-name selfRef">Using <code>@vocab</code> or <code>@base</code> for vocabulary references</a>
+          </h4>
+<p id="section-3.2.1-1">Since <code>@vocab</code> is simply prepended to does not undergo the same limitations of <code>@base</code>,
+it is possible to use it to model references to vocabularies
+using fragment identifiers.
+On the other hand, <code>@vocab</code> cannot be used to model object
+identifiers, so it does not work when composing contexts for <code>@id</code> properties.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+</section>
 </div>
 </section>
 </div>
@@ -2587,10 +2620,15 @@ Person:
 <a href="#name-a-json-schema-data-model-wit" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
-<p id="appendix-A.2-3">The resulting RDF graph is<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-3">Here we associate a vocabulary to the <code>country</code> property,
+specifying that <code>@type</code> is <code>@vocab</code>
+and providing a nested context for the country codes.
+This is different from how we did it in <a href="#modeling-identifiers" class="auto internal xref">Section 2.2</a>,
+where the property itself was mapped to <code>@id</code>.<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-4">The resulting RDF graph is:<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
 <span id="name-an-rdf-graph-with-semantic-"></span><div id="ex-rdf-from-json">
 <figure id="figure-18">
-          <div class="lang-text sourcecode" id="appendix-A.2-4.1">
+          <div class="lang-text sourcecode" id="appendix-A.2-5.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
 @prefix country: &lt;http://publications.europa.eu/resource/authority/country/&gt; .

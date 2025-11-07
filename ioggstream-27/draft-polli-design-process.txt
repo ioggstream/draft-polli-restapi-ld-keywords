@@ -68,9 +68,10 @@ Table of Contents
    2.  Models based on non-object types
      2.1.  Simple text values
      2.2.  Modeling identifiers
-   3.  Modeling an vocabulary-bases entry
+   3.  Modeling an vocabulary-based entry
      3.1.  Caveats on identifiers
      3.2.  Modeling an object with references
+       3.2.1.  Using @vocab or @base for vocabulary references
      3.3.  Interpreting schema instances
    4.  Reusability
      4.1.  YAML Anchors and Merge Keys
@@ -379,7 +380,7 @@ Table of Contents
    Note that the changes to the schema instances were minimal: just the
    addition of the person_id JSON Schema property.
 
-3.  Modeling an vocabulary-bases entry
+3.  Modeling an vocabulary-based entry
 
    There are different ways to model a vocabulary-based entry, e.g., a
    list of countries or a list of currencies.
@@ -444,10 +445,10 @@ Table of Contents
                  Figure 6: An RDF graph with a blank node.
 
    1.  A non-isomorphic representation maps one property to the node
-       name.
+       identifier.
 
-   Associating a property with the @id keyword and a @base prefix, we
-   state that the corresponding value is the name of the node.  This
+   Associating a property with the @id keyword and a @base URI, we state
+   that the corresponding value is the identifier of the node.  This
    schema
 
        CountryURI:
@@ -455,7 +456,7 @@ Table of Contents
          x-jsonld-context:
            "@vocab": "https://schema.org/"
            identifier: "@id"
-           "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+           "@base": "http://publications.europa.eu/resource/authority/country/"
          type: object
          properties:
            identifier:
@@ -469,25 +470,37 @@ Table of Contents
    results in the following RDF graph using a named node:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
-   iso_3166_3:ITA
+   country:ITA
      a schema:Country;
      schema:name "Italy"
    .
 
                  Figure 7: An RDF graph with a named node.
 
+   Note that according to Section 5 of [URI], the "@base" value will be
+   trimmed of any part after the last slash (/) or hash (#)s: this means
+   that you cannot use this mechanism when the vocabulary uses fragment
+   identifiers i.e., the following JSON-LD object
+
+   {
+     "@context": {
+       "@base": "http://example.com/vocab#"
+     },
+     "@id": "MyTerm"
+   }
+
+   will result in the IRI <http://example.com/vocabMyTerm>.
+
 3.1.  Caveats on identifiers
 
-   Typical ways to associate an identifier to a resource in RDF are
-   using predicates as skos:notation or dcterms:identifier.
+   Typical ways to associate an identifier to a resource are using
+   predicates as skos:notation or dcterms:identifier.
 
    Their values are typed literals (i.e., not words and so without
    language tags, see SKOS Primier (https://www.w3.org/TR/skos-
-   primer/#secnotations))
-
-   When an identifier is used as an URI part
+   primer/#secnotations).
 
 3.2.  Modeling an object with references
 
@@ -507,7 +520,7 @@ Table of Contents
            nationality:
              "@type": "@vocab"
              "@context":
-               "@vocab": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+               "@vocab": "http://publications.europa.eu/resource/authority/country/"
          type: object
          properties:
            givenName:
@@ -524,13 +537,13 @@ Table of Contents
    results in the following RDF graph:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
    _:b0
      a schema:Person ;
      schema:familyName "Doe" ;
      schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA .
+     schema:nationality country:ITA .
 
                  Figure 8: An RDF graph with a named node.
 
@@ -561,22 +574,30 @@ Table of Contents
    undefined, and will then integrate the information present in
    CountryURI/x-jsonld-context into the instance context.
 
-   results in the following RDF graph:
+   This results in the following RDF graph:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
    _:b0
      a schema:Person ;
      schema:familyName "Doe" ;
      schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA
+     schema:nationality country:ITA
    .
-   iso_3166_3:ITA
+   country:ITA
      schema:name "Italy"
    .
 
                    Figure 9: An RDF graph with two nodes.
+
+3.2.1.  Using @vocab or @base for vocabulary references
+
+   Since @vocab is simply prepended to does not undergo the same
+   limitations of @base, it is possible to use it to model references to
+   vocabularies using fragment identifiers.  On the other hand, @vocab
+   cannot be used to model object identifiers, so it does not work when
+   composing contexts for @id properties.
 
 3.3.  Interpreting schema instances
 
@@ -1180,7 +1201,12 @@ A.2.  Schema with semantic and vocabulary information
 
     Figure 17: A JSON Schema data model with semantic context and type.
 
-   The resulting RDF graph is
+   Here we associate a vocabulary to the country property, specifying
+   that @type is @vocab and providing a nested context for the country
+   codes.  This is different from how we did it in Section 2.2, where
+   the property itself was mapped to @id.
+
+   The resulting RDF graph is:
 
    @prefix schema: <https://schema.org/> .
    @prefix country: <http://publications.europa.eu/resource/authority/country/> .

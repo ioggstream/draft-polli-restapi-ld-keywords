@@ -2049,6 +2049,20 @@ Person:
 <a href="#name-an-rdf-graph-with-semantic-" class="selfRef">An RDF graph with semantic context and type.</a>
           </figcaption></figure>
 </div>
+<p id="appendix-A.2-5">Note that in the above example:<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.2-6.1">
+            <p id="appendix-A.2-6.1.1">the <code>email</code> property is mapped to <code>@id</code>,
+thus making the instance IRI dependent on its value.
+Since it's not an absolute IRI,
+the <code>@base</code> keyword is used to provide a base IRI
+i.e. <code>https://example.org/people/</code> + <code>jon@doe.example</code>;<a href="#appendix-A.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.2-6.2">
+            <p id="appendix-A.2-6.2.1">the <code>country</code> property is associated with the country
+vocabulary using the <code>@type: @vocab</code> keyword.<a href="#appendix-A.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 <div id="ex-cyclic-schema">
