@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                           6 November 2025
-Expires: 10 May 2026
+Intended status: Informational                           7 November 2025
+Expires: 11 May 2026
 
 
                      REST API Linked Data Keywords
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 May 2026.
+   This Internet-Draft will expire on 11 May 2026.
 
 Copyright Notice
 
@@ -373,8 +373,8 @@ Table of Contents
    context and specifying that Linked Data keywords are JSON Literals.
 
    { "@context": {
-       "x-jsonld-context: { "@type": "@json"},
-       "x-jsonld-type: { "@type": "@json"}
+       "x-jsonld-context": { "@type": "@json"},
+       "x-jsonld-type": { "@type": "@json"}
      }
    }
 
@@ -607,7 +607,6 @@ A.1.  Schema with semantic information
         custom_id: null  # detach this property from the @vocab
         country:
           "@id": addressCountry
-          "@language": en
      type: object
      required:
      - given_name
@@ -631,6 +630,9 @@ A.1.  Schema with semantic information
      "@context": {
        "@vocab": "https://schema.org/",
        "custom_id": null
+       "country": {
+          "@id": "addressCountry"
+       }
      },
      "@type": "https://schema.org/Person",
      "familyName": "Doe",
@@ -645,7 +647,7 @@ A.1.  Schema with semantic information
    @prefix schema: <https://schema.org/>
 
    _:b0 rdf:type schema:Person    ;
-        schema:country     "FRA"  ;
+        schema:addressCountry  "FRA"  ;
         schema:familyName  "Doe"  ;
         schema:givenName   "John" .
 
@@ -658,6 +660,7 @@ A.2.  Schema with semantic and vocabulary information
      "x-jsonld-type": "https://schema.org/Person"
      "x-jsonld-context":
         "@vocab": "https://schema.org/"
+        "@base": "https://example.org/people/"
         email: "@id"
         custom_id: null  # detach this property from the @vocab
         country:
@@ -691,7 +694,8 @@ A.2.  Schema with semantic and vocabulary information
    @prefix schema: <https://schema.org/> .
    @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
-   <mailto:jon@doe.example>
+   <https://example.org/people/jon@doe.example>
+     a schema:Person           ;
      schema:familyName "Doe"          ;
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
@@ -779,6 +783,23 @@ A.4.  Composite instance context
    In the following schema document, the "Citizen" schema references the
    "BirthPlace" schema.
 
+   Citizen:
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "email": "@id"
+       "@vocab": "https://w3.org/ns/person#"
+     type: object
+     properties:
+       email: { type: string }
+       birthplace:
+         $ref: "#/BirthPlace"
+     example:
+       email: "mailto:a@example"
+       givenName: Roberto
+       familyName: Polli
+       birthplace:
+         province: LT
+         country: ITA
    BirthPlace:
      x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
      x-jsonld-context:
@@ -807,23 +828,6 @@ A.4.  Composite instance context
      example:
        province: RM
        country: ITA
-   Citizen:
-     x-jsonld-type: Person
-     x-jsonld-context:
-       "email": "@id"
-       "@vocab": "https://w3.org/ns/person#"
-     type: object
-     properties:
-       email: { type: string }
-       birthplace:
-         $ref: "#/BirthPlace"
-     example:
-       email: "mailto:a@example"
-       givenName: Roberto
-       familyName: Polli
-       birthplace:
-         province: LT
-         country: ITA
 
                   Figure 9: A schema with object contexts.
 
@@ -836,7 +840,7 @@ A.4.  Composite instance context
      "givenName": "Roberto",
      "familyName": "Polli",
      "birthplace": {
-       "province": "RM",
+       "province": "LT",
        "country": "ITA",
        "@type": "https://w3id.org/italia/onto/CLV/Feature"
      },
@@ -883,8 +887,8 @@ A.4.  Composite instance context
      eu:givenName  "Roberto"
    .
    _:b0 rdf:type itl:Feature ;
-     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
    .
 
                  Figure 11: The above entry in text/turtle
