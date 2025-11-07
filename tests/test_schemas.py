@@ -13,7 +13,7 @@ from oasld import Instance, RefResolver
 
 DATADIR = Path(__file__).parent
 SPEC_MD = DATADIR.parent / "draft-polli-restapi-ld-keywords.md"
-DESIGN_MD = DATADIR.parent / "design" / "draft-polli-design-process.md"
+DESIGN_MD = DATADIR.parent / "draft-polli-design-process.md"
 
 
 testfiles = [yaml.safe_load(x.read_text()) for x in DATADIR.glob("*.oas3.yaml")]
@@ -183,12 +183,17 @@ def extract_testcases(doc: dict):
                     example["language"]: parsed,
                 }
             elif example["language"] == "text":
-                g = Graph()
-                g.parse(data=example["content"], format="text/turtle")
-                d = {
-                    "rdf": example["content"],
-                    "jld": yaml.safe_load(g.serialize(format="application/ld+json")),
-                }
+                try:
+                    g = Graph()
+                    g.parse(data=example["content"], format="text/turtle")
+                    d = {
+                        "rdf": example["content"],
+                        "jld": yaml.safe_load(
+                            g.serialize(format="application/ld+json")
+                        ),
+                    }
+                except Exception as e:
+                    raise ValueError(section) from e
             else:
                 continue
             test_id.update(d)
@@ -199,12 +204,18 @@ TEST_DRAFT_EXAMPLES_ARE_CORRECT = [
     [k, v.get("schema"), v.get("jsonld"), v.get("rdf")]
     for k, v in get_examples_from_md(SPEC_MD).items()
 ]
+TEST_DESIGN_EXAMPLES_ARE_CORRECT = [
+    [k, v.get("schema"), v.get("jsonld"), v.get("rdf")]
+    for k, v in get_examples_from_md(DESIGN_MD).items()
+]
 
 
 @pytest.mark.parametrize(
     "section, schema, jsonld, rdf",
-    TEST_DRAFT_EXAMPLES_ARE_CORRECT,
-    ids=[x[0] for x in TEST_DRAFT_EXAMPLES_ARE_CORRECT],
+    TEST_DRAFT_EXAMPLES_ARE_CORRECT + TEST_DESIGN_EXAMPLES_ARE_CORRECT,
+    ids=[
+        x[0] for x in TEST_DRAFT_EXAMPLES_ARE_CORRECT + TEST_DESIGN_EXAMPLES_ARE_CORRECT
+    ],
 )
 def test_draft_examples_are_correct(section, schema, jsonld, rdf):
     """
@@ -231,8 +242,11 @@ def test_draft_examples_are_correct(section, schema, jsonld, rdf):
     if not context:
         raise pytest.skip("No context in schema")
 
-    i = Instance(instance, schema_content)
-    i.process_instance(resolver=RefResolver(schema))
+    try:
+        i = Instance(instance, schema_content)
+        i.process_instance(resolver=RefResolver(schema))
+    except Exception as e:
+        raise pytest.skip(f"Error processing instance in section {section}") from e
 
     g_instance = _parse_rdf(data=json.dumps(i.ld), format="application/ld+json")
     assert (

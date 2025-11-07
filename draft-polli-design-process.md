@@ -290,7 +290,7 @@ The following schema uses a tax code as an identifier.
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         tax_code: "@id"
-        "@base": "urn:example:tax:it:"
+        "@base": "https://example.com/tax/it/"
         given_name: givenName
         family_name: familyName
       type: object
@@ -317,12 +317,14 @@ The following schema uses a tax code as an identifier.
 The associated RDF graph is:
 
 ~~~ text
-urn:example:tax:it:RSSMRO99A04H501A
+@prefix schema: <https://schema.org/> .
+
+<https://example.com/tax/it/RSSMRO99A04H501A>
   a schema:Person ;
   schema:givenName "Mario" ;
   schema:familyName "Rossi" ;
   schema:children
-  urn:example:tax:it:RSSLCC99A04H501A
+  <https://example.com/tax/it/RSSLCC99A04H501A>
 .
 ~~~
 
@@ -368,6 +370,8 @@ The resulting RDF consists in two, linked nodes,
 where the identifier is the `person_id` property.
 
 ~~~ text
+@prefix schema: <https://schema.org/> .
+
 <urn:example:person:1234567890123456>
   a schema:RegisteredResidentPerson ;
   schema:givenName "Mario" ;
@@ -864,7 +868,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       properties:
         tax_code:
@@ -902,7 +906,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       required:
         - tax_code
@@ -1051,7 +1055,6 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@language": en
   type: object
   required:
   - given_name
@@ -1076,6 +1079,9 @@ The example object is assembled as a JSON-LD object as follows.
   "@context": {
     "@vocab": "https://schema.org/",
     "custom_id": null
+    "country": {
+      "@id": "addressCountry"
+    }
   },
   "@type": "https://schema.org/Person",
   "familyName": "Doe",
@@ -1207,7 +1213,7 @@ Applying the workflow described in {{interpreting}}
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.
 
-~~~ json
+~~~ example
 {
   ...
   "@context": {
@@ -1234,6 +1240,23 @@ In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.
 
 ~~~ yaml
+Citizen:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+  example:
+    email: "mailto:a@example"
+    givenName: Roberto
+    familyName: Polli
+    birthplace:
+      province: LT
+      country: ITA
 BirthPlace:
   x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
   x-jsonld-context:
@@ -1262,23 +1285,6 @@ BirthPlace:
   example:
     province: RM
     country: ITA
-Citizen:
-  x-jsonld-type: Person
-  x-jsonld-context:
-    "email": "@id"
-    "@vocab": "https://w3.org/ns/person#"
-  type: object
-  properties:
-    email: { type: string }
-    birthplace:
-      $ref: "#/BirthPlace"
-  example:
-    email: "mailto:a@example"
-    givenName: Roberto
-    familyName: Polli
-    birthplace:
-      province: LT
-      country: ITA
 
 ~~~
 {: title="A schema with object contexts." #ex-object-contexts}
@@ -1294,7 +1300,7 @@ The instance context contains information from both
   "givenName": "Roberto",
   "familyName": "Polli",
   "birthplace": {
-    "province": "RM",
+    "province": "LT",
     "country": "ITA",
     "@type": "https://w3id.org/italia/onto/CLV/Feature"
   },
@@ -1341,8 +1347,8 @@ That can be serialized as `text/turtle` as
   eu:givenName  "Roberto"
 .
 _:b0 rdf:type itl:Feature ;
-  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
 .
 ~~~
 {:title="The above entry in text/turtle" #ex-composite-context-turtle}
