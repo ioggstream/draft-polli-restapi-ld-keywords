@@ -12,6 +12,9 @@ from rdflib import Graph
 from oasld import Instance, RefResolver
 
 DATADIR = Path(__file__).parent
+SPEC_MD = DATADIR.parent / "draft-polli-restapi-ld-keywords.md"
+DESIGN_MD = DATADIR.parent / "design" / "draft-polli-design-process.md"
+
 
 testfiles = [yaml.safe_load(x.read_text()) for x in DATADIR.glob("*.oas3.yaml")]
 testschemas = [
@@ -21,7 +24,7 @@ testschemas = [
 ]
 
 
-def extract_snippets(body: str):
+def extract_snippets(document_section: str):
     pattern = re.compile(
         r"""
 \n
@@ -33,7 +36,7 @@ def extract_snippets(body: str):
         """,
         re.VERBOSE | re.DOTALL,
     )
-    for match in pattern.finditer(body):
+    for match in pattern.finditer(document_section):
         groups = match.groupdict()
         language = groups["language"].strip()
         content = groups["content"]
@@ -87,7 +90,7 @@ def test_ld_1():
 
 
 @pytest.mark.parametrize("schema_name, schema_content", testschemas)
-def test_ld_schemas(schema_name, schema_content):
+def test_oas_annotated_schemas(schema_name, schema_content):
     if not (expected := schema_content.get("x-rdf")):
         raise pytest.skip("No expected status  in schema")
 
@@ -153,8 +156,7 @@ def parse_spec_md(mdfile: Path):
     return doc
 
 
-def test_parse_md():
-    mdfile = DATADIR.parent / "draft-polli-restapi-ld-keywords.md"
+def get_examples_from_md(mdfile: Path):
     doc = parse_spec_md(mdfile)
     testcases = extract_testcases(doc)
     return testcases
@@ -193,14 +195,30 @@ def extract_testcases(doc: dict):
     return testcases
 
 
+TEST_DRAFT_EXAMPLES_ARE_CORRECT = [
+    [k, v.get("schema"), v.get("jsonld"), v.get("rdf")]
+    for k, v in get_examples_from_md(SPEC_MD).items()
+]
+
+
 @pytest.mark.parametrize(
     "section, schema, jsonld, rdf",
-    [
-        [k, v.get("schema"), v.get("jsonld"), v.get("rdf")]
-        for k, v in test_parse_md().items()
-    ],
+    TEST_DRAFT_EXAMPLES_ARE_CORRECT,
+    ids=[x[0] for x in TEST_DRAFT_EXAMPLES_ARE_CORRECT],
 )
 def test_draft_examples_are_correct(section, schema, jsonld, rdf):
+    """
+    Given:
+    - a document section containing:
+        - an annotated OAS schema with example and context
+        - the expected JSON-LD or RDF output
+
+    When:
+    - process the instance according to the schema and context
+
+    Then:
+    - the produced RDF graph is isomorphic to the expected one
+    """
     if not schema:
         raise pytest.skip("No schema in test case")
 
@@ -212,35 +230,36 @@ def test_draft_examples_are_correct(section, schema, jsonld, rdf):
     context = schema_content.get("x-jsonld-context", {})
     if not context:
         raise pytest.skip("No context in schema")
-    l = {
-        **instance,
-        "@context": context,
-    }
-    type_info = schema_content.get("x-jsonld-type")
-    if type_info:
-        l["@type"] = type_info
 
     i = Instance(instance, schema_content)
     i.process_instance(resolver=RefResolver(schema))
 
-    result = i.ld
-
-    g_instance = Graph()
-    g_instance.parse(data=json.dumps(result), format="application/ld+json")
-
+    g_instance = _parse_rdf(data=json.dumps(i.ld), format="application/ld+json")
     assert (
         len(g_instance) > 0
-    ), f"Test case {section} produced empty graph: \n{yaml.safe_dump(l)}"
-    g_result = Graph()
+    ), f"Test case {section} produced empty graph: \n{yaml.safe_dump(i.ld)}"
+
     if rdf:
-        g_result.parse(data=rdf, format="text/turtle")
+        g_result = _parse_rdf(data=rdf, format="text/turtle")
     elif jsonld:
-        expanded = pyld.jsonld.expand(jsonld)
-        g_result.parse(data=json.dumps(expanded), format="application/ld+json")
+        g_result = _parse_rdf(data=jsonld, format="application/ld+json", expand=True)
     else:
         raise NotImplementedError("No expected output provided")
 
     assert_isomorphic(g_instance, g_result)
+
+
+def _parse_rdf(data: str | dict, format: str, expand: bool = False) -> Graph:
+    # Temporary fix for rdflib not handling "@base" correctly.
+    if format == "application/ld+json":
+        if isinstance(data, str):
+            data = json.loads(data)
+        if expand:
+            data = pyld.jsonld.expand(data)
+        data = json.dumps(data)
+    g = Graph()
+    g.parse(data=data, format=format)
+    return g
 
 
 def assert_isomorphic(g1: Graph, g2: Graph):
@@ -255,38 +274,3 @@ def assert_isomorphic(g1: Graph, g2: Graph):
         in_g1=dump_nt_sorted(in_g1),
         in_g2=dump_nt_sorted(in_g2),
     ))}"
-
-
-@pytest.mark.skip("Bug in rdflib")
-def test_mailto():
-    l = {
-        "@context": {
-            "@vocab": "https://schema.org/",
-            "email": "@id",
-            "@base": "mailto:/",
-        },
-        "@type": "https://schema.org/Person",
-        "familyName": "Doe",
-        "email": "a@b.c",
-    }
-    g = Graph(store="Oxigraph")
-    g.parse(data=json.dumps(l), format="application/ld+json")
-    assert list(g)
-    ttl = g.serialize(format="text/turtle")
-    assert ttl.strip()
-
-
-@pytest.mark.skip("Bug in rdflib")
-def test_mailto_rdf():
-    ttl = """
-@prefix schema: <https://schema.org/> .
-@base <mailto:> .
-
-<a@b.c> a schema:Person ;
-    schema:familyName "Doe" .
-"""
-    g = Graph()
-    g.parse(data=ttl, format="text/turtle")
-    assert list(g)
-    jsonld = g.serialize(format="application/ld+json")
-    assert jsonld.strip()
