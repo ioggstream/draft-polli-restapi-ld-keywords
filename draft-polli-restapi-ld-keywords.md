@@ -382,8 +382,8 @@ that Linked Data keywords are JSON Literals.
 
 ~~~ json
 { "@context": {
-    "x-jsonld-context: { "@type": "@json"},
-    "x-jsonld-type: { "@type": "@json"}
+    "x-jsonld-context": { "@type": "@json"},
+    "x-jsonld-type": { "@type": "@json"}
   }
 }
 ~~~
@@ -534,7 +534,7 @@ Person JSON Schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.
 Type information is provided as a URI reference.
 
-~~~ example
+~~~ yaml
 Person:
   "x-jsonld-type": "https://schema.org/Person"
   "x-jsonld-context":
@@ -542,7 +542,6 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@language": en
   type: object
   required:
   - given_name
@@ -567,6 +566,9 @@ The example object is assembled as a JSON-LD object as follows.
   "@context": {
     "@vocab": "https://schema.org/",
     "custom_id": null
+    "country": {
+       "@id": "addressCountry"
+    }
   },
   "@type": "https://schema.org/Person",
   "familyName": "Doe",
@@ -583,7 +585,7 @@ The above JSON-LD can be represented as `text/turtle` as follows.
 @prefix schema: <https://schema.org/>
 
 _:b0 rdf:type schema:Person    ;
-     schema:country     "FRA"  ;
+     schema:addressCountry  "FRA"  ;
      schema:familyName  "Doe"  ;
      schema:givenName   "John" .
 ~~~
@@ -594,11 +596,12 @@ The following example shows a
 "Person" schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.
 
-~~~ example
+~~~ yaml
 Person:
   "x-jsonld-type": "https://schema.org/Person"
   "x-jsonld-context":
      "@vocab": "https://schema.org/"
+     "@base": "https://example.org/people/"
      email: "@id"
      custom_id: null  # detach this property from the @vocab
      country:
@@ -633,7 +636,8 @@ The resulting RDF graph is
 @prefix schema: <https://schema.org/> .
 @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
-<mailto:jon@doe.example>
+<https://example.org/people/jon@doe.example>
+  a schema:Person           ;
   schema:familyName "Doe"          ;
   schema:givenName "John"          ;
   schema:addressCountry country:FRA .
@@ -700,7 +704,7 @@ Applying the workflow described in {{interpreting}}
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.
 
-~~~ json
+~~~ example
 {
   ...
   "@context": {
@@ -727,6 +731,23 @@ In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.
 
 ~~~ yaml
+Citizen:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+  example:
+    email: "mailto:a@example"
+    givenName: Roberto
+    familyName: Polli
+    birthplace:
+      province: LT
+      country: ITA
 BirthPlace:
   x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
   x-jsonld-context:
@@ -755,23 +776,6 @@ BirthPlace:
   example:
     province: RM
     country: ITA
-Citizen:
-  x-jsonld-type: Person
-  x-jsonld-context:
-    "email": "@id"
-    "@vocab": "https://w3.org/ns/person#"
-  type: object
-  properties:
-    email: { type: string }
-    birthplace:
-      $ref: "#/BirthPlace"
-  example:
-    email: "mailto:a@example"
-    givenName: Roberto
-    familyName: Polli
-    birthplace:
-      province: LT
-      country: ITA
 
 ~~~
 {: title="A schema with object contexts." #ex-object-contexts}
@@ -787,7 +791,7 @@ The instance context contains information from both
   "givenName": "Roberto",
   "familyName": "Polli",
   "birthplace": {
-    "province": "RM",
+    "province": "LT",
     "country": "ITA",
     "@type": "https://w3id.org/italia/onto/CLV/Feature"
   },
@@ -834,8 +838,8 @@ That can be serialized as `text/turtle` as
   eu:givenName  "Roberto"
 .
 _:b0 rdf:type itl:Feature ;
-  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
 .
 ~~~
 {:title="The above entry in text/turtle" #ex-composite-context-turtle}
