@@ -1494,7 +1494,7 @@ as identifiers or as simple property values.<a href="#section-2.2-4" class="pilc
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         tax_code: "@id"
-        "@base": "urn:example:tax:it:"
+        "@base": "https://example.com/tax/it/"
         given_name: givenName
         family_name: familyName
       type: object
@@ -1521,12 +1521,14 @@ as identifiers or as simple property values.<a href="#section-2.2-4" class="pilc
 <p id="section-2.2-7">The associated RDF graph is:<a href="#section-2.2-7" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.2-8">
 <pre>
-urn:example:tax:it:RSSMRO99A04H501A
+@prefix schema: &lt;https://schema.org/&gt; .
+
+&lt;https://example.com/tax/it/RSSMRO99A04H501A&gt;
   a schema:Person ;
   schema:givenName "Mario" ;
   schema:familyName "Rossi" ;
   schema:children
-  urn:example:tax:it:RSSLCC99A04H501A
+  &lt;https://example.com/tax/it/RSSLCC99A04H501A&gt;
 .
 </pre><a href="#section-2.2-8" class="pilcrow">¶</a>
 </div>
@@ -1572,6 +1574,8 @@ while <code>tax_code</code> is a simple property value.<a href="#section-2.2-9" 
 where the identifier is the <code>person_id</code> property.<a href="#section-2.2-11" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-2.2-12">
 <pre>
+@prefix schema: &lt;https://schema.org/&gt; .
+
 &lt;urn:example:person:1234567890123456&gt;
   a schema:RegisteredResidentPerson ;
   schema:givenName "Mario" ;
@@ -2149,7 +2153,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       properties:
         tax_code:
@@ -2191,7 +2195,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       required:
         - tax_code
@@ -2483,7 +2487,6 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@language": en
   type: object
   required:
   - given_name
@@ -2511,6 +2514,9 @@ Person:
   "@context": {
     "@vocab": "https://schema.org/",
     "custom_id": null
+    "country": {
+      "@id": "addressCountry"
+    }
   },
   "@type": "https://schema.org/Person",
   "familyName": "Doe",
@@ -2663,7 +2669,7 @@ just recursively copying the x-jsonld-context,
 the instance context could have been more complex.<a href="#appendix-A.3-5" class="pilcrow">¶</a></p>
 <span id="name-an-instance-context-contain"></span><div id="ex-redundant-context">
 <figure id="figure-19">
-          <div class="lang-json sourcecode" id="appendix-A.3-6.1">
+          <div class="lang-example sourcecode" id="appendix-A.3-6.1">
 <pre>
 {
   ...
@@ -2701,6 +2707,23 @@ the "Citizen" schema references the "BirthPlace" schema.<a href="#appendix-A.4-1
 <figure id="figure-20">
           <div class="lang-yaml sourcecode" id="appendix-A.4-2.1">
 <pre>
+Citizen:
+  x-jsonld-type: Person
+  x-jsonld-context:
+    "email": "@id"
+    "@vocab": "https://w3.org/ns/person#"
+  type: object
+  properties:
+    email: { type: string }
+    birthplace:
+      $ref: "#/BirthPlace"
+  example:
+    email: "mailto:a@example"
+    givenName: Roberto
+    familyName: Polli
+    birthplace:
+      province: LT
+      country: ITA
 BirthPlace:
   x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
   x-jsonld-context:
@@ -2729,23 +2752,6 @@ BirthPlace:
   example:
     province: RM
     country: ITA
-Citizen:
-  x-jsonld-type: Person
-  x-jsonld-context:
-    "email": "@id"
-    "@vocab": "https://w3.org/ns/person#"
-  type: object
-  properties:
-    email: { type: string }
-    birthplace:
-      $ref: "#/BirthPlace"
-  example:
-    email: "mailto:a@example"
-    givenName: Roberto
-    familyName: Polli
-    birthplace:
-      province: LT
-      country: ITA
 
 </pre>
 </div>
@@ -2766,7 +2772,7 @@ The instance context contains information from both
   "givenName": "Roberto",
   "familyName": "Polli",
   "birthplace": {
-    "province": "RM",
+    "province": "LT",
     "country": "ITA",
     "@type": "https://w3id.org/italia/onto/CLV/Feature"
   },
@@ -2818,8 +2824,8 @@ The instance context contains information from both
   eu:givenName  "Roberto"
 .
 _:b0 rdf:type itl:Feature ;
-  itl:hasCountry &lt;http://publications.europa.eu/resource/authority/country/ITA&gt; .
-  itl:hasProvince &lt;https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM&gt;
+  itl:hasCountry &lt;http://publications.europa.eu/resource/authority/country/ITA&gt; ;
+  itl:hasProvince &lt;https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT&gt;
 .
 </pre>
 </div>

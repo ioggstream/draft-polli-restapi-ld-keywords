@@ -287,7 +287,7 @@ Table of Contents
          x-jsonld-context:
            "@vocab": "https://schema.org/"
            tax_code: "@id"
-           "@base": "urn:example:tax:it:"
+           "@base": "https://example.com/tax/it/"
            given_name: givenName
            family_name: familyName
          type: object
@@ -312,12 +312,14 @@ Table of Contents
 
    The associated RDF graph is:
 
-   urn:example:tax:it:RSSMRO99A04H501A
+   @prefix schema: <https://schema.org/> .
+
+   <https://example.com/tax/it/RSSMRO99A04H501A>
      a schema:Person ;
      schema:givenName "Mario" ;
      schema:familyName "Rossi" ;
      schema:children
-     urn:example:tax:it:RSSLCC99A04H501A
+     <https://example.com/tax/it/RSSLCC99A04H501A>
    .
 
    This other schema uses person_id property as identifier, while
@@ -358,6 +360,8 @@ Table of Contents
 
    The resulting RDF consists in two, linked nodes, where the identifier
    is the person_id property.
+
+   @prefix schema: <https://schema.org/> .
 
    <urn:example:person:1234567890123456>
      a schema:RegisteredResidentPerson ;
@@ -830,7 +834,7 @@ Table of Contents
          x-jsonld-context:
            RPO: https://w3id.org/italia/onto/RPO/
            tax_code: '@id'
-           '@base': 'urn:example:tax:it:'
+           '@base': 'https://example.com/tax/it/'
          type: object
          properties:
            tax_code:
@@ -866,7 +870,7 @@ Table of Contents
          x-jsonld-context:
            RPO: https://w3id.org/italia/onto/RPO/
            tax_code: '@id'
-           '@base': 'urn:example:tax:it:'
+           '@base': 'https://example.com/tax/it/'
          type: object
          required:
            - tax_code
@@ -1095,7 +1099,6 @@ A.1.  Schema with semantic information
         custom_id: null  # detach this property from the @vocab
         country:
           "@id": addressCountry
-          "@language": en
      type: object
      required:
      - given_name
@@ -1119,6 +1122,9 @@ A.1.  Schema with semantic information
      "@context": {
        "@vocab": "https://schema.org/",
        "custom_id": null
+       "country": {
+         "@id": "addressCountry"
+       }
      },
      "@type": "https://schema.org/Person",
      "familyName": "Doe",
@@ -1265,6 +1271,23 @@ A.4.  Composite instance context
    In the following schema document, the "Citizen" schema references the
    "BirthPlace" schema.
 
+   Citizen:
+     x-jsonld-type: Person
+     x-jsonld-context:
+       "email": "@id"
+       "@vocab": "https://w3.org/ns/person#"
+     type: object
+     properties:
+       email: { type: string }
+       birthplace:
+         $ref: "#/BirthPlace"
+     example:
+       email: "mailto:a@example"
+       givenName: Roberto
+       familyName: Polli
+       birthplace:
+         province: LT
+         country: ITA
    BirthPlace:
      x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
      x-jsonld-context:
@@ -1293,23 +1316,6 @@ A.4.  Composite instance context
      example:
        province: RM
        country: ITA
-   Citizen:
-     x-jsonld-type: Person
-     x-jsonld-context:
-       "email": "@id"
-       "@vocab": "https://w3.org/ns/person#"
-     type: object
-     properties:
-       email: { type: string }
-       birthplace:
-         $ref: "#/BirthPlace"
-     example:
-       email: "mailto:a@example"
-       givenName: Roberto
-       familyName: Polli
-       birthplace:
-         province: LT
-         country: ITA
 
                  Figure 20: A schema with object contexts.
 
@@ -1322,7 +1328,7 @@ A.4.  Composite instance context
      "givenName": "Roberto",
      "familyName": "Polli",
      "birthplace": {
-       "province": "RM",
+       "province": "LT",
        "country": "ITA",
        "@type": "https://w3id.org/italia/onto/CLV/Feature"
      },
@@ -1369,8 +1375,8 @@ A.4.  Composite instance context
      eu:givenName  "Roberto"
    .
    _:b0 rdf:type itl:Feature ;
-     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
    .
 
                  Figure 22: The above entry in text/turtle
