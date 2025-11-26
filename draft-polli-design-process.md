@@ -290,7 +290,7 @@ The following schema uses a tax code as an identifier.
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         tax_code: "@id"
-        "@base": "urn:example:tax:it:"
+        "@base": "https://example.com/tax/it/"
         given_name: givenName
         family_name: familyName
       type: object
@@ -317,12 +317,14 @@ The following schema uses a tax code as an identifier.
 The associated RDF graph is:
 
 ~~~ text
-urn:example:tax:it:RSSMRO99A04H501A
+@prefix schema: <https://schema.org/> .
+
+<https://example.com/tax/it/RSSMRO99A04H501A>
   a schema:Person ;
   schema:givenName "Mario" ;
   schema:familyName "Rossi" ;
   schema:children
-  urn:example:tax:it:RSSLCC99A04H501A
+  <https://example.com/tax/it/RSSLCC99A04H501A>
 .
 ~~~
 
@@ -368,6 +370,8 @@ The resulting RDF consists in two, linked nodes,
 where the identifier is the `person_id` property.
 
 ~~~ text
+@prefix schema: <https://schema.org/> .
+
 <urn:example:person:1234567890123456>
   a schema:RegisteredResidentPerson ;
   schema:givenName "Mario" ;
@@ -385,14 +389,14 @@ where the identifier is the `person_id` property.
 Note that the changes to the schema instances
 were minimal: just the addition of the `person_id` JSON Schema property.
 
-# Modeling an vocabulary-bases entry
+# Modeling an vocabulary-based entry
 
 There are different ways to model a vocabulary-based entry,
 e.g., a list of countries or a list of currencies.
 
 Normally, you would use a JSON Schema (e.g., with an `enum` keyword):
 
-~~~ yaml
+~~~ example
     CountryCode:
       type: string
       enum: [ "ITA", "FRA", "DEU" ]
@@ -407,7 +411,7 @@ an enumerated entry can be modeled using
 a specific property for the identifier,
 and a JSON-LD context.
 
-~~~ yaml
+~~~ example
     Country:
       type: object
       properties:
@@ -424,7 +428,8 @@ Linked Data keywords provide a context.
 Different contexts can lead to different
 RDF representations for the same schema instances (i.e. the actual data).
 
-1. A "property-to-property" representation preserves the mapping between JSON object members and RDF properties;
+1. A "property-to-property" representation preserves
+the mapping between JSON object members and RDF properties;
 with the only addition of the `@type` keyword if `x-jsonld-type` is present.
 
 The following schema instance
@@ -456,10 +461,10 @@ _:b0
 ~~~
 {: title="An RDF graph with a blank node." #ex-country-rdf-blank-node}
 
-2. A non-isomorphic representation maps one property to the node name.
+2. A non-isomorphic representation maps one property to the node identifier.
 
-Associating a property with the `@id` keyword and a `@base` prefix,
-we state that the corresponding value is the name of the node.
+Associating a property with the `@id` keyword and a `@base` URI,
+we state that the corresponding value is the identifier of the node.
 This schema
 
 ~~~ yaml
@@ -468,7 +473,7 @@ This schema
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         identifier: "@id"
-        "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+        "@base": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         identifier:
@@ -484,27 +489,40 @@ results in the following RDF graph using a named node:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
-@prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+@prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
-iso_3166_3:ITA
+country:ITA
   a schema:Country;
   schema:name "Italy"
 .
 ~~~
 {: title="An RDF graph with a named node." #ex-country-rdf-named-node}
 
+Note that according to {{Section 5 of URI}},
+the "@base" value will be trimmed of any part after the last slash (`/`) or hash (`#`)s:
+this means that you cannot use this mechanism
+when the vocabulary uses fragment identifiers
+i.e., the following JSON-LD object
+
+~~~ example
+{
+  "@context": {
+    "@base": "http://example.com/vocab#"
+  },
+  "@id": "MyTerm"
+}
+~~~
+
+will result in the IRI `<http://example.com/vocabMyTerm>`.
+
 ### Caveats on identifiers
 
 Typical ways to associate an identifier to a resource
-in RDF are using predicates as `skos:notation` or `dcterms:identifier`.
+are using predicates as `skos:notation` or `dcterms:identifier`.
 
 Their values are typed literals (i.e., not words and so
 without language tags,
-see  [SKOS Primier](https://www.w3.org/TR/skos-primer/#secnotations))
-
-When an identifier is used as an URI part
-
-
+see  [SKOS Primier](https://www.w3.org/TR/skos-primer/#secnotations).
 
 
 ## Modeling an object with references
@@ -523,9 +541,9 @@ though there is no space in the schema instance to provide a name for the countr
       x-jsonld-context:
         "@vocab": "https://schema.org/"
         nationality:
-          "@type": "@id"
+          "@type": "@vocab"
           "@context":
-            "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+            "@vocab": "http://publications.europa.eu/resource/authority/country/"
       type: object
       properties:
         givenName:
@@ -544,13 +562,13 @@ results in the following RDF graph:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
-@prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+@prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
 _:b0
   a schema:Person ;
   schema:familyName "Doe" ;
   schema:givenName "John" ;
-  schema:nationality iso_3166_3:ITA .
+  schema:nationality country:ITA .
 ~~~
 {: title="An RDF graph with a named node." #ex-person-rdf}
 
@@ -581,23 +599,31 @@ An implementation supporting context composition
 will check that the value of `NestedPerson/x-jsonld-context/nationality/@context` is undefined,
 and will then integrate the information present in `CountryURI/x-jsonld-context` into the instance context.
 
-results in the following RDF graph:
+This results in the following RDF graph:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
-@prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+@prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
 _:b0
   a schema:Person ;
   schema:familyName "Doe" ;
   schema:givenName "John" ;
-  schema:nationality iso_3166_3:ITA
+  schema:nationality country:ITA
 .
-iso_3166_3:ITA
+country:ITA
   schema:name "Italy"
 .
 ~~~
 {: title="An RDF graph with two nodes." #ex-nested-person-rdf}
+
+### Using `@vocab` or `@base` for vocabulary references
+
+Since `@vocab` is simply prepended to does not undergo the same limitations of `@base`,
+it is possible to use it to model references to vocabularies
+using fragment identifiers.
+On the other hand, `@vocab` cannot be used to model object
+identifiers, so it does not work when composing contexts for `@id` properties.
 
 
 ## Interpreting schema instances {#interpreting}
@@ -864,7 +890,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       properties:
         tax_code:
@@ -902,7 +928,7 @@ components:
       x-jsonld-context:
         RPO: https://w3id.org/italia/onto/RPO/
         tax_code: '@id'
-        '@base': 'urn:example:tax:it:'
+        '@base': 'https://example.com/tax/it/'
       type: object
       required:
         - tax_code
@@ -1051,7 +1077,6 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@language": en
   type: object
   required:
   - given_name
@@ -1076,6 +1101,9 @@ The example object is assembled as a JSON-LD object as follows.
   "@context": {
     "@vocab": "https://schema.org/",
     "custom_id": null
+    "country": {
+      "@id": "addressCountry"
+    }
   },
   "@type": "https://schema.org/Person",
   "familyName": "Doe",
@@ -1112,9 +1140,9 @@ Person:
      custom_id: null  # detach this property from the @vocab
      country:
        "@id": addressCountry
-       "@type": "@id"
+       "@type": "@vocab"
        "@context":
-          "@base": "http://publications.europa.eu/resource/authority/country/"
+          "@vocab": "http://publications.europa.eu/resource/authority/country/"
 
   type: object
   required:
@@ -1136,7 +1164,13 @@ Person:
 ~~~
 {: title="A JSON Schema data model with semantic context and type." #ex-complete-example}
 
-The resulting RDF graph is
+Here we associate a vocabulary to the `country` property,
+specifying that `@type` is `@vocab`
+and providing a nested context for the country codes.
+This is different from how we did it in {{modeling-identifiers}},
+where the property itself was mapped to `@id`.
+
+The resulting RDF graph is:
 
 ~~~ text
 @prefix schema: <https://schema.org/> .
@@ -1207,7 +1241,7 @@ Applying the workflow described in {{interpreting}}
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.
 
-~~~ json
+~~~ example
 {
   ...
   "@context": {
@@ -1234,34 +1268,6 @@ In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.
 
 ~~~ yaml
-BirthPlace:
-  x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
-  x-jsonld-context:
-    "@vocab": "https://w3id.org/italia/onto/CLV/"
-    country:
-      "@id": "hasCountry"
-      "@type": "@id"
-      "@context":
-        "@base": "http://publications.europa.eu/resource/authority/country/"
-    province:
-      "@id": "hasProvince"
-      "@type": "@id"
-      "@context":
-        "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
-  type: object
-  required:
-    - province
-    - country
-  properties:
-    province:
-      description: The province where the person was born.
-      type: string
-    country:
-      description: The iso alpha-3 code of the country where the person was born.
-      type: string
-  example:
-    province: RM
-    country: ITA
 Citizen:
   x-jsonld-type: Person
   x-jsonld-context:
@@ -1279,6 +1285,34 @@ Citizen:
     birthplace:
       province: LT
       country: ITA
+BirthPlace:
+  x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+  x-jsonld-context:
+    "@vocab": "https://w3id.org/italia/onto/CLV/"
+    country:
+      "@id": "hasCountry"
+      "@type": "@vocab"
+      "@context":
+        "@vocab": "http://publications.europa.eu/resource/authority/country/"
+    province:
+      "@id": "hasProvince"
+      "@type": "@vocab"
+      "@context":
+        "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+  type: object
+  required:
+    - province
+    - country
+  properties:
+    province:
+      description: The province where the person was born.
+      type: string
+    country:
+      description: The iso alpha-3 code of the country where the person was born.
+      type: string
+  example:
+    province: RM
+    country: ITA
 
 ~~~
 {: title="A schema with object contexts." #ex-object-contexts}
@@ -1294,7 +1328,7 @@ The instance context contains information from both
   "givenName": "Roberto",
   "familyName": "Polli",
   "birthplace": {
-    "province": "RM",
+    "province": "LT",
     "country": "ITA",
     "@type": "https://w3id.org/italia/onto/CLV/Feature"
   },
@@ -1308,16 +1342,16 @@ The instance context contains information from both
         "city": "hasCity",
         "country": {
           "@id": "hasCountry",
-          "@type": "@id",
+          "@type": "@vocab",
           "@context": {
-            "@base": "http://publications.europa.eu/resource/authority/country/"
+            "@vocab": "http://publications.europa.eu/resource/authority/country/"
           }
         },
         "province": {
           "@id": "hasProvince",
-          "@type": "@id",
+          "@type": "@vocab",
           "@context": {
-            "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+            "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
           }
         }
       }
@@ -1341,8 +1375,8 @@ That can be serialized as `text/turtle` as
   eu:givenName  "Roberto"
 .
 _:b0 rdf:type itl:Feature ;
-  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+  itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+  itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
 .
 ~~~
 {:title="The above entry in text/turtle" #ex-composite-context-turtle}
