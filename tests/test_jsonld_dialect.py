@@ -8,12 +8,8 @@ DATADIR = Path(__file__).parent.parent
 VOCAB_DIR = DATADIR / "vocab"
 DIALECT_JSON = VOCAB_DIR / "jsonld-dialect.json"
 META_JSON = VOCAB_DIR / "jsonld-meta.json"
-META_URI = (
-    "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/jsonld-meta.json"
-)
-DIALECT_URI = (
-    "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/jsonld-dialect.json"
-)
+META_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json"
+DIALECT_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-dialect.json"
 
 STORE = {
     META_URI: json.loads(META_JSON.read_text()),
@@ -21,14 +17,20 @@ STORE = {
 }
 
 
-@pytest.fixture
-def validator():
-    """Load the dialect and return a Validator instance that resolves the
-    remote meta schema URI to the local `vocab/jsonld-meta.json` when present.
+@pytest.fixture(params=[True, False], ids=["with_resolver", "without_resolver"])
+def validator(request):
+    """Return a Validator instance.
+
+    Parametrized to return two variants:
+    - with_resolver=True: a validator with a RefResolver that maps the remote
+      meta-schema URI to the local `vocab/jsonld-meta.json` (store).
+    - with_resolver=False: a validator without the resolver (default instantiation).
     """
     Validator = jsonschema.validators.validator_for(STORE[DIALECT_URI])
-    resolver = jsonschema.RefResolver.from_schema(STORE[DIALECT_URI], store=STORE)
-    return Validator(STORE[DIALECT_URI], resolver=resolver)
+    if request.param:
+        resolver = jsonschema.RefResolver.from_schema(STORE[DIALECT_URI], store=STORE)
+        return Validator(STORE[DIALECT_URI], resolver=resolver)
+    return Validator(STORE[DIALECT_URI])
 
 
 def _sample_schema(x_jsonld_type):
