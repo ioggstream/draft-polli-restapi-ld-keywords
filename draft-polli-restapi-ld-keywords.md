@@ -963,7 +963,7 @@ Q: Why don't design for composability first?
   The result will be that only one of the properties will be correctly annotated.
   For this reason, composability is limited to the object level.
 
-Q: Why don't use the keywords such as `x-refersTo`, `x-kindOf`, etc.?
+Q: Why not use keywords such as `x-refersTo`, `x-kindOf`, etc.?
 :  When we started enriching OAS documents with `x-refersTo` and similar keywords,
    we realized that composing a JSON-LD `@context` from multiple keywords
    was increasingly complex when considering nested objects and cyclic references,
