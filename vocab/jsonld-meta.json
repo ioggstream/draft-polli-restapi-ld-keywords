@@ -1,5 +1,5 @@
 {
-  "$id": "https://https://ioggstream.github.io/draft-polli-restapi-ld-keywords/jsonld-meta.json",
+  "$id": "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$vocabulary": {
     "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/jsonld-meta.json": true
