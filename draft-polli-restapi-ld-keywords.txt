@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                          26 November 2025
-Expires: 30 May 2026
+Intended status: Informational                          27 November 2025
+Expires: 31 May 2026
 
 
                      REST API Linked Data Keywords
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 May 2026.
+   This Internet-Draft will expire on 31 May 2026.
 
 Copyright Notice
 
@@ -1012,6 +1012,18 @@ FAQ
    The result will be that only one of the properties will be correctly
    annotated.  For this reason, composability is limited to the object
    level.
+
+   Q: Why not use keywords such as x-refersTo, x-kindOf, etc.?  When we
+      started enriching OAS documents with x-refersTo and similar
+      keywords, we realized that composing a JSON-LD @context from
+      multiple keywords was increasingly complex when considering nested
+      objects and cyclic references, especially when we needed to adapt
+      existing OAS documents to ontologies defined by third parties.
+      Then, we realized that JSON-LD provided most of the needed
+      features to describe semantics without the need of re-assembling a
+      @context from multiple keywords.  Moreover, as long as JSON-LD is
+      evolving, our approach does not require the addition of new
+      keywords.
 
    Q: Can the value of x-jsonld-type be an rdf:Property?  Would this
    allow to reuse the same schema in different objects without
