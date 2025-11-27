@@ -963,6 +963,18 @@ Q: Why don't design for composability first?
   The result will be that only one of the properties will be correctly annotated.
   For this reason, composability is limited to the object level.
 
+Q: Why not use keywords such as `x-refersTo`, `x-kindOf`, etc.?
+:  When we started enriching OAS documents with `x-refersTo` and similar keywords,
+   we realized that composing a JSON-LD `@context` from multiple keywords
+   was increasingly complex when considering nested objects and cyclic references,
+   especially when we needed to adapt existing
+   OAS documents to ontologies defined by third parties.
+   Then, we realized that
+   JSON-LD provided most of the needed features to describe semantics
+   without the need of re-assembling a `@context` from multiple keywords.
+   Moreover, as long as JSON-LD is evolving, our approach
+   does not require the addition of new keywords.
+
 Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to reuse the same schema in different objects without modifying the `@context`?
 :  Under normal circumstances, i.e. when designing public or financial service APIs,
    you don't want `x-jsonld-type` to be an `rdf:Property`.
