@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                           3 November 2025
-Expires: 7 May 2026
+Intended status: Informational                          12 December 2025
+Expires: 15 June 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 May 2026.
+   This Internet-Draft will expire on 15 June 2026.
 
 Copyright Notice
 
@@ -68,9 +68,10 @@ Table of Contents
    2.  Models based on non-object types
      2.1.  Simple text values
      2.2.  Modeling identifiers
-   3.  Modeling an vocabulary-bases entry
+   3.  Modeling an vocabulary-based entry
      3.1.  Caveats on identifiers
      3.2.  Modeling an object with references
+       3.2.1.  Using @vocab or @base for vocabulary references
      3.3.  Interpreting schema instances
    4.  Reusability
      4.1.  YAML Anchors and Merge Keys
@@ -287,7 +288,7 @@ Table of Contents
          x-jsonld-context:
            "@vocab": "https://schema.org/"
            tax_code: "@id"
-           "@base": "urn:example:tax:it:"
+           "@base": "https://example.com/tax/it/"
            given_name: givenName
            family_name: familyName
          type: object
@@ -312,12 +313,14 @@ Table of Contents
 
    The associated RDF graph is:
 
-   urn:example:tax:it:RSSMRO99A04H501A
+   @prefix schema: <https://schema.org/> .
+
+   <https://example.com/tax/it/RSSMRO99A04H501A>
      a schema:Person ;
      schema:givenName "Mario" ;
      schema:familyName "Rossi" ;
      schema:children
-     urn:example:tax:it:RSSLCC99A04H501A
+     <https://example.com/tax/it/RSSLCC99A04H501A>
    .
 
    This other schema uses person_id property as identifier, while
@@ -359,6 +362,8 @@ Table of Contents
    The resulting RDF consists in two, linked nodes, where the identifier
    is the person_id property.
 
+   @prefix schema: <https://schema.org/> .
+
    <urn:example:person:1234567890123456>
      a schema:RegisteredResidentPerson ;
      schema:givenName "Mario" ;
@@ -375,7 +380,7 @@ Table of Contents
    Note that the changes to the schema instances were minimal: just the
    addition of the person_id JSON Schema property.
 
-3.  Modeling an vocabulary-bases entry
+3.  Modeling an vocabulary-based entry
 
    There are different ways to model a vocabulary-based entry, e.g., a
    list of countries or a list of currencies.
@@ -440,10 +445,10 @@ Table of Contents
                  Figure 6: An RDF graph with a blank node.
 
    1.  A non-isomorphic representation maps one property to the node
-       name.
+       identifier.
 
-   Associating a property with the @id keyword and a @base prefix, we
-   state that the corresponding value is the name of the node.  This
+   Associating a property with the @id keyword and a @base URI, we state
+   that the corresponding value is the identifier of the node.  This
    schema
 
        CountryURI:
@@ -451,7 +456,7 @@ Table of Contents
          x-jsonld-context:
            "@vocab": "https://schema.org/"
            identifier: "@id"
-           "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+           "@base": "http://publications.europa.eu/resource/authority/country/"
          type: object
          properties:
            identifier:
@@ -465,25 +470,37 @@ Table of Contents
    results in the following RDF graph using a named node:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
-   iso_3166_3:ITA
+   country:ITA
      a schema:Country;
      schema:name "Italy"
    .
 
                  Figure 7: An RDF graph with a named node.
 
+   Note that according to Section 5 of [URI], the "@base" value will be
+   trimmed of any part after the last slash (/) or hash (#)s: this means
+   that you cannot use this mechanism when the vocabulary uses fragment
+   identifiers i.e., the following JSON-LD object
+
+   {
+     "@context": {
+       "@base": "http://example.com/vocab#"
+     },
+     "@id": "MyTerm"
+   }
+
+   will result in the IRI <http://example.com/vocabMyTerm>.
+
 3.1.  Caveats on identifiers
 
-   Typical ways to associate an identifier to a resource in RDF are
-   using predicates as skos:notation or dcterms:identifier.
+   Typical ways to associate an identifier to a resource are using
+   predicates as skos:notation or dcterms:identifier.
 
    Their values are typed literals (i.e., not words and so without
    language tags, see SKOS Primier (https://www.w3.org/TR/skos-
-   primer/#secnotations))
-
-   When an identifier is used as an URI part
+   primer/#secnotations).
 
 3.2.  Modeling an object with references
 
@@ -501,9 +518,9 @@ Table of Contents
          x-jsonld-context:
            "@vocab": "https://schema.org/"
            nationality:
-             "@type": "@id"
+             "@type": "@vocab"
              "@context":
-               "@base": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#"
+               "@vocab": "http://publications.europa.eu/resource/authority/country/"
          type: object
          properties:
            givenName:
@@ -520,13 +537,13 @@ Table of Contents
    results in the following RDF graph:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
    _:b0
      a schema:Person ;
      schema:familyName "Doe" ;
      schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA .
+     schema:nationality country:ITA .
 
                  Figure 8: An RDF graph with a named node.
 
@@ -557,22 +574,30 @@ Table of Contents
    undefined, and will then integrate the information present in
    CountryURI/x-jsonld-context into the instance context.
 
-   results in the following RDF graph:
+   This results in the following RDF graph:
 
    @prefix schema: <https://schema.org/> .
-   @prefix iso_3166_3: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3#> .
+   @prefix country: <http://publications.europa.eu/resource/authority/country/> .
 
    _:b0
      a schema:Person ;
      schema:familyName "Doe" ;
      schema:givenName "John" ;
-     schema:nationality iso_3166_3:ITA
+     schema:nationality country:ITA
    .
-   iso_3166_3:ITA
+   country:ITA
      schema:name "Italy"
    .
 
                    Figure 9: An RDF graph with two nodes.
+
+3.2.1.  Using @vocab or @base for vocabulary references
+
+   Since @vocab is simply prepended to does not undergo the same
+   limitations of @base, it is possible to use it to model references to
+   vocabularies using fragment identifiers.  On the other hand, @vocab
+   cannot be used to model object identifiers, so it does not work when
+   composing contexts for @id properties.
 
 3.3.  Interpreting schema instances
 
@@ -830,7 +855,7 @@ Table of Contents
          x-jsonld-context:
            RPO: https://w3id.org/italia/onto/RPO/
            tax_code: '@id'
-           '@base': 'urn:example:tax:it:'
+           '@base': 'https://example.com/tax/it/'
          type: object
          properties:
            tax_code:
@@ -866,7 +891,7 @@ Table of Contents
          x-jsonld-context:
            RPO: https://w3id.org/italia/onto/RPO/
            tax_code: '@id'
-           '@base': 'urn:example:tax:it:'
+           '@base': 'https://example.com/tax/it/'
          type: object
          required:
            - tax_code
@@ -1012,8 +1037,9 @@ Table of Contents
    [LD-KEYWORDS]
               Polli, R., "REST API Linked Data Keywords", Work in
               Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
-              06, 23 April 2025, <https://datatracker.ietf.org/doc/html/
-              draft-polli-restapi-ld-keywords-06>.
+              07, 3 November 2025,
+              <https://datatracker.ietf.org/doc/html/draft-polli-
+              restapi-ld-keywords-07>.
 
    [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
               Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
@@ -1094,7 +1120,6 @@ A.1.  Schema with semantic information
         custom_id: null  # detach this property from the @vocab
         country:
           "@id": addressCountry
-          "@language": en
      type: object
      required:
      - given_name
@@ -1118,6 +1143,9 @@ A.1.  Schema with semantic information
      "@context": {
        "@vocab": "https://schema.org/",
        "custom_id": null
+       "country": {
+         "@id": "addressCountry"
+       }
      },
      "@type": "https://schema.org/Person",
      "familyName": "Doe",
@@ -1149,9 +1177,9 @@ A.2.  Schema with semantic and vocabulary information
         custom_id: null  # detach this property from the @vocab
         country:
           "@id": addressCountry
-          "@type": "@id"
+          "@type": "@vocab"
           "@context":
-             "@base": "http://publications.europa.eu/resource/authority/country/"
+             "@vocab": "http://publications.europa.eu/resource/authority/country/"
 
      type: object
      required:
@@ -1173,7 +1201,12 @@ A.2.  Schema with semantic and vocabulary information
 
     Figure 17: A JSON Schema data model with semantic context and type.
 
-   The resulting RDF graph is
+   Here we associate a vocabulary to the country property, specifying
+   that @type is @vocab and providing a nested context for the country
+   codes.  This is different from how we did it in Section 2.2, where
+   the property itself was mapped to @id.
+
+   The resulting RDF graph is:
 
    @prefix schema: <https://schema.org/> .
    @prefix country: <http://publications.europa.eu/resource/authority/country/> .
@@ -1264,34 +1297,6 @@ A.4.  Composite instance context
    In the following schema document, the "Citizen" schema references the
    "BirthPlace" schema.
 
-   BirthPlace:
-     x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
-     x-jsonld-context:
-       "@vocab": "https://w3id.org/italia/onto/CLV/"
-       country:
-         "@id": "hasCountry"
-         "@type": "@id"
-         "@context":
-           "@base": "http://publications.europa.eu/resource/authority/country/"
-       province:
-         "@id": "hasProvince"
-         "@type": "@id"
-         "@context":
-           "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
-     type: object
-     required:
-       - province
-       - country
-     properties:
-       province:
-         description: The province where the person was born.
-         type: string
-       country:
-         description: The iso alpha-3 code of the country where the person was born.
-         type: string
-     example:
-       province: RM
-       country: ITA
    Citizen:
      x-jsonld-type: Person
      x-jsonld-context:
@@ -1309,6 +1314,34 @@ A.4.  Composite instance context
        birthplace:
          province: LT
          country: ITA
+   BirthPlace:
+     x-jsonld-type: https://w3id.org/italia/onto/CLV/Feature
+     x-jsonld-context:
+       "@vocab": "https://w3id.org/italia/onto/CLV/"
+       country:
+         "@id": "hasCountry"
+         "@type": "@vocab"
+         "@context":
+           "@vocab": "http://publications.europa.eu/resource/authority/country/"
+       province:
+         "@id": "hasProvince"
+         "@type": "@vocab"
+         "@context":
+           "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+     type: object
+     required:
+       - province
+       - country
+     properties:
+       province:
+         description: The province where the person was born.
+         type: string
+       country:
+         description: The iso alpha-3 code of the country where the person was born.
+         type: string
+     example:
+       province: RM
+       country: ITA
 
                  Figure 20: A schema with object contexts.
 
@@ -1321,7 +1354,7 @@ A.4.  Composite instance context
      "givenName": "Roberto",
      "familyName": "Polli",
      "birthplace": {
-       "province": "RM",
+       "province": "LT",
        "country": "ITA",
        "@type": "https://w3id.org/italia/onto/CLV/Feature"
      },
@@ -1335,16 +1368,16 @@ A.4.  Composite instance context
            "city": "hasCity",
            "country": {
              "@id": "hasCountry",
-             "@type": "@id",
+             "@type": "@vocab",
              "@context": {
-               "@base": "http://publications.europa.eu/resource/authority/country/"
+               "@vocab": "http://publications.europa.eu/resource/authority/country/"
              }
            },
            "province": {
              "@id": "hasProvince",
-             "@type": "@id",
+             "@type": "@vocab",
              "@context": {
-               "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
+               "@vocab": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
              }
            }
          }
@@ -1368,8 +1401,8 @@ A.4.  Composite instance context
      eu:givenName  "Roberto"
    .
    _:b0 rdf:type itl:Feature ;
-     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> .
-     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/RM>
+     itl:hasCountry <http://publications.europa.eu/resource/authority/country/ITA> ;
+     itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
    .
 
                  Figure 22: The above entry in text/turtle
