@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                          27 November 2025
-Expires: 31 May 2026
+Intended status: Informational                           22 January 2026
+Expires: 26 July 2026
 
 
                      REST API Linked Data Keywords
@@ -45,11 +45,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 May 2026.
+   This Internet-Draft will expire on 26 July 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -629,7 +629,7 @@ A.1.  Schema with semantic information
    {
      "@context": {
        "@vocab": "https://schema.org/",
-       "custom_id": null
+       "custom_id": null,
        "country": {
           "@id": "addressCountry"
        }
