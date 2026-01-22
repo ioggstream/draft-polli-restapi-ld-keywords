@@ -1,0 +1,71 @@
+{
+  "$id": "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/table-schema-jsonld.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+    "https://json-schema.org/draft/2020-12/vocab/unevaluated": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://json-schema.org/draft/2020-12/vocab/meta-data": true,
+    "https://json-schema.org/draft/2020-12/vocab/format-annotation": true,
+    "https://json-schema.org/draft/2020-12/vocab/content": true,
+    "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json": true
+  },
+  "$dynamicAnchor": "meta",
+  "title": "Table Schema with JSON-LD Extensions",
+  "description": "A JSON Schema that extends Frictionless Data Table Schema with JSON-LD annotations",
+  "allOf": [
+    {
+      "$ref": "https://specs.frictionlessdata.io/schemas/table-schema.json"
+    },
+    {
+      "$ref": "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json"
+    }
+  ],
+  "examples": [
+    {
+      "x-jsonld-type": "skos:Concept",
+      "x-jsonld-context": {
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "dct": "http://purl.org/dc/terms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "id": "skos:notation",
+        "name": "skos:prefLabel",
+        "url": "@id",
+        "created": {
+          "@id": "dct:created",
+          "@type": "xsd:dateTime"
+        },
+        "description": null
+      },
+      "fields": [
+        {
+          "name": "url",
+          "type": "string",
+          "description": "URL of the resource"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Unique identifier"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name of the person"
+        },
+        {
+          "name": "created",
+          "type": "string",
+          "description": "Creation date of the record"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "Description of the resource"
+        }
+      ],
+      "primaryKey": "id"
+    }
+  ]
+}
