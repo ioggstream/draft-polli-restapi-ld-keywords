@@ -565,7 +565,7 @@ The example object is assembled as a JSON-LD object as follows.
 {
   "@context": {
     "@vocab": "https://schema.org/",
-    "custom_id": null
+    "custom_id": null,
     "country": {
        "@id": "addressCountry"
     }
