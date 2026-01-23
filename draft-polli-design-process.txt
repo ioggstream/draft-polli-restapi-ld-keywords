@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                          27 November 2025
-Expires: 31 May 2026
+Intended status: Informational                           23 January 2026
+Expires: 27 July 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,11 +44,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 May 2026.
+   This Internet-Draft will expire on 27 July 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1037,9 +1037,9 @@ Table of Contents
    [LD-KEYWORDS]
               Polli, R., "REST API Linked Data Keywords", Work in
               Progress, Internet-Draft, draft-polli-restapi-ld-keywords-
-              07, 3 November 2025,
+              08, 12 December 2025,
               <https://datatracker.ietf.org/doc/html/draft-polli-
-              restapi-ld-keywords-07>.
+              restapi-ld-keywords-08>.
 
    [OAS]      Darrel Miller, Jeremy Whitlock, Marsh Gardiner, Mike
               Ralphson, Ron Ratovsky, and Uri Sarid, "OpenAPI
@@ -1142,7 +1142,7 @@ A.1.  Schema with semantic information
    {
      "@context": {
        "@vocab": "https://schema.org/",
-       "custom_id": null
+       "custom_id": null,
        "country": {
          "@id": "addressCountry"
        }
