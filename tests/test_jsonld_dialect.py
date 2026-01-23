@@ -3,21 +3,32 @@ from pathlib import Path
 
 import jsonschema
 import pytest
+import yaml
 
 DATADIR = Path(__file__).parent.parent
 VOCAB_DIR = DATADIR / "vocab"
 DIALECT_JSON = VOCAB_DIR / "jsonld-dialect.json"
 META_JSON = VOCAB_DIR / "jsonld-meta.json"
+TABLE_SCHEMA_JSONLD_JSON = VOCAB_DIR / "table-schema-jsonld.json"
+SEMANTIC_DATA_PACKAGE_YAML = VOCAB_DIR / "semantic-data-package.yaml"
+
 META_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json"
 DIALECT_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-dialect.json"
+TABLE_SCHEMA_JSONLD_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/table-schema-jsonld.json"
+SEMANTIC_DATA_PACKAGE_URI = "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/semantic-data-package.json"
 
 STORE = {
     META_URI: json.loads(META_JSON.read_text()),
     DIALECT_URI: json.loads(DIALECT_JSON.read_text()),
+    TABLE_SCHEMA_JSONLD_URI: yaml.safe_load(TABLE_SCHEMA_JSONLD_JSON.read_text()),
+    SEMANTIC_DATA_PACKAGE_URI: yaml.safe_load(SEMANTIC_DATA_PACKAGE_YAML.read_text()),
 }
 
 
-@pytest.fixture(params=[True, False], ids=["with_resolver", "without_resolver"])
+@pytest.fixture(
+    params=[True, False],
+    ids=["with_resolver", "without_resolver"],  # Uncomment when PR is published
+)
 def validator(request):
     """Return a Validator instance.
 
@@ -52,3 +63,40 @@ def test_x_jsonld_type_boolean_invalid(validator):
     """A boolean `x-jsonld-type` must be rejected by the dialect."""
     with pytest.raises(jsonschema.exceptions.ValidationError):
         validator.validate(_sample_schema(True))
+
+
+def test_datapackage_examples_valid():
+    """Validate datapackage.yaml examples against table-schema-jsonld.yaml."""
+    # Load the table schema with JSON-LD extensions
+    table_schema_jsonld = yaml.safe_load(TABLE_SCHEMA_JSONLD_JSON.read_text())
+
+    # Create a validator with resolver for the table-schema-jsonld
+    Validator = jsonschema.Draft202012Validator
+    resolver = jsonschema.RefResolver.from_schema(table_schema_jsonld, store=STORE)
+    validator = Validator(table_schema_jsonld, resolver=resolver)
+
+    # Validate each example's schema
+    for example in table_schema_jsonld.get("examples", []):
+        # Validate the schema against table-schema-jsonld
+        validator.validate(example)
+
+
+def test_semantic_data_package_examples_valid():
+    """Validate semantic-data-package.yaml examples against the schema."""
+    # Load the semantic data package schema
+    semantic_data_package = yaml.safe_load(SEMANTIC_DATA_PACKAGE_YAML.read_text())
+
+    # Create a validator with resolver for remote schema references
+    Validator = jsonschema.Draft202012Validator
+    resolver = jsonschema.RefResolver.from_schema(semantic_data_package, store=STORE)
+    validator = Validator(semantic_data_package, resolver=resolver)
+
+    # Validate each example against the schema
+    examples = semantic_data_package.get("examples", [])
+    assert len(examples) > 0, "No examples found in semantic-data-package.yaml"
+
+    for idx, example in enumerate(examples):
+        try:
+            validator.validate(example)
+        except jsonschema.exceptions.ValidationError as e:
+            pytest.fail(f"Example {idx} failed validation: {e.message}")
