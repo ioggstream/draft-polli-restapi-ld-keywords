@@ -48,7 +48,6 @@ Spouse:
     "@vocab": "https://w3.org/ns/person#"
     children:
       "@container": "@set"
-
   properties:
     email: {type: string}
     spouse:
