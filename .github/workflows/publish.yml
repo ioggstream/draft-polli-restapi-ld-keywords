@@ -3,7 +3,7 @@ name: "Publish New Draft Version"
 on:
   push:
     tags:
-      - "draft-*"
+    - "draft-*"
 
 jobs:
   build:
@@ -15,7 +15,8 @@ jobs:
 
     # See https://github.com/actions/checkout/issues/290
     - name: "Get Tag Annotations"
-      run: git fetch -f origin ${{ github.ref }}:${{ github.ref }}
+      run: git fetch -f origin ${{ github.ref }}:${{ github.ref
+        }}
 
     - name: "Setup"
       id: setup
