@@ -9,8 +9,9 @@ components:
       type: string
       maxLength: 64
       description: >-
-        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
-        associated with a naming property registry information.
+        A string that can be used to represent a givenName, a
+        familyName, a patronymicName, or any other string associated
+        with a naming property registry information.
     BasePerson:
       type: object
       properties: &BasePerson_properties

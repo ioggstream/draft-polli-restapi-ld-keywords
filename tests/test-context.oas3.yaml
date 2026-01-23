@@ -20,8 +20,7 @@ components:
         country: ITA
     Location:
       description: >-
-        The country property inherits its id
-        from Country/x-jsonld-context.
+        The country property inherits its id from Country/x-jsonld-context.
       x-jsonld-context:
         "@vocab": https://w3id.org/italia/onto/CLV/
         country: hasCountry
@@ -84,7 +83,6 @@ components:
           type: string
         parent:
           $ref: "#/components/schemas/MergeContext"
-
 info:
   title: Test schema collection
   version: 202409.01.00
@@ -98,7 +96,6 @@ info:
     email: roberto.polli@par-tec.it
     url: https://www.par-tec.it
   description: |-
-
     ## Welcome!
     This schema is used to test the editor functionalities.
 #

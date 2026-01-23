@@ -1,10 +1,8 @@
 name: "Publish New Draft Version"
-
 on:
   push:
     tags:
-      - "draft-*"
-
+    - "draft-*"
 jobs:
   build:
     name: "Publish New Draft Version"
@@ -12,15 +10,13 @@ jobs:
     steps:
     - name: "Checkout"
       uses: actions/checkout@v4
-
     # See https://github.com/actions/checkout/issues/290
     - name: "Get Tag Annotations"
-      run: git fetch -f origin ${{ github.ref }}:${{ github.ref }}
-
+      run: git fetch -f origin ${{ github.ref }}:${{ github.ref
+        }}
     - name: "Setup"
       id: setup
       run: date -u "+date=%FT%T" >>"$GITHUB_OUTPUT"
-
     - name: "Caching"
       uses: actions/cache@v4
       with:
@@ -32,7 +28,6 @@ jobs:
           .targets.mk
         key: i-d-${{ steps.setup.outputs.date }}
         restore-keys: i-d-
-
     - name: "Upload to Datatracker"
       uses: martinthomson/i-d-template@v1
       with:

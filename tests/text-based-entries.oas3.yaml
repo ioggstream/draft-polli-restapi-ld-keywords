@@ -22,8 +22,9 @@ components:
       type: string
       maxLength: 64
       description: >-
-        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
-        associated with a naming property registry information.
+        A string that can be used to represent a givenName, a
+        familyName, a patronymicName, or any other string associated
+        with a naming property registry information.
     NumericTaxCode:
       description: >-
         Legal persons have a 11-digit tax code.
@@ -38,11 +39,11 @@ components:
       example: RSSMRO99A04H501A
     TaxCode:
       description: >-
-        This is a purely syntactic definition, and can
-        be used in different semantic contexts.
+        This is a purely syntactic definition, and can be used
+        in different semantic contexts.
       oneOf:
-        - $ref: "#/components/schemas/NumericTaxCode"
-        - $ref: "#/components/schemas/StringTaxCode"
+      - $ref: "#/components/schemas/NumericTaxCode"
+      - $ref: "#/components/schemas/StringTaxCode"
     PersonId:
       description: >-
         The Person identifier is a 16-character string.
@@ -83,7 +84,6 @@ components:
             :children <urn:example:tax:it/RSSLCC99A04H501A> ;
             :familyName "Rossi" ;
             :givenName "Mario" .
-
     RegistryStringL:
       type: string
       maxLength: 64
@@ -143,7 +143,6 @@ components:
             :taxCode "RSSMRO99A04H501A" .
 
         <urn:example:person/2234567890123457> :taxCode "RSSLCC99A04H501A" .
-
 #
 # If this is a schema-only file, you can leave the following sections empty.
 # Do not remove them, as they are required by the OpenAPI 3.0 specification.

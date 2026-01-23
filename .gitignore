@@ -19,3 +19,7 @@ tmp*.json
 __pycache__
 *egg-info
 .hypothesis
+
+.ipynb_checkpoints
+
+Untitled*
