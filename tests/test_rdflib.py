@@ -6,7 +6,7 @@ from rdflib import Graph
 
 @pytest.mark.skip("Bug in rdflib")
 def test_mailto_scheme_should_work_jsonld():
-    l = {
+    instance = {
         "@context": {
             "@vocab": "https://schema.org/",
             "email": "@id",
@@ -17,7 +17,7 @@ def test_mailto_scheme_should_work_jsonld():
         "email": "a@b.c",
     }
     g = Graph()
-    g.parse(data=json.dumps(l), format="application/ld+json")
+    g.parse(data=json.dumps(instance), format="application/ld+json")
     assert list(g)
     ttl = g.serialize(format="text/turtle")
     assert ttl.strip()

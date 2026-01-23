@@ -4,6 +4,23 @@
 #    based on Swagger Editor.
 #
 openapi: 3.0.3
+info:
+  title: A schema collection
+  version: 202108.01.00
+  x-summary: A schema collection with CPV ontology.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: robipolli@gmail.com
+    url: http://spcdata.digitpa.gov.it/Amministrazione/agid
+  description: |-
+
+    ## Welcome!
+    Edit the following schema examples in this semantic editor
+    based on Swagger Editor.
 components:
   schemas:
     EducationLevel:
@@ -32,7 +49,7 @@ components:
         che identifica un genitore.
       additionalProperties: false
       required:
-        - parent_id
+      - parent_id
       properties:
         parent_id:
           $ref: "#/components/schemas/TaxCode"
@@ -40,9 +57,9 @@ components:
       type: object
       additionalProperties: false
       required:
-        - city
-        - province
-        - country
+      - city
+      - province
+      - country
       x-jsonld-context: &BirthPlaceContext
         "@vocab": "https://w3id.org/italia/onto/CLV/"
         city: hasCity
@@ -68,7 +85,8 @@ components:
           example: RM
         country:
           type: string
-          description: The iso alpha-3 code of the country where the person was born.
+          description: The iso alpha-3 code of the country where
+            the person was born.
           example: ITA
         postCode:
           type: string
@@ -116,7 +134,7 @@ components:
           "@id": isChildOf
       additionalProperties: false
       description: |-
-          Questo schema rappresenta una persona fisica.
+        Questo schema rappresenta una persona fisica.
       required:
       - given_name
       - family_name
@@ -186,25 +204,8 @@ components:
         [A-Z0-9]{16}
     ExportedSchemas:
       anyOf:
-        - $ref: "#/components/schemas/Person"
-        - $ref: "#/components/schemas/EducationLevel"
+      - $ref: "#/components/schemas/Person"
+      - $ref: "#/components/schemas/EducationLevel"
 paths: {}
 servers: []
 tags: []
-info:
-  title: A schema collection
-  version: 202108.01.00
-  x-summary: A schema collection with CPV ontology.
-  license:
-    name: BSD3
-    url: https://opensource.org/licenses/BSD-3-Clause
-  termsOfService: https://opensource.org/licenses/BSD-3-Clause
-  contact:
-    name: Roberto Polli
-    email: robipolli@gmail.com
-    url: http://spcdata.digitpa.gov.it/Amministrazione/agid
-  description: |-
-
-    ## Welcome!
-    Edit the following schema examples in this semantic editor
-    based on Swagger Editor.

@@ -87,7 +87,7 @@ def test_init(testcase, expected):
         if i.is_subentry or i.is_decontext()
         else i.subentry_context_ref.get("@context")
     )
-    assert res == expected
+    assert res == expected  # nosec: B101
 
 
 @pytest.mark.parametrize(
