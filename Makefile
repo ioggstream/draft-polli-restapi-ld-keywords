@@ -1,8 +1,4 @@
 LIBDIR := lib
-
-# Include vocab directory files in GitHub Pages
-GHPAGES_EXTRA := vocab/jsonld-dialect.json vocab/jsonld-meta.json vocab/README.md vocab/semantic-data-package.json  vocab/table-schema-jsonld.json
-
 include $(LIBDIR)/main.mk
 
 $(LIBDIR)/main.mk:

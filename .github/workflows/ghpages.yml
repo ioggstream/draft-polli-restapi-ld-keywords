@@ -40,6 +40,17 @@ jobs:
         make: gh-pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: "Deploy vocab files to GitHub Pages"
+      uses: peaceiris/actions-gh-pages@v4
+      if: ${{ github.event_name == 'push' }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./vocab
+        destination_dir: ${{ github.ref == 'refs/heads/main' &&
+          'vocab' || format('{0}/vocab', github.ref_name) }}
+        keep_files: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
     - name: "Save HTML"
       uses: actions/upload-artifact@v4
       with:
