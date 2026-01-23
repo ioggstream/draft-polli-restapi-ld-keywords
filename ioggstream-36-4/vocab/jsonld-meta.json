@@ -1,0 +1,42 @@
+{
+  "$id": "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/vocab/jsonld-meta.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$vocabulary": {
+    "https://ioggstream.github.io/draft-polli-restapi-ld-keywords/jsonld-meta.json": true
+  },
+  "title": "Linked Data Keywords Meta-Schema",
+  "description": "A JSON Schema vocabulary for attaching JSON-LD information to JSON Schema documents.",
+  "type": "object",
+  "properties": {
+    "x-jsonld-type": {
+      "description": "An annotation carrying JSON-LD `@type` information for the instances covered by the schema.",
+      "anyOf": [
+        { "type": "string" }
+      ],
+      "examples": [
+        "Person",
+        "http://schema.org/Person",
+        "http://example.org/vocab#Thing"
+      ]
+    },
+    "x-jsonld-context": {
+      "description": "An annotation carrying a JSON-LD `@context` for the instances covered by the schema.",
+      "anyOf": [
+        { "type": "object" }
+      ],
+      "examples": [
+        {"@vocab": "https://example.org/vocab#"}
+      ]
+    }
+  },
+  "examples": [
+    {
+      "x-jsonld-type": "Person",
+      "x-jsonld-context": { "@vocab": "https://example.org/vocab#" }
+    },
+    {
+      "x-jsonld-type": "http://schema.org/Person",
+      "x-jsonld-context": "https://example.org/context/person.jsonld"
+    }
+  ]
+}
