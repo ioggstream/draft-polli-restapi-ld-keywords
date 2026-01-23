@@ -91,6 +91,8 @@ Table of Contents
      A.5.  Identifiers and IRI Expansion
    Appendix B.  Acknowledgements
    FAQ
+   JSON Schema Vocabulary
+   Semantic Frictionless Data Packages
    Change Log
    Author's Address
 
@@ -1047,6 +1049,22 @@ FAQ
 
      Figure 13: The above code is ambiguous, because the rdfs:range of
                         CPV:taxCode is rdfs:Literal
+
+JSON Schema Vocabulary
+
+   This section is to be removed before publishing as an RFC.
+
+   A JSON Schema Vocabulary is provided in the vocab/ directory.  See
+   the associated README (vocab/README.md) for details.
+
+Semantic Frictionless Data Packages
+
+   This section is to be removed before publishing as an RFC.
+
+   This specification can be used to add semantic information in a
+   Frictionless Data Package (see https://frictionlessdata.io/specs/
+   data-package/).  See the associated README (vocab/README.md) for
+   details.
 
 Change Log
 
