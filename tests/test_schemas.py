@@ -87,7 +87,7 @@ def test_ld_1():
     g = Graph()
     g.parse(data=json.dumps(result), format="application/ld+json")
     ttl = g.serialize(format="text/turtle")
-
+    assert ttl
     raise NotImplementedError
 
 
@@ -108,9 +108,9 @@ def test_oas_annotated_schemas(schema_name, schema_content, schemas):
     i.process_instance(resolver=RefResolver(schemas))
 
     g_instance = _parse_rdf(data=json.dumps(i.ld), format="application/ld+json")
-    assert (
-        len(g_instance) > 0
-    ), f"Test case {schema_name} produced empty graph: \n{yaml.safe_dump(i.ld)}"
+    assert len(g_instance) > 0, (
+        f"Test case {schema_name} produced empty graph: \n{yaml.safe_dump(i.ld)}"
+    )
 
     g = Graph()
     g.parse(data=json.dumps(i.ld), format="application/ld+json")
@@ -253,9 +253,9 @@ def test_draft_examples_are_correct(section, schema, jsonld, rdf):
         raise pytest.skip(f"Error processing instance in section {section}") from e
 
     g_instance = _parse_rdf(data=json.dumps(i.ld), format="application/ld+json")
-    assert (
-        len(g_instance) > 0
-    ), f"Test case {section} produced empty graph: \n{yaml.safe_dump(i.ld)}"
+    assert len(g_instance) > 0, (
+        f"Test case {section} produced empty graph: \n{yaml.safe_dump(i.ld)}"
+    )
 
     if rdf:
         g_result = _parse_rdf(data=rdf, format="text/turtle")
@@ -280,15 +280,20 @@ def _parse_rdf(data: str | dict, format: str, expand: bool = False) -> Graph:
     return g
 
 
+def dump_nt_sorted(g):
+    return "\n".join(sorted(g.serialize(format="nt").splitlines()))
+
+
 def assert_isomorphic(g1: Graph, g2: Graph):
     i1 = rdflib.compare.to_isomorphic(g1)
     i2 = rdflib.compare.to_isomorphic(g2)
     in_both, in_g1, in_g2 = rdflib.compare.graph_diff(i1, i2)
-    dump_nt_sorted = lambda g: "\n".join(sorted(g.serialize(format="nt").splitlines()))
-    assert (
-        i1 == i2
-    ), f"Graphs are not isomorphic {yaml.safe_dump(dict(
-        in_both=dump_nt_sorted(in_both),
-        in_g1=dump_nt_sorted(in_g1),
-        in_g2=dump_nt_sorted(in_g2),
-    ))}"
+    result = yaml.safe_dump(
+        dict(
+            in_both=dump_nt_sorted(in_both),
+            in_g1=dump_nt_sorted(in_g1),
+            in_g2=dump_nt_sorted(in_g2),
+        )
+    )
+
+    assert i1 == i2, f"Graphs are not isomorphic {result}"

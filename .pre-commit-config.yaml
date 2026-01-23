@@ -6,16 +6,20 @@
 #
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+default_stages:
+- pre-commit
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-added-large-files
-    -   id: check-symlinks
-    -   id: detect-private-key
-    #
+    # Manage spaces.
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-added-large-files
+    - id: check-symlinks
+    - id: mixed-line-ending
+      args: [--fix=lf]
+    # Check file syntax/format
     -   id: check-xml
     -   id: check-json
     -   id: check-yaml
@@ -41,28 +45,39 @@ repos:
         - --in-place
         - --remove-unused-variables
         - --remove-all-unused-imports
--   repo: https://github.com/psf/black
-    rev: 26.1.0
-    hooks:
-    -   id: black
-- repo: https://github.com/pycqa/isort
-  rev: 7.0.0
+#
+# Python linters.
+#
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.14.14
   hooks:
-    - id: isort
-      name: isort (python)
-      # Use black profile for isort to avoid conflicts
-      #   see https://github.com/PyCQA/isort/issues/1518
-      args: ["--profile", "black"]
-    - id: isort
-      name: isort (cython)
-      types: [cython]
-    - id: isort
-      name: isort (pyi)
-      types: [pyi]
+  # Run the linter.
+  - id: ruff
+    args: [--fix]
+  - # Run the formatter.
+    id: ruff-format
+# - repo: https://github.com/pre-commit/mirrors-mypy
+#   rev: v1.19.1
+#   hooks:
+#   - id: mypy
+#     additional_dependencies: [types-PyYAML]
+#     exclude: ^tests/
 - repo: https://github.com/PyCQA/flake8
   rev: 7.3.0
   hooks:
   - id: flake8
+- repo: local
+  hooks:
+    - id: yaml-to-json
+      name: Convert vocab YAML to JSON
+      entry: python .pre-commit-scripts/yaml-to-json.py
+      language: system
+      files: ^vocab/.*\.yaml*
+      pass_filenames: true
+#
+# Security linters.
+#
 - repo: https://github.com/PyCQA/bandit
   rev: 1.9.3
   hooks:
@@ -78,11 +93,21 @@ repos:
   rev: v1.4.2
   hooks:
     - id: python-safety-dependencies-check
+      stages:
+        - pre-push
+- repo: https://github.com/bridgecrewio/checkov.git
+  rev: 3.2.497  # change to tag or sha
+  hooks:
+  - id: checkov
+  - id: checkov_secrets
+    stages: ["pre-push"]
 - repo: local
   hooks:
-    - id: yaml-to-json
-      name: Convert vocab YAML to JSON
-      entry: python .pre-commit-scripts/yaml-to-json.py
-      language: system
-      files: ^vocab/.*\.yaml*
-      pass_filenames: true
+  - id: trufflehog
+    name: TruffleHog
+    description: Detect secrets in your data.
+    entry: bash -c 'docker run --rm -v "$(pwd):/workdir" -i --rm
+      trufflesecurity/trufflehog:latest git file:///workdir --since-commit
+      HEAD --results=verified,unknown --fail'
+    language: system
+    stages: ["pre-push"]
