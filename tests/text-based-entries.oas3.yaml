@@ -22,7 +22,8 @@ components:
       type: string
       maxLength: 64
       description: >-
-        A string that can be used to represent a givenName, a familyName, a patronymicName, or any other string
+        A string that can be used to represent a givenName, a
+        familyName, a patronymicName, or any other string
         associated with a naming property registry information.
     NumericTaxCode:
       description: >-
@@ -41,8 +42,8 @@ components:
         This is a purely syntactic definition, and can
         be used in different semantic contexts.
       oneOf:
-        - $ref: "#/components/schemas/NumericTaxCode"
-        - $ref: "#/components/schemas/StringTaxCode"
+      - $ref: "#/components/schemas/NumericTaxCode"
+      - $ref: "#/components/schemas/StringTaxCode"
     PersonId:
       description: >-
         The Person identifier is a 16-character string.
