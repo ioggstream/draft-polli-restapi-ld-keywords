@@ -746,6 +746,7 @@ Citizen:
   x-jsonld-context:
     "email": "@id"
     "@vocab": "https://w3.org/ns/person#"
+    "@propagate": false
   type: object
   properties:
     email: { type: string }
@@ -794,6 +795,8 @@ The example schema instance contained in the above schema
 results in the following JSON-LD document.
 The instance context contains information from both
 "Citizen" and "BirthPlace" semantic keywords.
+The `@propagate: false` keyword ensures that
+the parent's context is not propagated to the child object.
 
 ~~~ json
 {
