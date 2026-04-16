@@ -89,7 +89,6 @@
           "bytes": 2082,
           "hash": "d25c9c77f588f5dc32059d2da1136c02",
           "schema": {
-            "x-jsonld-context": null,
             "fields": [
               {
                 "name": "id",
@@ -219,6 +218,7 @@
           },
           "format": "inline",
           "name": "agente_causale.expected.datapackage",
+          "type": "table",
           "path": "agente_causale.expected.datapackage.csv",
           "schema": {
             "fields": [
@@ -298,12 +298,8 @@
               "xkos": "http://rdf-vocabulary.ddialliance.org/xkos#",
               "xsd": "http://www.w3.org/2001/XMLSchema#"
             },
-            "x-jsonld-type": [
-              "INAILService:AgenteCausaleINAIL",
-              "skos:Concept"
-            ]
-          },
-          "type": "table"
+            "x-jsonld-type": "INAILService:AgenteCausaleINAIL"
+          }
         },
         {
           "dialect": {
@@ -314,6 +310,7 @@
           "format": "inline",
           "name": "agente_causale.expected",
           "path": "agente_causale.expected.csv",
+          "type": "table",
           "schema": {
             "fields": [
               {
@@ -345,6 +342,7 @@
                 "type": "array"
               }
             ],
+            "x-jsonld-type": "INAILService:AgenteCausaleINAIL",
             "x-jsonld-context": {
               "@vocab": "https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/",
               "INAILService": "https://w3id.org/italia/work-accident/onto/adm_serv/",
@@ -391,13 +389,8 @@
               },
               "xkos": "http://rdf-vocabulary.ddialliance.org/xkos#",
               "xsd": "http://www.w3.org/2001/XMLSchema#"
-            },
-            "x-jsonld-type": [
-              "INAILService:AgenteCausaleINAIL",
-              "skos:Concept"
-            ]
-          },
-          "type": "table"
+            }
+          }
         }
       ]
     }

@@ -998,6 +998,20 @@ Q: Can the value of `x-jsonld-type` be an `rdf:Property`? Would this allow to re
 ~~~
 {: title="The above code is ambiguous, because the rdfs:range of CPV:taxCode is rdfs:Literal" #ex-invalid-x-jsonld-type}
 
+# JSON Schema Vocabulary
+{: numbered="false" removeinrfc="true"}
+
+A JSON Schema Vocabulary is provided in the `vocab/` directory.
+See the associated [README](vocab/README.md) for details.
+
+# Semantic Frictionless Data Packages
+{: numbered="false" removeinrfc="true"}
+
+This specification can be used to add semantic information
+in a Frictionless Data Package
+(see https://frictionlessdata.io/specs/data-package/).
+See the associated [README](vocab/README.md) for details.
+
 # Change Log
 {: numbered="false" removeinrfc="true"}
 
