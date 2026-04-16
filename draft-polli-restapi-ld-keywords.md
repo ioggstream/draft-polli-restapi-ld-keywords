@@ -963,8 +963,88 @@ Q: Why don't design for composability first?
           $ref: "#/components/schemas/TaxCode"
 ~~~
 
-  The result will be that only one of the properties will be correctly annotated.
-  For this reason, composability is limited to the object level.
+   The result will be that only one of the properties will be correctly annotated.
+   For this reason, composability is limited to the object level.
+
+Q: How should I model controlled vocabularies (e.g. codelists or taxonomies)?
+   What's the difference between `@base` and `@vocab`?
+:  Use `@vocab` to expand terms (e.g. class and property names),
+   and use `@base` to expand relative identifiers into absolute IRIs.
+   For controlled vocabulary values:
+
+   - use `@type: @vocab` when the property value should be interpreted as
+     a vocabulary term;
+   - use `@id` (possibly with `@base`) when the property value is itself
+     a node identifier.
+
+   Non-composable vocabulary (supports fragment identifiers):
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  country:
+    "@type": "@vocab"
+    "@context":
+      "@vocab": "https://example.com/vocab#"
+"@type": Country
+country: ITA
+~~~
+{: title="Controlled vocabulary value expanded with @type: @vocab." #ex-faq-controlled-vocab-non-composable}
+
+~~~ text
+[]
+  a <https://example.com/Country>;
+  <https://example.com/country> <https://example.com/vocab#ITA> .
+~~~
+
+   Composable vocabulary (without fragment identifiers):
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab/"
+  country: "@id"
+"@type": Country
+country: ITA
+~~~
+{: title="Controlled vocabulary value expanded with @id and @base." #ex-faq-controlled-vocab-composable-base}
+
+~~~ text
+<https://example.com/vocab/ITA> a <https://example.com/Country> .
+~~~
+
+   Composable vocabulary with fragments can be represented by using a base IRI
+   without a trailing slash and a fragment in the value:
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab"
+  country: "@id"
+"@type": Country
+country: "#ITA"
+~~~
+{: title="Controlled vocabulary with fragments using @base and @id." #ex-faq-controlled-vocab-composable-fragment}
+
+~~~ text
+<https://example.com/vocab#ITA> a <https://example.com/Country> .
+~~~
+
+   Alternatively, use a prefix to make fragment-based identifiers explicit:
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  c: "https://example.com/vocab#"
+  country: "@id"
+"@type": Country
+country: "c:ITA"
+~~~
+{: title="Controlled vocabulary with fragments using a prefix." #ex-faq-controlled-vocab-composable-prefix}
+
+~~~ text
+<https://example.com/vocab#ITA> a <https://example.com/Country> .
+~~~
 
 Q: Why not use keywords such as `x-refersTo`, `x-kindOf`, etc.?
 :  When we started enriching OAS documents with `x-refersTo` and similar keywords,
