@@ -93,7 +93,6 @@ examples:
     hash: d25c9c77f588f5dc32059d2da1136c02
     # Table schema
     schema:
-      x-jsonld-context:
       fields:
       - name: id
         title: ID
@@ -180,6 +179,7 @@ examples:
         keyed: true
     format: inline
     name: agente_causale.expected.datapackage
+    type: table
     path: agente_causale.expected.datapackage.csv
     schema:
       fields:
@@ -231,16 +231,14 @@ examples:
           "@id": skos:inScheme
         xkos: http://rdf-vocabulary.ddialliance.org/xkos#
         xsd: http://www.w3.org/2001/XMLSchema#
-      x-jsonld-type:
-      - INAILService:AgenteCausaleINAIL
-      - skos:Concept
-    type: table
+      x-jsonld-type: INAILService:AgenteCausaleINAIL
   - dialect:
       inline:
         keyed: true
     format: inline
     name: agente_causale.expected
     path: agente_causale.expected.csv
+    type: table
     schema:
       fields:
       - name: "@type"
@@ -257,6 +255,7 @@ examples:
         type: string
       - name: vocab
         type: array
+      x-jsonld-type: INAILService:AgenteCausaleINAIL
       x-jsonld-context:
         "@vocab": https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/
         INAILService: https://w3id.org/italia/work-accident/onto/adm_serv/
@@ -291,7 +290,3 @@ examples:
           "@id": skos:inScheme
         xkos: http://rdf-vocabulary.ddialliance.org/xkos#
         xsd: http://www.w3.org/2001/XMLSchema#
-      x-jsonld-type:
-      - INAILService:AgenteCausaleINAIL
-      - skos:Concept
-    type: table
