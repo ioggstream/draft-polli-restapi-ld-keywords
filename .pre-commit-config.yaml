@@ -104,10 +104,12 @@ repos:
 - repo: local
   hooks:
   - id: trufflehog
-    name: TruffleHog
+    name: TruffleHog v3.93.3
     description: Detect secrets in your data.
-    entry: bash -c 'docker run --rm -v "$(pwd):/workdir" -i --rm
-      trufflesecurity/trufflehog:latest git file:///workdir --since-commit
-      HEAD --results=verified,unknown --fail'
+    entry: bash -c 'docker run --cpus 2 --rm -v "$(pwd):/workdir" -i --rm
+      docker.io/trufflesecurity/trufflehog@sha256:06c1f230512cbb694954716fa5e0adbfb95809c7bfb5a50c25110847417b69db git file:///workdir
+      --since-commit teamdigitale/main
+      --branch HEAD
+      --results=verified,unknown --fail'
     language: system
     stages: ["pre-push"]
