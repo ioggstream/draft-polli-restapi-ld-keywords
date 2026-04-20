@@ -619,13 +619,9 @@ country:ITA
 
 ### Using `@vocab` or `@base` for vocabulary references
 
-`@vocab` is used to expand terms (i.e. prepend a prefix to them),
-while `@base` is used to expand relative IRIs to absolute IRIs.
-Remember:
-
-- `@vocab` does not have the limitations of `@base` and can be used to model references to vocabularies using fragment identifiers;
-- `@vocab` cannot be used to model object identifiers, so it does not work when composing contexts for `@id` properties.
-ontrolled vocabulary values:
+`@vocab` is used to expand terms (i.e. prepend a prefix to them even when it contains a fragment separator `#`),
+while `@base` is used to expand relative IRIs to absolute IRIs
+according to the URI resolution algorithm defined in {{Section 5 of URI}}:
 
 - use `@type: @vocab` when the property value should be interpreted as
   a vocabulary term, without affecting the node identifier;
@@ -634,8 +630,8 @@ ontrolled vocabulary values:
 
 Here are some examples of modeling a controlled vocabulary value using `@vocab` and `@id`.
 
-A non-composable vocabulary (supports fragment identifiers)
-where the `ITA` value is expanded to `https://example.com/vocab#ITA`:
+A vocabulary using fragment identifiers
+where we expand the `ITA` JSON value to `https://example.com/vocab#ITA`:
 
 ~~~ yaml
 "@context":
@@ -649,7 +645,8 @@ country: ITA
 ~~~
 {: title="Controlled vocabulary value expanded with @type: @vocab." #ex-faq-controlled-vocab-non-composable}
 
-The resulting RDF graph is a blank node.
+The resulting RDF graph is a blank node
+with a `country` property.
 
 ~~~ text
 []
@@ -671,7 +668,6 @@ this cannot be used with fragment identifiers.
     "@id": "@id"
 "@type": Country
 country: ITA
-label: Italia
 ~~~
 {: title="Controlled vocabulary value expanded with @id and @base." #ex-faq-controlled-vocab-composable-base}
 

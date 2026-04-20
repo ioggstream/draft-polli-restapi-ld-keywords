@@ -108,7 +108,7 @@ repos:
     description: Detect secrets in your data.
     entry: bash -c 'docker run --cpus 2 --rm -v "$(pwd):/workdir" -i --rm
       docker.io/trufflesecurity/trufflehog@sha256:06c1f230512cbb694954716fa5e0adbfb95809c7bfb5a50c25110847417b69db git file:///workdir
-      --since-commit teamdigitale/main
+      --since-commit origin/main
       --branch HEAD
       --results=verified,unknown --fail'
     language: system
