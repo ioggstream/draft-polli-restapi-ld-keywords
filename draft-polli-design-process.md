@@ -619,11 +619,115 @@ country:ITA
 
 ### Using `@vocab` or `@base` for vocabulary references
 
-Since `@vocab` is simply prepended to does not undergo the same limitations of `@base`,
-it is possible to use it to model references to vocabularies
-using fragment identifiers.
-On the other hand, `@vocab` cannot be used to model object
-identifiers, so it does not work when composing contexts for `@id` properties.
+`@vocab` is used to expand terms (i.e. prepend a prefix to them),
+while `@base` is used to expand relative IRIs to absolute IRIs.
+Remember:
+
+- `@vocab` does not have the limitations of `@base` and can be used to model references to vocabularies using fragment identifiers;
+- `@vocab` cannot be used to model object identifiers, so it does not work when composing contexts for `@id` properties.
+ontrolled vocabulary values:
+
+- use `@type: @vocab` when the property value should be interpreted as
+  a vocabulary term, without affecting the node identifier;
+- use `@id` (possibly with `@base`) when the property value is itself
+  a node identifier.
+
+Here are some examples of modeling a controlled vocabulary value using `@vocab` and `@id`.
+
+A non-composable vocabulary (supports fragment identifiers)
+where the `ITA` value is expanded to `https://example.com/vocab#ITA`:
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  country:
+    "@type": "@vocab"
+    "@context":
+      "@vocab": "https://example.com/vocab#"
+"@type": Country
+country: ITA
+~~~
+{: title="Controlled vocabulary value expanded with @type: @vocab." #ex-faq-controlled-vocab-non-composable}
+
+The resulting RDF graph is a blank node.
+
+~~~ text
+[]
+  a <https://example.com/Country>;
+  <https://example.com/country> <https://example.com/vocab#ITA> .
+~~~
+
+A composable vocabulary using `@base` to associate
+the `country` property to the IRI.
+Since Establishing a base URI (see {{Section 5.1 of URI}})
+strips everything after the last slash from `@base`
+this cannot be used with fragment identifiers.
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab/"
+  country:
+    "@id": "@id"
+"@type": Country
+country: ITA
+label: Italia
+~~~
+{: title="Controlled vocabulary value expanded with @id and @base." #ex-faq-controlled-vocab-composable-base}
+
+The resulting RDF graph is is a named node.
+
+~~~ text
+<https://example.com/vocab/ITA> a <https://example.com/Country> .
+~~~
+
+NOTE: Currently there's no identified way for this specification
+to map a simple JSON string to a fragment-based IRI.
+
+A vocabulary using a fragment as separator,
+can be represented by using
+a base IRI without a trailing slash
+and a fragment in the value:
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab"
+  country: "@id"
+"@type": Country
+country: "#ITA"
+~~~
+{: title="Controlled vocabulary with fragments using @base and @id." #ex-faq-controlled-vocab-composable-fragment}
+
+~~~ text
+<https://example.com/vocab#ITA> a <https://example.com/Country> .
+~~~
+
+Alternatively, use a prefix to make fragment-based identifiers explicit:
+
+~~~ yaml
+"@context":
+  "@vocab": "https://example.com/"
+  c: "https://example.com/vocab#"
+  country: "@id"
+"@type": Country
+country: "c:ITA"
+~~~
+{: title="Controlled vocabulary with fragments using a prefix." #ex-faq-controlled-vocab-composable-prefix}
+
+~~~ text
+<https://example.com/vocab#ITA> a <https://example.com/Country> .
+~~~
+
+
+
+
+
+
+
+
+
+
 
 
 ## Interpreting schema instances {#interpreting}
@@ -1038,7 +1142,7 @@ and either map it to `http://w3.org/ns/person#patronymicName` or `foaf:familyNam
 
 ## Composability {#int-composability}
 
-Always prefer explicit context information  over implicit context composition.
+Always prefer explicit context information over implicit context composition.
 Different implementations of context composition may lead to different results,
 especially over large schemas with many nested objects.
 
@@ -1388,6 +1492,36 @@ The following is a list of some bundling tools:
 - https://redocly.com/docs/cli;
 - https://www.npmjs.com/package/swagger-cli.
 
+For example, redocly CLI can be used via a pre-commit hook
+to automatically bundle the schema before committing it to the repository.
+
+```yaml
+#
+# An example pre-commit hook configuration for generating OAS bundles.
+#
+- repo: local
+  hooks:
+  - id: generate-bundles
+    name: Generate OAS bundles v2.20.3
+    stages:
+    - pre-push
+    language: docker_image
+    files: >-
+      oas/open.*yaml
+    entry: |-
+      --entrypoint sh
+      docker.io/redocly/cli@sha256:78fa111b6c84522383d419a0631c984aefa76c5fbd39d8904a201b86e3b44168
+      -c
+      'mkdir -p bundles/
+      for f in $0 $@; \
+      do
+        DIR=${f%/*}
+        redocly bundle \
+          "$f" \
+        -o "bundles/${DIR##*/}.yaml"
+      done'
+```
+
 # Acknowledgements
 
 Thanks to Giorgia Lodi, Matteo Fortini and Saverio Pulizzi for being the initial contributors of this work.
@@ -1399,7 +1533,8 @@ opening pull requests, reporting bugs, asking smart questions,
 drafting or reviewing text, and evaluating open issues:
 
 Pierre-Antoine Champin,
-and Vladimir Alexiev.
+Vladimir Alexiev,
+and Stefano Baruzzo.
 
 # FAQ
 {: numbered="false" removeinrfc="true"}
