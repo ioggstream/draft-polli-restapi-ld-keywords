@@ -1870,29 +1870,22 @@ country:ITA
           <h4 id="name-using-vocab-or-base-for-voc">
 <a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-using-vocab-or-base-for-voc" class="section-name selfRef">Using <code>@vocab</code> or <code>@base</code> for vocabulary references</a>
           </h4>
-<p id="section-3.2.1-1"><code>@vocab</code> is used to expand terms (i.e. prepend a prefix to them),
-while <code>@base</code> is used to expand relative IRIs to absolute IRIs.
-Remember:<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-1"><code>@vocab</code> is used to expand terms (i.e. prepend a prefix to them even when it contains a fragment separator <code>#</code>),
+while <code>@base</code> is used to expand relative IRIs to absolute IRIs
+according to the URI resolution algorithm defined in <span><a href="https://rfc-editor.org/rfc/rfc3986#section-5" class="relref">Section 5</a> of [<a href="#URI" class="cite xref">URI</a>]</span>:<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.2.1-2.1">
-              <p id="section-3.2.1-2.1.1"><code>@vocab</code> does not have the limitations of <code>@base</code> and can be used to model references to vocabularies using fragment identifiers;<a href="#section-3.2.1-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-3.2.1-2.1.1">use <code>@type: @vocab</code> when the property value should be interpreted as
+a vocabulary term, without affecting the node identifier;<a href="#section-3.2.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.2.1-2.2">
-              <p id="section-3.2.1-2.2.1"><code>@vocab</code> cannot be used to model object identifiers, so it does not work when composing contexts for <code>@id</code> properties.
-ontrolled vocabulary values:<a href="#section-3.2.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-3.2.1-2.3">
-              <p id="section-3.2.1-2.3.1">use <code>@type: @vocab</code> when the property value should be interpreted as
-a vocabulary term, without affecting the node identifier;<a href="#section-3.2.1-2.3.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-3.2.1-2.4">
-              <p id="section-3.2.1-2.4.1">use <code>@id</code> (possibly with <code>@base</code>) when the property value is itself
-a node identifier.<a href="#section-3.2.1-2.4.1" class="pilcrow">¶</a></p>
+              <p id="section-3.2.1-2.2.1">use <code>@id</code> (possibly with <code>@base</code>) when the property value is itself
+a node identifier.<a href="#section-3.2.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.2.1-3">Here are some examples of modeling a controlled vocabulary value using <code>@vocab</code> and <code>@id</code>.<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.2.1-4">A non-composable vocabulary (supports fragment identifiers)
-where the <code>ITA</code> value is expanded to <code>https://example.com/vocab#ITA</code>:<a href="#section-3.2.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-4">A vocabulary using fragment identifiers
+where we expand the <code>ITA</code> JSON value to <code>https://example.com/vocab#ITA</code>:<a href="#section-3.2.1-4" class="pilcrow">¶</a></p>
 <span id="name-controlled-vocabulary-value"></span><div id="ex-faq-controlled-vocab-non-composable">
 <figure id="figure-10">
             <div class="lang-yaml sourcecode" id="section-3.2.1-5.1">
@@ -1911,7 +1904,8 @@ country: ITA
 <a href="#name-controlled-vocabulary-value" class="selfRef">Controlled vocabulary value expanded with @type: @vocab.</a>
             </figcaption></figure>
 </div>
-<p id="section-3.2.1-6">The resulting RDF graph is a blank node.<a href="#section-3.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-6">The resulting RDF graph is a blank node
+with a <code>country</code> property.<a href="#section-3.2.1-6" class="pilcrow">¶</a></p>
 <div class="lang-text sourcecode" id="section-3.2.1-7">
 <pre>
 []
@@ -1935,7 +1929,6 @@ this cannot be used with fragment identifiers.<a href="#section-3.2.1-8" class="
     "@id": "@id"
 "@type": Country
 country: ITA
-label: Italia
 </pre>
 </div>
 <figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
