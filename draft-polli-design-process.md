@@ -671,7 +671,7 @@ country: ITA
 ~~~
 {: title="Controlled vocabulary value expanded with @id and @base." #ex-faq-controlled-vocab-composable-base}
 
-The resulting RDF graph is is a named node.
+The resulting RDF graph is a named node.
 
 ~~~ text
 <https://example.com/vocab/ITA> a <https://example.com/Country> .
