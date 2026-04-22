@@ -895,7 +895,8 @@ opening pull requests, reporting bugs, asking smart questions,
 drafting or reviewing text, and evaluating open issues:
 
 Pierre-Antoine Champin,
-and Vladimir Alexiev.
+Vladimir Alexiev,
+and Stefano Baruzzo.
 
 # FAQ
 {: numbered="false" removeinrfc="true"}
@@ -963,8 +964,8 @@ Q: Why don't design for composability first?
           $ref: "#/components/schemas/TaxCode"
 ~~~
 
-  The result will be that only one of the properties will be correctly annotated.
-  For this reason, composability is limited to the object level.
+   The result will be that only one of the properties will be correctly annotated.
+   For this reason, composability is limited to the object level.
 
 Q: Why not use keywords such as `x-refersTo`, `x-kindOf`, etc.?
 :  When we started enriching OAS documents with `x-refersTo` and similar keywords,
