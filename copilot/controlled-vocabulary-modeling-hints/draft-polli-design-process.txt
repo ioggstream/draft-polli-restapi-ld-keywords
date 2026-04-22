@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                             20 April 2026
-Expires: 22 October 2026
+Intended status: Informational                             22 April 2026
+Expires: 24 October 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 October 2026.
+   This Internet-Draft will expire on 24 October 2026.
 
 Copyright Notice
 
@@ -642,7 +642,7 @@ Table of Contents
 
     Figure 11: Controlled vocabulary value expanded with @id and @base.
 
-   The resulting RDF graph is is a named node.
+   The resulting RDF graph is a named node.
 
    <https://example.com/vocab/ITA> a <https://example.com/Country> .
 
