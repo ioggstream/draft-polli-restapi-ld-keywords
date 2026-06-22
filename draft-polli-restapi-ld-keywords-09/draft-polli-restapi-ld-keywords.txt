@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft     Digital Transformation Department, Italian Government
-Intended status: Informational                           23 January 2026
-Expires: 27 July 2026
+Intended status: Informational                              22 June 2026
+Expires: 24 December 2026
 
 
                      REST API Linked Data Keywords
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 July 2026.
+   This Internet-Draft will expire on 24 December 2026.
 
 Copyright Notice
 
@@ -800,6 +800,7 @@ A.4.  Composite instance context
      x-jsonld-context:
        "email": "@id"
        "@vocab": "https://w3.org/ns/person#"
+       "@propagate": false
      type: object
      properties:
        email: { type: string }
@@ -846,6 +847,8 @@ A.4.  Composite instance context
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
    information from both "Citizen" and "BirthPlace" semantic keywords.
+   The @propagate: false keyword ensures that the parent's context is
+   not propagated to the child object.
 
    {
      "email": "mailto:a@example",
@@ -941,7 +944,7 @@ Appendix B.  Acknowledgements
    requests, reporting bugs, asking smart questions, drafting or
    reviewing text, and evaluating open issues:
 
-   Pierre-Antoine Champin, and Vladimir Alexiev.
+   Pierre-Antoine Champin, Vladimir Alexiev, and Stefano Baruzzo.
 
 FAQ
 
@@ -951,8 +954,8 @@ FAQ
       machine-readable semantic information in [OAS] / [JSONSCHEMA] to
       be used at contract time.
 
-   Q: Does this document support the exchange of JSON-LD resources?  Thi
-      s document is focused on annotating schemas that are used at
+   Q: Does this document support the exchange of JSON-LD resources?  This
+      document is focused on annotating schemas that are used at
       contract/design time, so that application can exchange compact
       JSON object without dereferencing nor interpreting external
       resources at runtime.
@@ -982,14 +985,14 @@ FAQ
 
    Q: Why not defining a mechanism to attach semantic information to
 
-   non-object schemas (e.g. JSON Strings) like other implementations?  T
-      his is actually problematic.  Look at this example that reuses the
+   non-object schemas (e.g. JSON Strings) like other implementations?  This
+      is actually problematic.  Look at this example that reuses the
       TaxCode schema and semantic in different properties.
 
-   Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?  W
-      eb and mobile developers consider JSON Schema is easier to use
-      than SHACL.  Moreover, OWL restrictions are about semantics, and
-      are not designed to restrict the syntax.
+   Q: Why don't use SHACL or OWL restrictions instead of JSON Schema?  Web
+      and mobile developers consider JSON Schema is easier to use than
+      SHACL.  Moreover, OWL restrictions are about semantics, and are
+      not designed to restrict the syntax.
 
    Q: Why don't design for composability first?  JSON-LD is a complex
       specification.  Consider the following schemas, where Contract

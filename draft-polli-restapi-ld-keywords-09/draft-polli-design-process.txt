@@ -4,8 +4,8 @@
 
 Network Working Group                                           R. Polli
 Internet-Draft                                            Par-Tec S.p.A.
-Intended status: Informational                           22 January 2026
-Expires: 26 July 2026
+Intended status: Informational                              22 June 2026
+Expires: 24 December 2026
 
 
            Designing APIs with REST API Linked Data Keywords
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 July 2026.
+   This Internet-Draft will expire on 24 December 2026.
 
 Copyright Notice
 
@@ -593,11 +593,90 @@ Table of Contents
 
 3.2.1.  Using @vocab or @base for vocabulary references
 
-   Since @vocab is simply prepended to does not undergo the same
-   limitations of @base, it is possible to use it to model references to
-   vocabularies using fragment identifiers.  On the other hand, @vocab
-   cannot be used to model object identifiers, so it does not work when
-   composing contexts for @id properties.
+   @vocab is used to expand terms (i.e. prepend a prefix to them even
+   when it contains a fragment separator #), while @base is used to
+   expand relative IRIs to absolute IRIs according to the URI resolution
+   algorithm defined in Section 5 of [URI]:
+
+   *  use @type: @vocab when the property value should be interpreted as
+      a vocabulary term, without affecting the node identifier;
+
+   *  use @id (possibly with @base) when the property value is itself a
+      node identifier.
+
+   Here are some examples of modeling a controlled vocabulary value
+   using @vocab and @id.
+
+   A vocabulary using fragment identifiers where we expand the ITA JSON
+   value to https://example.com/vocab#ITA:
+
+   "@context":
+     "@vocab": "https://example.com/"
+     country:
+       "@type": "@vocab"
+       "@context":
+         "@vocab": "https://example.com/vocab#"
+   "@type": Country
+   country: ITA
+
+    Figure 10: Controlled vocabulary value expanded with @type: @vocab.
+
+   The resulting RDF graph is a blank node with a country property.
+
+   []
+     a <https://example.com/Country>;
+     <https://example.com/country> <https://example.com/vocab#ITA> .
+
+   A composable vocabulary using @base to associate the country property
+   to the IRI.  Since Establishing a base URI (see Section 5.1 of [URI])
+   strips everything after the last slash from @base this cannot be used
+   with fragment identifiers.
+
+   "@context":
+     "@vocab": "https://example.com/"
+     "@base": "https://example.com/vocab/"
+     country:
+       "@id": "@id"
+   "@type": Country
+   country: ITA
+
+    Figure 11: Controlled vocabulary value expanded with @id and @base.
+
+   The resulting RDF graph is a named node.
+
+   <https://example.com/vocab/ITA> a <https://example.com/Country> .
+
+   NOTE: Currently there's no identified way for this specification to
+   map a simple JSON string to a fragment-based IRI.
+
+   A vocabulary using a fragment as separator, can be represented by
+   using a base IRI without a trailing slash and a fragment in the
+   value:
+
+   "@context":
+     "@vocab": "https://example.com/"
+     "@base": "https://example.com/vocab"
+     country: "@id"
+   "@type": Country
+   country: "#ITA"
+
+    Figure 12: Controlled vocabulary with fragments using @base and @id.
+
+   <https://example.com/vocab#ITA> a <https://example.com/Country> .
+
+   Alternatively, use a prefix to make fragment-based identifiers
+   explicit:
+
+   "@context":
+     "@vocab": "https://example.com/"
+     c: "https://example.com/vocab#"
+     country: "@id"
+   "@type": Country
+   country: "c:ITA"
+
+      Figure 13: Controlled vocabulary with fragments using a prefix.
+
+   <https://example.com/vocab#ITA> a <https://example.com/Country> .
 
 3.3.  Interpreting schema instances
 
@@ -679,7 +758,7 @@ Table of Contents
            givenName: Diego Maria
            familyName: De La Peña
 
-           Figure 10: Reusing schema components with merge keys.
+           Figure 14: Reusing schema components with merge keys.
 
 4.2.  Context propagation and composability
 
@@ -835,7 +914,7 @@ Table of Contents
            - $ref: "#/components/schemas/NumericTaxCode"
            - $ref: "#/components/schemas/StringTaxCode"
 
-          Figure 11: A definitions.yaml with reusable components.
+          Figure 15: A definitions.yaml with reusable components.
 
    openapi: 3.0.0
    ...
@@ -862,7 +941,7 @@ Table of Contents
              $ref: "https://example.com/definitions.yaml#/components/schemas/TaxCode"
            ...
 
-              Figure 12: A schema using an external component.
+              Figure 16: A schema using an external component.
 
    Bundling is the process of combining multiple OpenAPI and JSON schema
    documents in a single document in order to distribute a consolidated
@@ -918,7 +997,7 @@ Table of Contents
            - $ref: '#/components/schemas/NumericTaxCode'
            - $ref: '#/components/schemas/StringTaxCode'
 
-                        Figure 13: A bundled schema.
+                        Figure 17: A bundled schema.
 
    Bundling can be done in different ways.  Appendix A.5 contains a list
    of bundling tools.
@@ -951,7 +1030,7 @@ Table of Contents
        hasOccupation:
          $ref: "#/Occupation"
 
-    Figure 14: A JSON Schema with properties named after RDF predicates.
+    Figure 18: A JSON Schema with properties named after RDF predicates.
 
    As we can see from the above schema, this practice can lead to
    inheriting non uniform naming conventions from the RDF vocabulary:
@@ -984,7 +1063,7 @@ Table of Contents
      x-rdf: >-
        _:b0 :patronymicName "Ericsson" .
 
-      Figure 15: Drawbacks of using RDF property names as JSON Schema
+      Figure 19: Drawbacks of using RDF property names as JSON Schema
                                 properties.
 
    If the service evolves to be more generic (e.g., moving to foaf:),
@@ -1135,7 +1214,7 @@ A.1.  Schema with semantic information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 16: A JSON Schema data model with semantic context and type.
+    Figure 20: A JSON Schema data model with semantic context and type.
 
    The example object is assembled as a JSON-LD object as follows.
 
@@ -1199,7 +1278,7 @@ A.2.  Schema with semantic and vocabulary information
        country: "FRA"
        custom_id: "12345"
 
-    Figure 17: A JSON Schema data model with semantic context and type.
+    Figure 21: A JSON Schema data model with semantic context and type.
 
    Here we associate a vocabulary to the country property, specifying
    that @type is @vocab and providing a nested context for the country
@@ -1216,7 +1295,7 @@ A.2.  Schema with semantic and vocabulary information
      schema:givenName "John"          ;
      schema:addressCountry country:FRA .
 
-          Figure 18: An RDF graph with semantic context and type.
+          Figure 22: An RDF graph with semantic context and type.
 
 A.3.  Cyclic schema
 
@@ -1290,7 +1369,7 @@ A.3.  Cyclic schema
      }
    }
 
-      Figure 19: An instance context containing redundant information
+      Figure 23: An instance context containing redundant information
 
 A.4.  Composite instance context
 
@@ -1343,7 +1422,7 @@ A.4.  Composite instance context
        province: RM
        country: ITA
 
-                 Figure 20: A schema with object contexts.
+                 Figure 24: A schema with object contexts.
 
    The example schema instance contained in the above schema results in
    the following JSON-LD document.  The instance context contains
@@ -1385,7 +1464,7 @@ A.4.  Composite instance context
      }
    }
 
-       Figure 21: A @context that includes information from different
+       Figure 25: A @context that includes information from different
                                   schemas.
 
    That can be serialized as text/turtle as
@@ -1405,7 +1484,7 @@ A.4.  Composite instance context
      itl:hasProvince <https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/LT>
    .
 
-                 Figure 22: The above entry in text/turtle
+                 Figure 26: The above entry in text/turtle
 
 A.5.  Bundling tools
 
@@ -1414,6 +1493,18 @@ A.5.  Bundling tools
    *  https://redocly.com/docs/cli;
 
    *  https://www.npmjs.com/package/swagger-cli.
+
+   For example, redocly CLI can be used via a pre-commit hook to
+   automatically bundle the schema before committing it to the
+   repository.
+
+   yaml # # An example pre-commit hook configuration for generating OAS
+   bundles. # - repo: local hooks: - id: generate-bundles name: Generate
+   OAS bundles v2.20.3 stages: - pre-push language: docker_image files:
+   >- oas/open.*yaml entry: |- --entrypoint sh docker.io/redocly/
+   cli@sha256:78fa111b6c84522383d419a0631c984aefa76c5fbd39d8904a201b86e3b44168
+   -c 'mkdir -p bundles/ for f in $0 $@; \ do DIR=${f%/*} redocly bundle
+   \ "$f" \ -o "bundles/${DIR##*/}.yaml" done'
 
 Appendix B.  Acknowledgements
 
@@ -1426,7 +1517,7 @@ Appendix B.  Acknowledgements
    requests, reporting bugs, asking smart questions, drafting or
    reviewing text, and evaluating open issues:
 
-   Pierre-Antoine Champin, and Vladimir Alexiev.
+   Pierre-Antoine Champin, Vladimir Alexiev, and Stefano Baruzzo.
 
 FAQ
 

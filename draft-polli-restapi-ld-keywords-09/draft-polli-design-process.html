@@ -10,22 +10,23 @@
        This document provides guidance
 for designing schemas using REST API Linked Data keywords. 
     " name="description">
-<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="xml2rfc 3.34.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-polli-design-process-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.31.0
-    Python 3.12.12
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.0.2
-    platformdirs 4.5.1
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.10.0
     pycountry 24.6.1
     PyYAML 6.0.3
-    requests 2.32.5
-    wcwidth 0.3.0
+    requests 2.33.1
+    wcwidth 0.8.1
 -->
 <link href="draft-polli-design-process.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -166,7 +167,7 @@ for designing schemas using REST API Linked Data keywords.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Oxygen Mono';
@@ -174,7 +175,8 @@ for designing schemas using REST API Linked Data keywords.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 }
 
 @font-face {
@@ -291,16 +293,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -320,10 +325,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -334,59 +339,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -424,26 +429,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -459,20 +463,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -508,9 +514,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -520,17 +526,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -566,6 +574,7 @@ aside, blockquote {
 }
 blockquote {
   margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
 }
 cite {
   display: block;
@@ -579,25 +588,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -617,13 +618,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -634,18 +628,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -704,9 +696,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -796,23 +788,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -823,19 +819,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -856,54 +854,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -922,26 +920,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -957,12 +955,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1024,17 +1023,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1044,11 +1045,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Designing APIs with REST API Linked Data</td>
-<td class="right">January 2026</td>
+<td class="right">June 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Polli</td>
-<td class="center">Expires 26 July 2026</td>
+<td class="center">Expires 24 December 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,12 +1062,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-polli-design-process-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-01-22" class="published">22 January 2026</time>
+<time datetime="2026-06-22" class="published">22 June 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-07-26">26 July 2026</time></dd>
+<dd class="expires"><time datetime="2026-12-24">24 December 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1114,7 @@ for designing schemas using REST API Linked Data keywords.<a href="#section-abst
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 July 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 December 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1868,11 +1869,126 @@ country:ITA
           <h4 id="name-using-vocab-or-base-for-voc">
 <a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-using-vocab-or-base-for-voc" class="section-name selfRef">Using <code>@vocab</code> or <code>@base</code> for vocabulary references</a>
           </h4>
-<p id="section-3.2.1-1">Since <code>@vocab</code> is simply prepended to does not undergo the same limitations of <code>@base</code>,
-it is possible to use it to model references to vocabularies
-using fragment identifiers.
-On the other hand, <code>@vocab</code> cannot be used to model object
-identifiers, so it does not work when composing contexts for <code>@id</code> properties.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-1"><code>@vocab</code> is used to expand terms (i.e. prepend a prefix to them even when it contains a fragment separator <code>#</code>),
+while <code>@base</code> is used to expand relative IRIs to absolute IRIs
+according to the URI resolution algorithm defined in <span><a href="https://rfc-editor.org/rfc/rfc3986#section-5" class="relref">Section 5</a> of [<a href="#URI" class="cite xref">URI</a>]</span>:<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2.1-2.1">
+              <p id="section-3.2.1-2.1.1">use <code>@type: @vocab</code> when the property value should be interpreted as
+a vocabulary term, without affecting the node identifier;<a href="#section-3.2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3.2.1-2.2">
+              <p id="section-3.2.1-2.2.1">use <code>@id</code> (possibly with <code>@base</code>) when the property value is itself
+a node identifier.<a href="#section-3.2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-3.2.1-3">Here are some examples of modeling a controlled vocabulary value using <code>@vocab</code> and <code>@id</code>.<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-4">A vocabulary using fragment identifiers
+where we expand the <code>ITA</code> JSON value to <code>https://example.com/vocab#ITA</code>:<a href="#section-3.2.1-4" class="pilcrow">¶</a></p>
+<span id="name-controlled-vocabulary-value"></span><div id="ex-faq-controlled-vocab-non-composable">
+<figure id="figure-10">
+            <div class="lang-yaml sourcecode" id="section-3.2.1-5.1">
+<pre>
+"@context":
+  "@vocab": "https://example.com/"
+  country:
+    "@type": "@vocab"
+    "@context":
+      "@vocab": "https://example.com/vocab#"
+"@type": Country
+country: ITA
+</pre>
+</div>
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<a href="#name-controlled-vocabulary-value" class="selfRef">Controlled vocabulary value expanded with @type: @vocab.</a>
+            </figcaption></figure>
+</div>
+<p id="section-3.2.1-6">The resulting RDF graph is a blank node
+with a <code>country</code> property.<a href="#section-3.2.1-6" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2.1-7">
+<pre>
+[]
+  a &lt;https://example.com/Country&gt;;
+  &lt;https://example.com/country&gt; &lt;https://example.com/vocab#ITA&gt; .
+</pre><a href="#section-3.2.1-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2.1-8">A composable vocabulary using <code>@base</code> to associate
+the <code>country</code> property to the IRI.
+Since Establishing a base URI (see <span><a href="https://rfc-editor.org/rfc/rfc3986#section-5.1" class="relref">Section 5.1</a> of [<a href="#URI" class="cite xref">URI</a>]</span>)
+strips everything after the last slash from <code>@base</code>
+this cannot be used with fragment identifiers.<a href="#section-3.2.1-8" class="pilcrow">¶</a></p>
+<span id="name-controlled-vocabulary-value-"></span><div id="ex-faq-controlled-vocab-composable-base">
+<figure id="figure-11">
+            <div class="lang-yaml sourcecode" id="section-3.2.1-9.1">
+<pre>
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab/"
+  country:
+    "@id": "@id"
+"@type": Country
+country: ITA
+</pre>
+</div>
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<a href="#name-controlled-vocabulary-value-" class="selfRef">Controlled vocabulary value expanded with @id and @base.</a>
+            </figcaption></figure>
+</div>
+<p id="section-3.2.1-10">The resulting RDF graph is a named node.<a href="#section-3.2.1-10" class="pilcrow">¶</a></p>
+<div class="lang-text sourcecode" id="section-3.2.1-11">
+<pre>
+&lt;https://example.com/vocab/ITA&gt; a &lt;https://example.com/Country&gt; .
+</pre><a href="#section-3.2.1-11" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2.1-12">NOTE: Currently there's no identified way for this specification
+to map a simple JSON string to a fragment-based IRI.<a href="#section-3.2.1-12" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-13">A vocabulary using a fragment as separator,
+can be represented by using
+a base IRI without a trailing slash
+and a fragment in the value:<a href="#section-3.2.1-13" class="pilcrow">¶</a></p>
+<span id="name-controlled-vocabulary-with-"></span><div id="ex-faq-controlled-vocab-composable-fragment">
+<figure id="figure-12">
+            <div class="lang-yaml sourcecode" id="section-3.2.1-14.1">
+<pre>
+"@context":
+  "@vocab": "https://example.com/"
+  "@base": "https://example.com/vocab"
+  country: "@id"
+"@type": Country
+country: "#ITA"
+</pre>
+</div>
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<a href="#name-controlled-vocabulary-with-" class="selfRef">Controlled vocabulary with fragments using @base and @id.</a>
+            </figcaption></figure>
+</div>
+<div class="lang-text sourcecode" id="section-3.2.1-15">
+<pre>
+&lt;https://example.com/vocab#ITA&gt; a &lt;https://example.com/Country&gt; .
+</pre><a href="#section-3.2.1-15" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2.1-16">Alternatively, use a prefix to make fragment-based identifiers explicit:<a href="#section-3.2.1-16" class="pilcrow">¶</a></p>
+<span id="name-controlled-vocabulary-with-f"></span><div id="ex-faq-controlled-vocab-composable-prefix">
+<figure id="figure-13">
+            <div class="lang-yaml sourcecode" id="section-3.2.1-17.1">
+<pre>
+"@context":
+  "@vocab": "https://example.com/"
+  c: "https://example.com/vocab#"
+  country: "@id"
+"@type": Country
+country: "c:ITA"
+</pre>
+</div>
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<a href="#name-controlled-vocabulary-with-f" class="selfRef">Controlled vocabulary with fragments using a prefix.</a>
+            </figcaption></figure>
+</div>
+<div class="lang-text sourcecode" id="section-3.2.1-18">
+<pre>
+&lt;https://example.com/vocab#ITA&gt; a &lt;https://example.com/Country&gt; .
+</pre><a href="#section-3.2.1-18" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 </section>
@@ -1930,7 +2046,7 @@ components:
 To increase interoperability, it is possible to post-process the schema to replace merge keys with the corresponding components before releasing it,
 similarly to what bundling tools do (see <a href="#bundling" class="auto internal xref">Section 5.1</a>).<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <span id="name-reusing-schema-components-w"></span><div id="ex-merge-keys">
-<figure id="figure-10">
+<figure id="figure-14">
           <div class="lang-yaml sourcecode" id="section-4.1-5.1">
 <pre>
 openapi: 3.0.0
@@ -1972,7 +2088,7 @@ components:
         familyName: De La Peña
 </pre>
 </div>
-<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
 <a href="#name-reusing-schema-components-w" class="selfRef">Reusing schema components with merge keys.</a>
           </figcaption></figure>
 </div>
@@ -2131,7 +2247,7 @@ in separate resources.
 This eases maintenance and enables component reuse,
 like shown in the following two examples.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <span id="name-a-definitionsyaml-with-reus"></span><div id="ex-definitions">
-<figure id="figure-11">
+<figure id="figure-15">
           <div class="lang-yaml sourcecode" id="section-5.1-2.1">
 <pre>
 # A definitions.yaml with reusable components at https://example.com/definitions.yaml
@@ -2160,12 +2276,12 @@ components:
         - $ref: "#/components/schemas/StringTaxCode"
 </pre>
 </div>
-<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
 <a href="#name-a-definitionsyaml-with-reus" class="selfRef">A definitions.yaml with reusable components.</a>
           </figcaption></figure>
 </div>
 <span id="name-a-schema-using-an-external-"></span><div id="ex-bundled-schema-definitions">
-<figure id="figure-12">
+<figure id="figure-16">
           <div class="lang-yaml sourcecode" id="section-5.1-3.1">
 <pre>
 openapi: 3.0.0
@@ -2195,7 +2311,7 @@ components:
 
 </pre>
 </div>
-<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
 <a href="#name-a-schema-using-an-external-" class="selfRef">A schema using an external component.</a>
           </figcaption></figure>
 </div>
@@ -2207,7 +2323,7 @@ and avoids the need to resolve external references.<a href="#section-5.1-4" clas
 adds them to the schema,
 and replaces the associated <code>$ref</code> with a local reference.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <span id="name-a-bundled-schema"></span><div id="ex-bundled-schema">
-<figure id="figure-13">
+<figure id="figure-17">
           <div class="lang-yaml sourcecode" id="section-5.1-6.1">
 <pre>
 openapi: 3.0.0
@@ -2256,7 +2372,7 @@ components:
         - $ref: '#/components/schemas/StringTaxCode'
 </pre>
 </div>
-<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
 <a href="#name-a-bundled-schema" class="selfRef">A bundled schema.</a>
           </figcaption></figure>
 </div>
@@ -2279,7 +2395,7 @@ components:
 <p id="section-6.1-1">To minimize context information, a common practice is to name
 JSON Schema properties after the corresponding RDF predicates.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-with-properti"></span><div id="ex-rdf-predicates">
-<figure id="figure-14">
+<figure id="figure-18">
           <div class="lang-yaml sourcecode" id="section-6.1-2.1">
 <pre>
 Place:
@@ -2304,7 +2420,7 @@ Person:
       $ref: "#/Occupation"
 </pre>
 </div>
-<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
 <a href="#name-a-json-schema-with-properti" class="selfRef">A JSON Schema with properties named after RDF predicates.</a>
           </figcaption></figure>
 </div>
@@ -2328,7 +2444,7 @@ in time, like shown in the following example.<a href="#section-6.1-5" class="pil
 <p id="section-6.1-6">Instead of using a generic <code>surname</code>, this schema uses
 the more specific <code>patronymicName</code> named after the corresponding RDF predicate.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
 <span id="name-drawbacks-of-using-rdf-prop"></span><div id="ex-inheriting-property-names">
-<figure id="figure-15">
+<figure id="figure-19">
           <div class="lang-yaml sourcecode" id="section-6.1-7.1">
 <pre>
 Person:
@@ -2343,7 +2459,7 @@ Person:
     _:b0 :patronymicName "Ericsson" .
 </pre>
 </div>
-<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
+<figcaption><a href="#figure-19" class="selfRef">Figure 19</a>:
 <a href="#name-drawbacks-of-using-rdf-prop" class="selfRef">Drawbacks of using RDF property names as JSON Schema properties.</a>
           </figcaption></figure>
 </div>
@@ -2360,7 +2476,7 @@ and either map it to <code>http://w3.org/ns/person#patronymicName</code> or <cod
         <h3 id="name-composability">
 <a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-composability" class="section-name selfRef">Composability</a>
         </h3>
-<p id="section-6.2-1">Always prefer explicit context information  over implicit context composition.
+<p id="section-6.2-1">Always prefer explicit context information over implicit context composition.
 Different implementations of context composition may lead to different results,
 especially over large schemas with many nested objects.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2-2">While composition is useful in the schema design phase,
@@ -2510,7 +2626,7 @@ schema definition reduces the risk of interoperability issues.<a href="#section-
 Person JSON Schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wi"></span><div id="ex-base">
-<figure id="figure-16">
+<figure id="figure-20">
           <div class="lang-example sourcecode" id="appendix-A.1-2.1">
 <pre>
 Person:
@@ -2536,7 +2652,7 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
+<figcaption><a href="#figure-20" class="selfRef">Figure 20</a>:
 <a href="#name-a-json-schema-data-model-wi" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2582,7 +2698,7 @@ _:b0 rdf:type schema:Person    ;
 "Person" schema with semantic information
 provided by the x-jsonld-type and x-jsonld-context.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
 <span id="name-a-json-schema-data-model-wit"></span><div id="ex-complete-example">
-<figure id="figure-17">
+<figure id="figure-21">
           <div class="lang-example sourcecode" id="appendix-A.2-2.1">
 <pre>
 Person:
@@ -2616,7 +2732,7 @@ Person:
     custom_id: "12345"
 </pre>
 </div>
-<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
+<figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
 <a href="#name-a-json-schema-data-model-wit" class="selfRef">A JSON Schema data model with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2627,7 +2743,7 @@ This is different from how we did it in <a href="#modeling-identifiers" class="a
 where the property itself was mapped to <code>@id</code>.<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-4">The resulting RDF graph is:<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
 <span id="name-an-rdf-graph-with-semantic-"></span><div id="ex-rdf-from-json">
-<figure id="figure-18">
+<figure id="figure-22">
           <div class="lang-text sourcecode" id="appendix-A.2-5.1">
 <pre>
 @prefix schema: &lt;https://schema.org/&gt; .
@@ -2639,7 +2755,7 @@ where the property itself was mapped to <code>@id</code>.<a href="#appendix-A.2-
   schema:addressCountry country:FRA .
 </pre>
 </div>
-<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
+<figcaption><a href="#figure-22" class="selfRef">Figure 22</a>:
 <a href="#name-an-rdf-graph-with-semantic-" class="selfRef">An RDF graph with semantic context and type.</a>
           </figcaption></figure>
 </div>
@@ -2706,7 +2822,7 @@ results in the following JSON-LD document.<a href="#appendix-A.3-3" class="pilcr
 just recursively copying the x-jsonld-context,
 the instance context could have been more complex.<a href="#appendix-A.3-5" class="pilcrow">¶</a></p>
 <span id="name-an-instance-context-contain"></span><div id="ex-redundant-context">
-<figure id="figure-19">
+<figure id="figure-23">
           <div class="lang-example sourcecode" id="appendix-A.3-6.1">
 <pre>
 {
@@ -2728,7 +2844,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 }
 </pre>
 </div>
-<figcaption><a href="#figure-19" class="selfRef">Figure 19</a>:
+<figcaption><a href="#figure-23" class="selfRef">Figure 23</a>:
 <a href="#name-an-instance-context-contain" class="selfRef">An instance context containing redundant information</a>
           </figcaption></figure>
 </div>
@@ -2742,7 +2858,7 @@ the instance context could have been more complex.<a href="#appendix-A.3-5" clas
 <p id="appendix-A.4-1">In the following schema document,
 the "Citizen" schema references the "BirthPlace" schema.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
 <span id="name-a-schema-with-object-contex"></span><div id="ex-object-contexts">
-<figure id="figure-20">
+<figure id="figure-24">
           <div class="lang-yaml sourcecode" id="appendix-A.4-2.1">
 <pre>
 Citizen:
@@ -2793,7 +2909,7 @@ BirthPlace:
 
 </pre>
 </div>
-<figcaption><a href="#figure-20" class="selfRef">Figure 20</a>:
+<figcaption><a href="#figure-24" class="selfRef">Figure 24</a>:
 <a href="#name-a-schema-with-object-contex" class="selfRef">A schema with object contexts.</a>
           </figcaption></figure>
 </div>
@@ -2802,7 +2918,7 @@ results in the following JSON-LD document.
 The instance context contains information from both
 "Citizen" and "BirthPlace" semantic keywords.<a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
 <span id="name-a-context-that-includes-inf"></span><div id="ex-composite-context">
-<figure id="figure-21">
+<figure id="figure-25">
           <div class="lang-json sourcecode" id="appendix-A.4-4.1">
 <pre>
 {
@@ -2842,13 +2958,13 @@ The instance context contains information from both
 }
 </pre>
 </div>
-<figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
+<figcaption><a href="#figure-25" class="selfRef">Figure 25</a>:
 <a href="#name-a-context-that-includes-inf" class="selfRef">A @context that includes information from different schemas.</a>
           </figcaption></figure>
 </div>
 <p id="appendix-A.4-5">That can be serialized as <code>text/turtle</code> as<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
 <span id="name-the-above-entry-in-text-tur"></span><div id="ex-composite-context-turtle">
-<figure id="figure-22">
+<figure id="figure-26">
           <div class="lang-text sourcecode" id="appendix-A.4-6.1">
 <pre>
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
@@ -2867,7 +2983,7 @@ _:b0 rdf:type itl:Feature ;
 .
 </pre>
 </div>
-<figcaption><a href="#figure-22" class="selfRef">Figure 22</a>:
+<figcaption><a href="#figure-26" class="selfRef">Figure 26</a>:
 <a href="#name-the-above-entry-in-text-tur" class="selfRef">The above entry in text/turtle</a>
           </figcaption></figure>
 </div>
@@ -2887,6 +3003,34 @@ _:b0 rdf:type itl:Feature ;
             <p id="appendix-A.5-2.2.1">https://www.npmjs.com/package/swagger-cli.<a href="#appendix-A.5-2.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
+<p id="appendix-A.5-3">For example, redocly CLI can be used via a pre-commit hook
+to automatically bundle the schema before committing it to the repository.<a href="#appendix-A.5-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.5-4"><code>yaml
+#
+# An example pre-commit hook configuration for generating OAS bundles.
+#
+- repo: local
+  hooks:
+  - id: generate-bundles
+    name: Generate OAS bundles v2.20.3
+    stages:
+    - pre-push
+    language: docker_image
+    files: &gt;-
+      oas/open.*yaml
+    entry: |-
+      --entrypoint sh
+      docker.io/redocly/cli@sha256:78fa111b6c84522383d419a0631c984aefa76c5fbd39d8904a201b86e3b44168
+      -c
+      'mkdir -p bundles/
+      for f in $0 $@; \
+      do
+        DIR=${f%/*}
+        redocly bundle \
+          "$f" \
+        -o "bundles/${DIR##*/}.yaml"
+      done'
+</code><a href="#appendix-A.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2903,7 +3047,8 @@ The following contributors have helped improve this specification by
 opening pull requests, reporting bugs, asking smart questions,
 drafting or reviewing text, and evaluating open issues:<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 <p id="appendix-B-3">Pierre-Antoine Champin,
-and Vladimir Alexiev.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
+Vladimir Alexiev,
+and Stefano Baruzzo.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="faq">
